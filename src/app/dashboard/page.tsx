@@ -8,11 +8,17 @@ export default async function DashboardPage() {
   const fullName = user?.user_metadata?.full_name as string | undefined
   const firstName = fullName ? fullName.split(' ')[0] : (user?.email?.split('@')[0] ?? 'there')
 
+  // Fetch real project stats
+  const { data: projects } = await supabase.from('projects').select('status').eq('client_id', user?.id ?? '')
+  const activeCount = projects?.filter(p => ['pending','in_review','in_progress'].includes(p.status)).length ?? 0
+  const completedCount = projects?.filter(p => p.status === 'completed').length ?? 0
+  const totalCount = projects?.length ?? 0
+
   const stats = [
-    { label: 'Active Projects', value: 0, icon: '&#128193;', note: 'Phase 2' },
-    { label: 'Completed Projects', value: 0, icon: '&#9989;', note: 'Phase 2' },
-    { label: 'Pending Payments', value: 0, icon: '&#128179;', note: 'Phase 2' },
-    { label: 'Messages', value: 0, icon: '&#128172;', note: 'Phase 2' },
+    { label: 'Active Projects', value: activeCount, icon: '&#128193;', note: null },
+    { label: 'Completed Projects', value: completedCount, icon: '&#9989;', note: null },
+    { label: 'Total Requests', value: totalCount, icon: '&#128203;', note: null },
+    { label: 'Messages', value: 0, icon: '&#128172;', note: 'Soon' },
   ]
 
   return (
@@ -59,7 +65,7 @@ export default async function DashboardPage() {
           <div key={i} className="stat-card">
             <div className="stat-card-top">
               <span className="stat-card-icon" dangerouslySetInnerHTML={{ __html: s.icon }} />
-              <span className="stat-card-badge">{s.note}</span>
+              {s.note && <span className="stat-card-badge">{s.note}</span>}
             </div>
             <div className="stat-card-value">{s.value}</div>
             <div className="stat-card-label">{s.label}</div>
