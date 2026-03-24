@@ -28,20 +28,29 @@ async function isAdmin(userId: string) {
 
 // GET all projects with client info
 export async function GET() {
-  const user = await getUser()
-  if (!user || !(await isAdmin(user.id))) return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
+  try {
+    const user = await getUser()
+    if (!user || !(await isAdmin(user.id))) return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
 
-  const { data, error } = await adminSupabase
-    .from('projects')
-    .select(`*, profiles:client_id (full_name, email, country, company)`)
-    .order('created_at', { ascending: false })
+    const { data, error } = await adminSupabase
+      .from('projects')
+      .select(`*, profiles:client_id (full_name, email, country, company)`)
+      .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+    if (error) {
+      console.error('GET /api/admin/projects error:', error.message)
+      return NextResponse.json({ error: 'Could not load projects. Please try again.' }, { status: 500 })
+    }
+    return NextResponse.json(data)
+  } catch (err) {
+    console.error('GET /api/admin/projects unexpected error:', err)
+    return NextResponse.json({ error: 'Could not load projects. Please try again.' }, { status: 500 })
+  }
 }
 
 // PATCH update project status
 export async function PATCH(request: Request) {
+  try {
   const user = await getUser()
   if (!user || !(await isAdmin(user.id))) return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
 
@@ -97,4 +106,8 @@ export async function PATCH(request: Request) {
   }
 
   return NextResponse.json({ success: true, project })
+  } catch (err) {
+    console.error('PATCH /api/admin/projects unexpected error:', err)
+    return NextResponse.json({ error: 'Could not update project. Please try again.' }, { status: 500 })
+  }
 }

@@ -26,22 +26,31 @@ async function getSupabase() {
 
 // GET — list current user's projects
 export async function GET() {
-  const supabase = await getSupabase()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  try {
+    const supabase = await getSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('client_id', user.id)
-    .order('created_at', { ascending: false })
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('client_id', user.id)
+      .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+    if (error) {
+      console.error('GET /api/projects error:', error.message)
+      return NextResponse.json({ error: 'Could not load your projects. Please try again.' }, { status: 500 })
+    }
+    return NextResponse.json(data)
+  } catch (err) {
+    console.error('GET /api/projects unexpected error:', err)
+    return NextResponse.json({ error: 'Could not load your projects. Please try again.' }, { status: 500 })
+  }
 }
 
 // POST — create new project
 export async function POST(request: Request) {
+  try {
   const supabase = await getSupabase()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
@@ -67,7 +76,10 @@ export async function POST(request: Request) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('POST /api/projects DB error:', error.message)
+    return NextResponse.json({ error: 'Could not save your request. Please try again or contact us at hello@theryters.com.' }, { status: 500 })
+  }
 
   const serviceLabels: Record<string, string> = {
     research_academic: 'Research and Academic Enquiry',
@@ -173,4 +185,8 @@ export async function POST(request: Request) {
   })
 
   return NextResponse.json({ success: true, project })
+  } catch (err) {
+    console.error('POST /api/projects unexpected error:', err)
+    return NextResponse.json({ error: 'Something went wrong. Please try again or contact us at hello@theryters.com.' }, { status: 500 })
+  }
 }
