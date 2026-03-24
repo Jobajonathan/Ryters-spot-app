@@ -1,8 +1,40 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Footer() {
+  const [email, setEmail] = useState('')
+  const [subStatus, setSubStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'exists'>('idle')
+  const [subMsg, setSubMsg] = useState('')
+
+  async function handleSubscribe(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email) return
+    setSubStatus('loading')
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'footer' }),
+      })
+      const data = await res.json()
+      if (res.status === 409) {
+        setSubStatus('exists')
+        setSubMsg('You are already subscribed!')
+      } else if (!res.ok) {
+        setSubStatus('error')
+        setSubMsg(data.error || 'Something went wrong.')
+      } else {
+        setSubStatus('success')
+        setEmail('')
+      }
+    } catch {
+      setSubStatus('error')
+      setSubMsg('Could not subscribe. Please try again.')
+    }
+  }
+
   return (
     <footer className="footer" role="contentinfo">
       <div className="container">
@@ -22,10 +54,32 @@ export default function Footer() {
             </div>
             <div className="footer-newsletter">
               <p className="footer-newsletter-label">Get fortnightly insights, free</p>
-              <form className="footer-newsletter-form" aria-label="Newsletter signup" noValidate>
-                <input type="email" className="footer-newsletter-input" placeholder="Your email address" required aria-label="Email address" />
-                <button type="submit" className="btn btn-accent btn-sm">Subscribe</button>
-              </form>
+              {subStatus === 'success' ? (
+                <div style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.4)', borderRadius: '8px', padding: '10px 14px', fontSize: '0.85rem', color: '#C9A84C' }}>
+                  &#10003; You are subscribed! Check your inbox for a welcome email.
+                </div>
+              ) : (
+                <>
+                  <form className="footer-newsletter-form" aria-label="Newsletter signup" noValidate onSubmit={handleSubscribe}>
+                    <input
+                      type="email"
+                      className="footer-newsletter-input"
+                      placeholder="Your email address"
+                      required
+                      aria-label="Email address"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      disabled={subStatus === 'loading'}
+                    />
+                    <button type="submit" className="btn btn-accent btn-sm" disabled={subStatus === 'loading'}>
+                      {subStatus === 'loading' ? '...' : 'Subscribe'}
+                    </button>
+                  </form>
+                  {(subStatus === 'error' || subStatus === 'exists') && (
+                    <p style={{ fontSize: '0.78rem', color: subStatus === 'exists' ? '#C9A84C' : '#fc8181', marginTop: '6px' }}>{subMsg}</p>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -52,7 +106,7 @@ export default function Footer() {
             <div style={{ marginTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
               <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.4rem' }}>Abuja, Nigeria</p>
               <p style={{ fontSize: '0.78rem', marginBottom: '0.4rem' }}>
-                <a href="mailto:hello@ryters-spot.com" style={{ color: 'rgba(255,255,255,0.55)' }}>hello@ryters-spot.com</a>
+                <a href="mailto:hello@theryters.com" style={{ color: 'rgba(255,255,255,0.55)' }}>hello@theryters.com</a>
               </p>
               <p style={{ fontSize: '0.78rem' }}>
                 <a href="tel:+2347062057116" style={{ color: 'rgba(255,255,255,0.55)' }}>+234 706 205 7116</a>
