@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   title: 'Ryters Spot — Research, Digital Transformation, Ed-Tech and Product Management',
   description: 'Ryters Spot delivers specialist research, digital transformation, Ed-Tech and product management services to clients across the UK, Europe, North America and beyond.',
   icons: {
-    icon: '/favicon.png',
-    shortcut: '/favicon.png',
-    apple: '/favicon.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 }
 

@@ -127,7 +127,7 @@ export default function HomePage() {
       {/* TRUST BAR */}
       <div className="trust-bar">
         <div className="container">
-          <p className="trust-bar-label">Trusted by organizations &amp; institutions across Nigeria</p>
+          <p className="trust-bar-label">Trusted by organisations &amp; institutions across the UK, Europe, North America and beyond</p>
           <div className="trust-logos">
             <span className="trust-logo">Enterprise Partners</span>
             <span className="trust-logo">Academic Institutions</span>
