@@ -13,16 +13,28 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [unconfirmed, setUnconfirmed] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    setUnconfirmed(false)
     setLoading(true)
     try {
       const supabase = createClient()
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) {
-        setError(authError.message)
+        if (authError.message.toLowerCase().includes('email not confirmed') ||
+            authError.message.toLowerCase().includes('not confirmed')) {
+          setUnconfirmed(true)
+        } else if (authError.message.toLowerCase().includes('invalid login') ||
+                   authError.message.toLowerCase().includes('invalid credentials')) {
+          setError('Incorrect email or password. Please try again.')
+        } else {
+          setError(authError.message)
+        }
       } else {
         router.push('/dashboard')
         router.refresh()
@@ -31,6 +43,27 @@ export default function LoginPage() {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleResendVerification() {
+    if (!email) {
+      setError('Please enter your email address above first.')
+      return
+    }
+    setResendLoading(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.resend({ type: 'signup', email })
+      if (error) {
+        setError(error.message)
+      } else {
+        setResendSuccess(true)
+      }
+    } catch {
+      setError('Could not resend email. Please try again.')
+    } finally {
+      setResendLoading(false)
     }
   }
 
@@ -59,7 +92,10 @@ export default function LoginPage() {
         .auth-heading { font-family: var(--font-serif); font-size: 1.75rem; color: var(--clr-text); margin-bottom: 0.5rem; }
         .auth-subheading { font-size: 0.9rem; color: var(--clr-text-muted); margin-bottom: 1.5rem; }
         .auth-error { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.875rem; margin-bottom: 1.25rem; }
+        .auth-warning { background: #fffbeb; border: 1px solid #f6c90e; color: #854d0e; padding: 1rem 1.25rem; border-radius: var(--radius-md); font-size: 0.875rem; margin-bottom: 1.25rem; }
+        .auth-success-box { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.875rem; margin-bottom: 1.25rem; }
         [data-theme="dark"] .auth-error { background: rgba(197,48,48,0.15); border-color: rgba(197,48,48,0.4); color: #fc8181; }
+        [data-theme="dark"] .auth-warning { background: rgba(133,77,14,0.15); border-color: rgba(246,201,14,0.4); color: #fde68a; }
         .auth-link-row { text-align: center; font-size: 0.875rem; color: var(--clr-text-muted); margin-top: 1rem; }
         .auth-link-row a { color: var(--clr-primary-light); font-weight: 600; }
         .pw-wrap { position: relative; }
@@ -92,6 +128,29 @@ export default function LoginPage() {
             <SocialAuth mode="login" />
 
             {error && <div className="auth-error">{error}</div>}
+
+            {unconfirmed && !resendSuccess && (
+              <div className="auth-warning">
+                <strong>Email not verified yet.</strong><br />
+                Please check your inbox (and spam folder) for the verification link we sent you.
+                <div style={{ marginTop: '0.75rem' }}>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                    style={{ fontSize: '0.82rem' }}>
+                    {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {resendSuccess && (
+              <div className="auth-success-box">
+                Verification email resent to <strong>{email}</strong>. Check your inbox!
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} noValidate>
               <div className="form-group">

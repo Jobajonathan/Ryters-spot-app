@@ -88,7 +88,13 @@ export default function SignupPage() {
         },
       })
       if (authError) {
-        setError(authError.message)
+        if (authError.message.toLowerCase().includes('already registered') ||
+            authError.message.toLowerCase().includes('already exists') ||
+            authError.message.toLowerCase().includes('user already')) {
+          setError('An account with this email already exists. Please sign in instead, or reset your password if you have forgotten it.')
+        } else {
+          setError(authError.message)
+        }
       } else {
         setSuccess(true)
       }
