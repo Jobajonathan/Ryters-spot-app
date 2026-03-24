@@ -36,9 +36,9 @@ function baseTemplate(content: string) {
             <div style="margin-top:40px;padding-top:24px;border-top:1px solid #e5e7eb;text-align:center;">
               <p style="margin:0;font-size:12px;color:${BRAND.muted};">
                 Ryters Spot &mdash; Research, Digital Transformation, Ed-Tech &amp; Product Management<br/>
-                <a href="https://ryters-spot.com" style="color:${BRAND.primary};text-decoration:none;">ryters-spot.com</a>
+                <a href="https://theryters.com" style="color:${BRAND.primary};text-decoration:none;">theryters.com</a>
                 &nbsp;&bull;&nbsp;
-                <a href="mailto:hello@ryters-spot.com" style="color:${BRAND.primary};text-decoration:none;">hello@ryters-spot.com</a>
+                <a href="mailto:hello@theryters.com" style="color:${BRAND.primary};text-decoration:none;">hello@theryters.com</a>
               </p>
               <p style="margin:8px 0 0;font-size:11px;color:#9ca3af;">
                 You are receiving this email because you have an account with Ryters Spot.<br/>
@@ -136,7 +136,7 @@ export function projectConfirmedEmail(name: string, projectTitle: string, servic
     </p>
 
     <div style="text-align:center;margin:32px 0;">
-      <a href="https://ryters-spot.com/dashboard/projects" style="display:inline-block;background:${BRAND.primary};color:#fff;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">
+      <a href="https://theryters.com/dashboard/projects" style="display:inline-block;background:${BRAND.primary};color:#fff;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">
         View My Project
       </a>
     </div>
@@ -161,7 +161,7 @@ export function workDeliveredEmail(name: string, projectTitle: string) {
     </p>
 
     <div style="text-align:center;margin:32px 0;">
-      <a href="https://ryters-spot.com/dashboard/deliverables" style="display:inline-block;background:${BRAND.primary};color:#fff;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">
+      <a href="https://theryters.com/dashboard/deliverables" style="display:inline-block;background:${BRAND.primary};color:#fff;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">
         Download My Work
       </a>
     </div>
@@ -203,7 +203,7 @@ export function invoiceReadyEmail(name: string, projectTitle: string, amount: st
 
     <p style="font-size:13px;color:${BRAND.muted};margin:0;">
       Payment is processed securely via Stripe. If you have questions about this invoice, please contact us at
-      <a href="mailto:hello@ryters-spot.com" style="color:${BRAND.primary};">hello@ryters-spot.com</a>.
+      <a href="mailto:hello@theryters.com" style="color:${BRAND.primary};">hello@theryters.com</a>.
     </p>
   `)
 }

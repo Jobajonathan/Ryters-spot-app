@@ -9,7 +9,7 @@ import {
 } from '@/lib/emails/templates'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Ryters Spot <noreply@ryters-spot.com>'
+const FROM = 'Ryters Spot <noreply@theryters.com>'
 
 export async function POST(req: NextRequest) {
   try {
