@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -31,7 +31,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }
   cancelled:    { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' },
 }
 
-export default function ProjectsPage() {
+function ProjectsContent() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const searchParams = useSearchParams()
@@ -110,5 +110,13 @@ export default function ProjectsPage() {
         })
       )}
     </>
+  )
+}
+
+export default function ProjectsPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '4rem', color: 'var(--clr-text-muted)' }}>Loading your projects...</div>}>
+      <ProjectsContent />
+    </Suspense>
   )
 }
