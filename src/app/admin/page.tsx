@@ -1,29 +1,30 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
-type Project = {
+type Stats = {
+  totalProjects: number
+  activeProjects: number
+  pendingProjects: number
+  completedProjects: number
+  totalClients: number
+  newClientsThisMonth: number
+  projectsThisMonth: number
+  projectsLastMonth: number
+}
+
+type RecentApp = {
   id: string
   title: string
   service: string
   status: string
   urgency: string
-  deadline: string | null
-  budget_range: string | null
-  description: string
-  admin_notes: string | null
   created_at: string
-  profiles: { full_name: string; email: string; country: string; company: string } | null
+  profiles: { full_name: string; email: string } | null
 }
 
-type AdminUser = {
-  id: string
-  full_name: string
-  email: string
-  role: 'admin' | 'superadmin'
-  created_at: string
-}
+type StatusBreak = { status: string; count: number }
 
 const SERVICE_LABELS: Record<string, string> = {
   research_academic: 'Research',
@@ -32,513 +33,188 @@ const SERVICE_LABELS: Record<string, string> = {
   product_management: 'Product Mgmt',
 }
 
-const STATUSES = [
-  { value: 'pending', label: 'Pending Review', bg: '#fef3c7', color: '#92400e' },
-  { value: 'in_review', label: 'In Review', bg: '#dbeafe', color: '#1e40af' },
-  { value: 'in_progress', label: 'In Progress', bg: '#d1fae5', color: '#065f46' },
-  { value: 'completed', label: 'Completed', bg: '#f0fdf4', color: '#166534' },
-  { value: 'cancelled', label: 'Cancelled', bg: '#fee2e2', color: '#991b1b' },
-]
+const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
+  pending:     { bg: '#fef3c7', color: '#92400e', label: 'Pending' },
+  in_review:   { bg: '#dbeafe', color: '#1e40af', label: 'In Review' },
+  in_progress: { bg: '#d1fae5', color: '#065f46', label: 'In Progress' },
+  completed:   { bg: '#f0fdf4', color: '#166534', label: 'Completed' },
+  cancelled:   { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' },
+}
 
-function StatusBadge({ status }: { status: string }) {
-  const s = STATUSES.find(x => x.value === status) || STATUSES[0]
+function KpiCard({ label, value, sub, color, icon }: { label: string; value: number; sub?: string; color: string; icon: string }) {
   return (
-    <span style={{ background: s.bg, color: s.color, fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
-      {s.label}
-    </span>
+    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+        {icon}
+      </div>
+      <div>
+        <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827', lineHeight: 1, fontFamily: 'Georgia, serif' }}>{value}</div>
+        <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: 3 }}>{label}</div>
+        {sub && <div style={{ fontSize: '0.72rem', color: color, marginTop: 4, fontWeight: 600 }}>{sub}</div>}
+      </div>
+    </div>
   )
 }
 
-export default function AdminPage() {
-  const router = useRouter()
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [recent, setRecent] = useState<RecentApp[]>([])
+  const [statusBreak, setStatusBreak] = useState<StatusBreak[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Auth & role
-  const [myRole, setMyRole] = useState<'admin' | 'superadmin' | null>(null)
-  const [myName, setMyName] = useState('')
-  const [authChecked, setAuthChecked] = useState(false)
-
-  // Tab
-  const [tab, setTab] = useState<'projects' | 'team'>('projects')
-
-  // Projects state
-  const [projects, setProjects] = useState<Project[]>([])
-  const [projLoading, setProjLoading] = useState(true)
-  const [projError, setProjError] = useState('')
-  const [filter, setFilter] = useState('all')
-  const [selected, setSelected] = useState<Project | null>(null)
-  const [newStatus, setNewStatus] = useState('')
-  const [adminNotes, setAdminNotes] = useState('')
-  const [updating, setUpdating] = useState(false)
-  const [updateMsg, setUpdateMsg] = useState('')
-
-  // Team state
-  const [admins, setAdmins] = useState<AdminUser[]>([])
-  const [teamLoading, setTeamLoading] = useState(false)
-  const [teamError, setTeamError] = useState('')
-  const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteName, setInviteName] = useState('')
-  const [inviting, setInviting] = useState(false)
-  const [inviteMsg, setInviteMsg] = useState('')
-  const [inviteMsgType, setInviteMsgType] = useState<'success' | 'error'>('success')
-  const [revokingId, setRevokingId] = useState<string | null>(null)
-
-  // 1. Check current admin's role
   useEffect(() => {
-    fetch('/api/admin/me')
+    fetch('/api/admin/analytics')
       .then(r => r.json())
       .then(data => {
-        if (data.role && ['admin', 'superadmin'].includes(data.role)) {
-          setMyRole(data.role)
-          setMyName(data.full_name || data.email)
-        }
-        setAuthChecked(true)
+        if (data.stats) setStats(data.stats)
+        if (data.recentApplications) setRecent(data.recentApplications)
+        if (data.statusBreakdown) setStatusBreak(data.statusBreakdown)
+        setLoading(false)
       })
-      .catch(() => setAuthChecked(true))
+      .catch(() => setLoading(false))
   }, [])
 
-  // 2. Load projects once authenticated
-  useEffect(() => {
-    if (!myRole) return
-    fetch('/api/admin/projects')
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) { setProjError(data.error); setProjLoading(false); return }
-        setProjects(Array.isArray(data) ? data : [])
-        setProjLoading(false)
-      })
-      .catch(() => { setProjError('Failed to load projects.'); setProjLoading(false) })
-  }, [myRole])
+  const trend = stats ? (
+    stats.projectsLastMonth === 0
+      ? null
+      : Math.round(((stats.projectsThisMonth - stats.projectsLastMonth) / stats.projectsLastMonth) * 100)
+  ) : null
 
-  // 3. Load team when superadmin opens Team tab
-  useEffect(() => {
-    if (tab !== 'team' || myRole !== 'superadmin') return
-    loadTeam()
-  }, [tab, myRole])
+  const maxCount = statusBreak.length ? Math.max(...statusBreak.map(s => s.count), 1) : 1
 
-  function loadTeam() {
-    setTeamLoading(true)
-    setTeamError('')
-    fetch('/api/admin/users')
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) { setTeamError(data.error); setTeamLoading(false); return }
-        setAdmins(Array.isArray(data) ? data : [])
-        setTeamLoading(false)
-      })
-      .catch(() => { setTeamError('Failed to load team.'); setTeamLoading(false) })
-  }
-
-  async function handleInvite(e: React.FormEvent) {
-    e.preventDefault()
-    setInviting(true)
-    setInviteMsg('')
-    const res = await fetch('/api/admin/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: inviteEmail, full_name: inviteName }),
-    })
-    const data = await res.json()
-    if (data.success) {
-      setInviteMsg(data.message)
-      setInviteMsgType('success')
-      setInviteEmail('')
-      setInviteName('')
-      loadTeam()
-    } else {
-      setInviteMsg(data.error)
-      setInviteMsgType('error')
-    }
-    setInviting(false)
-  }
-
-  async function revokeAdmin(id: string, name: string) {
-    if (!confirm(`Remove admin access for ${name}? They will become a regular client.`)) return
-    setRevokingId(id)
-    const res = await fetch('/api/admin/users', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, role: 'client' }),
-    })
-    const data = await res.json()
-    if (data.success) {
-      setAdmins(prev => prev.filter(a => a.id !== id))
-    } else {
-      alert(data.error)
-    }
-    setRevokingId(null)
-  }
-
-  function openProject(p: Project) {
-    setSelected(p)
-    setNewStatus(p.status)
-    setAdminNotes(p.admin_notes || '')
-    setUpdateMsg('')
-  }
-
-  async function updateStatus() {
-    if (!selected) return
-    setUpdating(true)
-    setUpdateMsg('')
-    const res = await fetch('/api/admin/projects', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selected.id, status: newStatus, admin_notes: adminNotes }),
-    })
-    const data = await res.json()
-    if (data.success) {
-      setProjects(prev => prev.map(p => p.id === selected.id ? { ...p, status: newStatus, admin_notes: adminNotes } : p))
-      setSelected(prev => prev ? { ...prev, status: newStatus, admin_notes: adminNotes } : null)
-      setUpdateMsg('Updated and client notified by email.')
-    } else {
-      setUpdateMsg('Error: ' + data.error)
-    }
-    setUpdating(false)
-  }
-
-  const filtered = filter === 'all' ? projects : projects.filter(p => p.status === filter)
-  const counts = STATUSES.reduce((acc, s) => ({ ...acc, [s.value]: projects.filter(p => p.status === s.value).length }), {} as Record<string, number>)
-
-  // Loading state
-  if (!authChecked) {
-    return <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--clr-text-muted)' }}>Checking access...</div>
-  }
-
-  // Not admin — redirect to admin login
-  if (!myRole) {
-    return (
-      <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-        <h2 style={{ fontFamily: 'var(--font-serif)', marginBottom: '0.5rem' }}>Admin Access Only</h2>
-        <p style={{ color: 'var(--clr-text-muted)', marginBottom: '1.5rem' }}>You do not have permission to view this page.</p>
-        <button className="btn btn-primary" onClick={() => router.push('/admin/login')}>Sign in as Admin</button>
-      </div>
-    )
-  }
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem', color: '#9ca3af', flexDirection: 'column', gap: '0.75rem' }}>
+      <div style={{ width: 28, height: 28, border: '3px solid #1B4332', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      Loading analytics...
+    </div>
+  )
 
   return (
     <>
       <style>{`
-        .admin-page { max-width: 1100px; }
-        .admin-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-        .admin-top h1 { font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 0.2rem; }
-        .admin-top p { color: var(--clr-text-muted); font-size: 0.875rem; }
-        .admin-role-badge {
-          display: inline-flex; align-items: center; gap: 6px;
-          font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-          background: rgba(27,67,50,0.08); color: var(--clr-primary);
-          border: 1px solid rgba(27,67,50,0.2); padding: 4px 12px; border-radius: 100px;
-        }
-        .admin-role-badge.superadmin { background: rgba(201,168,76,0.12); color: #92400e; border-color: rgba(201,168,76,0.35); }
-        .admin-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--clr-border); margin-bottom: 2rem; }
-        .admin-tab {
-          padding: 0.6rem 1.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer;
-          background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px;
-          color: var(--clr-text-muted); transition: all 0.15s;
-        }
-        .admin-tab:hover { color: var(--clr-text); }
-        .admin-tab.active { color: var(--clr-primary); border-bottom-color: var(--clr-primary); }
-        .stat-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 0.75rem; margin-bottom: 2rem; }
-        .stat-box { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .stat-box:hover { border-color: var(--clr-primary-light); }
-        .stat-box.active { border-color: var(--clr-primary); background: rgba(27,67,50,0.04); }
-        .stat-num { font-family: var(--font-serif); font-size: 1.75rem; font-weight: 700; color: var(--clr-primary); line-height: 1; }
-        .stat-lbl { font-size: 0.7rem; color: var(--clr-text-muted); margin-top: 4px; font-weight: 600; }
-        .proj-table { width: 100%; border-collapse: collapse; background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); overflow: hidden; }
-        .proj-table th { background: var(--clr-surface-2); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--clr-text-muted); padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--clr-border); }
-        .proj-table td { padding: 0.9rem 1rem; font-size: 0.875rem; border-bottom: 1px solid var(--clr-border); vertical-align: middle; }
-        .proj-table tr:last-child td { border-bottom: none; }
-        .proj-table tr:hover td { background: var(--clr-surface-2); cursor: pointer; }
-        .proj-title-cell { font-weight: 600; color: var(--clr-text); max-width: 200px; }
-        .proj-title-cell small { font-weight: 400; color: var(--clr-text-muted); display: block; font-size: 0.75rem; }
-        .panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; justify-content: flex-end; }
-        .panel { width: 480px; max-width: 95vw; background: var(--clr-bg); height: 100%; overflow-y: auto; padding: 2rem; box-shadow: -4px 0 24px rgba(0,0,0,0.15); }
-        .panel-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; }
-        .panel-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--clr-text-muted); padding: 4px; }
-        .panel-section { margin-bottom: 1.5rem; }
-        .panel-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--clr-text-muted); margin-bottom: 0.4rem; }
-        .panel-value { font-size: 0.9rem; color: var(--clr-text); line-height: 1.6; }
-        /* Team tab */
-        .team-layout { display: grid; grid-template-columns: 1fr 380px; gap: 2rem; align-items: start; }
-        .team-table { width: 100%; border-collapse: collapse; background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); overflow: hidden; }
-        .team-table th { background: var(--clr-surface-2); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--clr-text-muted); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--clr-border); }
-        .team-table td { padding: 0.9rem 1rem; font-size: 0.875rem; border-bottom: 1px solid var(--clr-border); vertical-align: middle; }
-        .team-table tr:last-child td { border-bottom: none; }
-        .invite-card { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 1.5rem; }
-        .invite-card h3 { font-family: var(--font-serif); font-size: 1.1rem; margin-bottom: 0.35rem; }
-        .invite-card p { font-size: 0.82rem; color: var(--clr-text-muted); margin-bottom: 1.25rem; }
-        .revoke-btn { background: none; border: 1px solid #fee2e2; color: #991b1b; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
-        .revoke-btn:hover { background: #fee2e2; }
-        .revoke-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        @media (max-width: 900px) { .stat-row { grid-template-columns: repeat(3,1fr); } .team-layout { grid-template-columns: 1fr; } }
-        @media (max-width: 600px) { .stat-row { grid-template-columns: repeat(2,1fr); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .dash-grid-2 { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; }
+        .dash-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
+        .dash-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+        .dash-card-title { font-size: 0.875rem; font-weight: 700; color: #111827; }
+        .recent-table { width: 100%; border-collapse: collapse; }
+        .recent-table th { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; padding: 0.75rem 1.25rem; text-align: left; border-bottom: 1px solid #f3f4f6; }
+        .recent-table td { padding: 0.85rem 1.25rem; font-size: 0.82rem; border-bottom: 1px solid #f9fafb; vertical-align: middle; }
+        .recent-table tr:last-child td { border-bottom: none; }
+        .recent-table tr:hover td { background: #f9fafb; }
+        .status-bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 1.25rem; }
+        .status-bar-label { font-size: 0.78rem; color: #374151; width: 90px; flex-shrink: 0; }
+        .status-bar-track { flex: 1; height: 8px; background: #f3f4f6; border-radius: 100px; overflow: hidden; }
+        .status-bar-fill { height: 100%; border-radius: 100px; transition: width 0.5s ease; }
+        .status-bar-count { font-size: 0.78rem; font-weight: 700; color: #374151; width: 24px; text-align: right; }
+        @media (max-width: 900px) { .dash-grid { grid-template-columns: repeat(2, 1fr); } .dash-grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 500px) { .dash-grid { grid-template-columns: 1fr; } }
       `}</style>
 
-      <div className="admin-page">
-        {/* Header */}
-        <div className="admin-top">
-          <div>
-            <h1>Admin Dashboard</h1>
-            <p>Welcome back, {myName}.</p>
-          </div>
-          <span className={`admin-role-badge${myRole === 'superadmin' ? ' superadmin' : ''}`}>
-            {myRole === 'superadmin' ? '★ Superadmin' : 'Admin'}
-          </span>
-        </div>
+      <div style={{ marginBottom: '1.75rem' }}>
+        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: 0, marginBottom: '0.25rem' }}>Dashboard</h1>
+        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Welcome back. Here is what is happening today.</p>
+      </div>
 
-        {/* Tabs */}
-        <div className="admin-tabs">
-          <button className={`admin-tab${tab === 'projects' ? ' active' : ''}`} onClick={() => setTab('projects')}>
-            Projects
-          </button>
-          {myRole === 'superadmin' && (
-            <button className={`admin-tab${tab === 'team' ? ' active' : ''}`} onClick={() => setTab('team')}>
-              Team
-            </button>
+      {/* KPI row */}
+      <div className="dash-grid">
+        <KpiCard label="Total Clients" value={stats?.totalClients || 0} sub={`+${stats?.newClientsThisMonth || 0} this month`} color="#1B4332" icon="👥" />
+        <KpiCard label="Total Projects" value={stats?.totalProjects || 0} sub={trend !== null ? `${trend >= 0 ? '+' : ''}${trend}% vs last month` : undefined} color="#C9A84C" icon="📋" />
+        <KpiCard label="Active Projects" value={stats?.activeProjects || 0} sub="In review + in progress" color="#2563eb" icon="⚡" />
+        <KpiCard label="Pending Review" value={stats?.pendingProjects || 0} sub={stats?.pendingProjects ? 'Needs attention' : 'All clear'} color={stats?.pendingProjects ? '#dc2626' : '#16a34a'} icon="⏳" />
+      </div>
+
+      <div className="dash-grid-2">
+        {/* Recent applications */}
+        <div className="dash-card">
+          <div className="dash-card-header">
+            <span className="dash-card-title">Recent Applications</span>
+            <Link href="/admin/applications" style={{ fontSize: '0.78rem', color: '#1B4332', fontWeight: 600, textDecoration: 'none' }}>View all →</Link>
+          </div>
+          {recent.length === 0 ? (
+            <div style={{ padding: '2.5rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem' }}>No applications yet.</div>
+          ) : (
+            <table className="recent-table">
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Client</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recent.map(app => {
+                  const s = STATUS_COLORS[app.status] || STATUS_COLORS.pending
+                  return (
+                    <tr key={app.id}>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#111827' }}>{app.title}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>{SERVICE_LABELS[app.service] || app.service}</div>
+                      </td>
+                      <td>
+                        <div style={{ color: '#374151' }}>{app.profiles?.full_name || 'Unknown'}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>{app.profiles?.email}</div>
+                      </td>
+                      <td>
+                        <span style={{ background: s.bg, color: s.color, fontSize: '0.68rem', fontWeight: 700, padding: '2px 8px', borderRadius: '100px' }}>{s.label}</span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           )}
         </div>
 
-        {/* ── PROJECTS TAB ── */}
-        {tab === 'projects' && (
-          <>
-            {/* Stats row */}
-            <div className="stat-row">
-              <div className={`stat-box${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
-                <div className="stat-num">{projects.length}</div>
-                <div className="stat-lbl">All</div>
-              </div>
-              {STATUSES.map(s => (
-                <div key={s.value} className={`stat-box${filter === s.value ? ' active' : ''}`} onClick={() => setFilter(s.value)}>
-                  <div className="stat-num" style={{ color: s.color }}>{counts[s.value] || 0}</div>
-                  <div className="stat-lbl">{s.label}</div>
-                </div>
-              ))}
+        {/* Status breakdown */}
+        <div>
+          <div className="dash-card" style={{ marginBottom: '1rem' }}>
+            <div className="dash-card-header">
+              <span className="dash-card-title">Projects by Status</span>
             </div>
-
-            {projLoading ? (
-              <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--clr-text-muted)' }}>Loading projects...</div>
-            ) : projError ? (
-              <div style={{ textAlign: 'center', padding: '3rem', color: '#c53030' }}>{projError}</div>
-            ) : filtered.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--clr-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--clr-border)', color: 'var(--clr-text-muted)' }}>
-                No projects in this category.
-              </div>
-            ) : (
-              <table className="proj-table">
-                <thead>
-                  <tr>
-                    <th>Project</th>
-                    <th>Client</th>
-                    <th>Service</th>
-                    <th>Urgency</th>
-                    <th>Deadline</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map(p => (
-                    <tr key={p.id} onClick={() => openProject(p)}>
-                      <td>
-                        <div className="proj-title-cell">
-                          {p.title}
-                          <small>{new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</small>
-                        </div>
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{p.profiles?.full_name || 'Unknown'}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>{p.profiles?.email}</div>
-                      </td>
-                      <td><span style={{ fontSize: '0.75rem', background: 'rgba(27,67,50,0.08)', color: 'var(--clr-primary)', padding: '2px 8px', borderRadius: '100px', fontWeight: 600 }}>{SERVICE_LABELS[p.service] || p.service}</span></td>
-                      <td style={{ textTransform: 'capitalize', fontSize: '0.82rem' }}>{p.urgency}</td>
-                      <td style={{ fontSize: '0.82rem', color: 'var(--clr-text-muted)' }}>{p.deadline ? new Date(p.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Flexible'}</td>
-                      <td><StatusBadge status={p.status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </>
-        )}
-
-        {/* ── TEAM TAB (superadmin only) ── */}
-        {tab === 'team' && myRole === 'superadmin' && (
-          <div className="team-layout">
-            {/* Admins table */}
-            <div>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '1rem' }}>Admin Team</h2>
-              {teamLoading ? (
-                <div style={{ color: 'var(--clr-text-muted)', padding: '2rem 0' }}>Loading team...</div>
-              ) : teamError ? (
-                <div style={{ color: '#c53030' }}>{teamError}</div>
-              ) : admins.length === 0 ? (
-                <div style={{ color: 'var(--clr-text-muted)', padding: '2rem', background: 'var(--clr-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--clr-border)', textAlign: 'center' }}>No admin users yet.</div>
-              ) : (
-                <table className="team-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                      <th>Joined</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {admins.map(a => (
-                      <tr key={a.id}>
-                        <td style={{ fontWeight: 600 }}>{a.full_name || '—'}</td>
-                        <td style={{ fontSize: '0.82rem', color: 'var(--clr-text-muted)' }}>{a.email}</td>
-                        <td>
-                          <span style={{
-                            fontSize: '0.7rem', fontWeight: 700, padding: '2px 9px', borderRadius: '100px',
-                            background: a.role === 'superadmin' ? 'rgba(201,168,76,0.15)' : 'rgba(27,67,50,0.08)',
-                            color: a.role === 'superadmin' ? '#92400e' : 'var(--clr-primary)',
-                          }}>
-                            {a.role === 'superadmin' ? '★ Superadmin' : 'Admin'}
-                          </span>
-                        </td>
-                        <td style={{ fontSize: '0.78rem', color: 'var(--clr-text-muted)' }}>
-                          {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td>
-                          {a.role !== 'superadmin' && (
-                            <button
-                              className="revoke-btn"
-                              onClick={() => revokeAdmin(a.id, a.full_name || a.email)}
-                              disabled={revokingId === a.id}
-                            >
-                              {revokingId === a.id ? 'Removing...' : 'Revoke'}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            {/* Invite form */}
-            <div className="invite-card">
-              <h3>Add Admin User</h3>
-              <p>Invite a team member to the admin dashboard. They will receive an email to set their password.</p>
-
-              {inviteMsg && (
-                <div style={{
-                  fontSize: '0.82rem',
-                  padding: '10px 14px', borderRadius: '8px', marginBottom: '1rem',
-                  background: inviteMsgType === 'success' ? '#f0fff4' : '#fff5f5',
-                  border: `1px solid ${inviteMsgType === 'success' ? '#9ae6b4' : '#feb2b2'}`,
-                  color: inviteMsgType === 'success' ? '#276749' : '#c53030',
-                }}>
-                  {inviteMsg}
-                </div>
-              )}
-
-              <form onSubmit={handleInvite}>
-                <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    placeholder="e.g. Sarah Okafor"
-                    value={inviteName}
-                    onChange={e => setInviteName(e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Email Address</label>
-                  <input
-                    className="form-control"
-                    type="email"
-                    placeholder="e.g. sarah@theryters.com"
-                    value={inviteEmail}
-                    onChange={e => setInviteEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={inviting}>
-                  {inviting ? 'Sending invite...' : 'Send Admin Invite'}
-                </button>
-              </form>
+            <div style={{ padding: '0.5rem 0' }}>
+              {statusBreak.map(s => {
+                const sc = STATUS_COLORS[s.status] || STATUS_COLORS.pending
+                return (
+                  <div className="status-bar" key={s.status}>
+                    <span className="status-bar-label">{sc.label}</span>
+                    <div className="status-bar-track">
+                      <div className="status-bar-fill" style={{ width: `${(s.count / maxCount) * 100}%`, background: sc.color }} />
+                    </div>
+                    <span className="status-bar-count">{s.count}</span>
+                  </div>
+                )
+              })}
             </div>
           </div>
-        )}
-      </div>
 
-      {/* Slide-over project panel */}
-      {selected && (
-        <div className="panel-overlay" onClick={e => e.target === e.currentTarget && setSelected(null)}>
-          <div className="panel">
-            <div className="panel-header">
-              <div>
-                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', margin: '0 0 4px' }}>{selected.title}</h3>
-                <StatusBadge status={selected.status} />
-              </div>
-              <button className="panel-close" onClick={() => setSelected(null)}>✕</button>
+          {/* Quick actions */}
+          <div className="dash-card">
+            <div className="dash-card-header">
+              <span className="dash-card-title">Quick Actions</span>
             </div>
-
-            <div className="panel-section">
-              <div className="panel-label">Client</div>
-              <div className="panel-value">
-                <strong>{selected.profiles?.full_name || 'Unknown'}</strong><br />
-                <a href={`mailto:${selected.profiles?.email}`} style={{ color: 'var(--clr-primary-light)', fontSize: '0.875rem' }}>{selected.profiles?.email}</a>
-                {selected.profiles?.company && <><br /><span style={{ fontSize: '0.82rem', color: 'var(--clr-text-muted)' }}>{selected.profiles.company}</span></>}
-                {selected.profiles?.country && <><br /><span style={{ fontSize: '0.82rem', color: 'var(--clr-text-muted)' }}>{selected.profiles.country}</span></>}
-              </div>
-            </div>
-
-            <div className="panel-section">
-              <div className="panel-label">Service</div>
-              <div className="panel-value">{SERVICE_LABELS[selected.service] || selected.service}</div>
-            </div>
-
-            <div className="panel-section">
-              <div className="panel-label">Project Description</div>
-              <div className="panel-value" style={{ whiteSpace: 'pre-wrap' }}>{selected.description}</div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div><div className="panel-label">Deadline</div><div className="panel-value">{selected.deadline ? new Date(selected.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Flexible'}</div></div>
-              <div><div className="panel-label">Urgency</div><div className="panel-value" style={{ textTransform: 'capitalize' }}>{selected.urgency}</div></div>
-              <div><div className="panel-label">Budget</div><div className="panel-value">{selected.budget_range || 'Not specified'}</div></div>
-              <div><div className="panel-label">Submitted</div><div className="panel-value">{new Date(selected.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div></div>
-            </div>
-
-            <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '1.5rem' }}>
-              <div className="panel-label" style={{ marginBottom: '0.75rem' }}>Update Status</div>
-              <select className="form-control" value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ marginBottom: '0.75rem' }}>
-                {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-              </select>
-
-              <div className="panel-label" style={{ marginBottom: '0.4rem' }}>Note to client (optional)</div>
-              <textarea
-                className="form-control"
-                placeholder="Add a note that will appear in the client's email notification..."
-                value={adminNotes}
-                onChange={e => setAdminNotes(e.target.value)}
-                style={{ minHeight: '90px', marginBottom: '0.75rem' }}
-              />
-
-              {updateMsg && (
-                <div style={{
-                  fontSize: '0.82rem',
-                  color: updateMsg.startsWith('Error') ? '#c53030' : '#276749',
-                  marginBottom: '0.75rem',
-                  background: updateMsg.startsWith('Error') ? '#fff5f5' : '#f0fff4',
-                  padding: '8px 12px', borderRadius: '6px',
-                  border: `1px solid ${updateMsg.startsWith('Error') ? '#feb2b2' : '#9ae6b4'}`,
+            <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {[
+                { label: 'Review pending applications', href: '/admin/applications', icon: '📋' },
+                { label: 'Manage services & pricing', href: '/admin/services', icon: '🏷' },
+                { label: 'Write a blog post', href: '/admin/blog', icon: '✍' },
+                { label: 'View all clients', href: '/admin/users', icon: '👥' },
+              ].map(a => (
+                <Link key={a.href} href={a.href} style={{
+                  display: 'flex', alignItems: 'center', gap: '0.6rem',
+                  padding: '0.6rem 0.75rem', borderRadius: 8, textDecoration: 'none',
+                  fontSize: '0.82rem', color: '#374151', fontWeight: 500,
+                  background: '#f9fafb', border: '1px solid #f3f4f6', transition: 'all 0.15s',
                 }}>
-                  {updateMsg}
-                </div>
-              )}
-
-              <button className="btn btn-primary" onClick={updateStatus} disabled={updating} style={{ width: '100%', justifyContent: 'center' }}>
-                {updating ? 'Updating...' : 'Update Status and Notify Client'}
-              </button>
+                  <span>{a.icon}</span>{a.label}
+                  <span style={{ marginLeft: 'auto', color: '#9ca3af' }}>→</span>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </>
   )
 }
