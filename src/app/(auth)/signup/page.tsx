@@ -8,7 +8,7 @@ import SocialAuth from '@/components/SocialAuth'
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
-    firstName: '', lastName: '', email: '', password: '',
+    firstName: '', lastName: '', email: '', phone: '', password: '',
     confirmPassword: '', country: '', agreed: false,
   })
   const [error, setError] = useState('')
@@ -85,6 +85,7 @@ export default function SignupPage() {
           data: {
             full_name: `${formData.firstName} ${formData.lastName}`.trim(),
             country: formData.country,
+            ...(formData.phone ? { phone: formData.phone } : {}),
           },
         },
       })
@@ -207,6 +208,15 @@ export default function SignupPage() {
                     <input className="form-control" type="email" id="email" name="email"
                       value={formData.email} onChange={handleChange}
                       placeholder="you@example.com" required autoComplete="email" />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="phone">
+                      Phone / WhatsApp <span style={{ fontSize: '0.78rem', fontWeight: 400, color: 'var(--clr-text-muted)' }}>(optional)</span>
+                    </label>
+                    <input className="form-control" type="tel" id="phone" name="phone"
+                      value={formData.phone} onChange={handleChange}
+                      placeholder="+44 7700 900000" autoComplete="tel" />
                   </div>
 
                   <div className="form-group">

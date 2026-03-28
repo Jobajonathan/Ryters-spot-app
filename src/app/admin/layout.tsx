@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, useRef, ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -80,6 +80,8 @@ function AdminShell({ children }: { children: ReactNode }) {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)
+  const inactivityRef = useRef<{ reset: () => void }>({ reset: () => {} })
 
   useEffect(() => {
     fetch('/api/admin/me')
@@ -95,6 +97,35 @@ function AdminShell({ children }: { children: ReactNode }) {
       })
       .catch(() => { router.replace('/admin/login'); setLoading(false) })
   }, [router])
+
+  useEffect(() => {
+    if (!role) return
+    let warningTimeout: ReturnType<typeof setTimeout>
+    let logoutTimeout: ReturnType<typeof setTimeout>
+
+    function reset() {
+      setShowWarning(false)
+      clearTimeout(warningTimeout)
+      clearTimeout(logoutTimeout)
+      warningTimeout = setTimeout(() => setShowWarning(true), 13 * 60 * 1000)
+      logoutTimeout = setTimeout(async () => {
+        const supabase = createClient()
+        await supabase.auth.signOut()
+        router.push('/admin/login?reason=inactivity')
+      }, 15 * 60 * 1000)
+    }
+
+    inactivityRef.current.reset = reset
+    const events = ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'] as const
+    events.forEach(e => window.addEventListener(e, reset, { passive: true }))
+    reset()
+
+    return () => {
+      events.forEach(e => window.removeEventListener(e, reset))
+      clearTimeout(warningTimeout)
+      clearTimeout(logoutTimeout)
+    }
+  }, [role, router])
 
   async function handleLogout() {
     const supabase = createClient()
@@ -299,6 +330,33 @@ function AdminShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </div>
+
+      {/* Inactivity Warning Modal */}
+      {showWarning && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ background:'#fff', borderRadius:'16px', padding:'2.5rem 2rem', maxWidth:'380px', width:'90%', textAlign:'center', boxShadow:'0 20px 60px rgba(0,0,0,0.3)' }}>
+            <div style={{ fontSize:'2.5rem', marginBottom:'0.75rem' }}>⏱️</div>
+            <h3 style={{ fontFamily:'Georgia,serif', fontSize:'1.2rem', fontWeight:700, color:'#111827', margin:'0 0 0.5rem' }}>Session Expiring Soon</h3>
+            <p style={{ fontSize:'0.9rem', color:'#6b7280', margin:'0 0 1.5rem', lineHeight:1.6 }}>
+              You will be automatically signed out in <strong>2 minutes</strong> due to inactivity.
+            </p>
+            <div style={{ display:'flex', gap:'0.75rem', justifyContent:'center' }}>
+              <button
+                onClick={() => inactivityRef.current.reset()}
+                style={{ background:'#1B4332', color:'#fff', border:'none', borderRadius:'8px', padding:'0.75rem 1.75rem', fontWeight:700, cursor:'pointer', fontSize:'0.9rem' }}
+              >
+                Stay Signed In
+              </button>
+              <button
+                onClick={handleLogout}
+                style={{ background:'transparent', color:'#9ca3af', border:'1px solid #e5e7eb', borderRadius:'8px', padding:'0.75rem 1.25rem', cursor:'pointer', fontSize:'0.9rem' }}
+              >
+                Sign Out Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

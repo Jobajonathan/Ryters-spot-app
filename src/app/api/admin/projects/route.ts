@@ -110,7 +110,7 @@ export async function PATCH(request: Request) {
     const body = await request.json()
     const {
       id, status, admin_notes,
-      deposit_amount, balance_amount, payment_instructions,
+      deposit_amount, balance_amount, payment_instructions, payment_currency,
       deliverable_url, ai_report_url,
     } = body
 
@@ -126,6 +126,7 @@ export async function PATCH(request: Request) {
     if (status === 'accepted') {
       updatePayload.deposit_amount = deposit_amount ?? null
       updatePayload.payment_instructions = payment_instructions ?? null
+      updatePayload.payment_currency = payment_currency || 'NGN'
     }
 
     if (status === 'in_progress') {
@@ -138,6 +139,7 @@ export async function PATCH(request: Request) {
     if (status === 'pending_balance') {
       updatePayload.balance_amount = balance_amount ?? null
       updatePayload.payment_instructions = payment_instructions ?? null
+      updatePayload.payment_currency = payment_currency || 'NGN'
       if (deliverable_url) updatePayload.deliverable_url = deliverable_url
       if (ai_report_url) updatePayload.ai_report_url = ai_report_url
     }

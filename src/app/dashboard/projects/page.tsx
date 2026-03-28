@@ -18,6 +18,7 @@ type Project = {
   payment_instructions: string | null
   deposit_amount: number | null
   balance_amount: number | null
+  payment_currency: string | null
   work_started_at: string | null
   expected_delivery_at: string | null
   deliverable_signed?: string
@@ -51,15 +52,42 @@ function fmtDate(iso: string | null) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-function fmtAmount(n: number | null) {
+const CURRENCY_SYMBOLS: Record<string, string> = { NGN: '₦', GBP: '£', EUR: '€', USD: '$' }
+
+function fmtAmount(n: number | null, currency?: string | null) {
   if (!n) return '—'
-  return n.toLocaleString('en-GB', { minimumFractionDigits: 0 })
+  const sym = CURRENCY_SYMBOLS[currency || 'NGN'] || (currency || '')
+  return `${sym}${n.toLocaleString()}`
+}
+
+async function initiatePayment(projectId: string, paymentType: 'deposit' | 'balance', setLoading: (v: boolean) => void, setError: (v: string) => void) {
+  setLoading(true)
+  setError('')
+  try {
+    const res = await fetch('/api/payments/initiate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project_id: projectId, payment_type: paymentType }),
+    })
+    const data = await res.json()
+    if (!res.ok || !data.redirect_url) {
+      setError(data.error || 'Could not initiate payment. Please try again.')
+      setLoading(false)
+      return
+    }
+    window.location.href = data.redirect_url
+  } catch {
+    setError('Something went wrong. Please try again.')
+    setLoading(false)
+  }
 }
 
 function ProjectCard({ project }: { project: Project }) {
   const cfg = STATUS_CONFIG[project.status] || STATUS_CONFIG.pending
   const currentStep = cfg.step
   const isCancelled = project.status === 'cancelled'
+  const [payLoading, setPayLoading] = useState(false)
+  const [payError, setPayError] = useState('')
 
   return (
     <div style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', marginBottom: '1.25rem', overflow: 'hidden' }}>
@@ -117,17 +145,28 @@ function ProjectCard({ project }: { project: Project }) {
           <div style={{ background: '#fef9c3', border: '1px solid #f6c90e', borderRadius: 10, padding: '1rem 1.25rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: '#854d0e', letterSpacing: '0.06em', marginBottom: 4 }}>Deposit Payment Required</div>
             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', fontFamily: 'var(--font-serif)', marginBottom: '0.5rem' }}>
-              {fmtAmount(project.deposit_amount)}
+              {fmtAmount(project.deposit_amount, project.payment_currency)}
             </div>
-            <p style={{ fontSize: '0.82rem', color: '#374151', margin: '0 0 0.6rem', lineHeight: 1.6 }}>
-              Your application has been accepted! To begin work, please make the deposit payment using the details below.
+            <p style={{ fontSize: '0.82rem', color: '#374151', margin: '0 0 0.75rem', lineHeight: 1.6 }}>
+              Your application has been accepted! Pay your deposit securely via card to begin work.
             </p>
+            {payError && <p style={{ fontSize: '0.78rem', color: '#dc2626', margin: '0 0 0.5rem' }}>{payError}</p>}
+            <button
+              onClick={() => initiatePayment(project.id, 'deposit', setPayLoading, setPayError)}
+              disabled={payLoading}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#1B4332', color: '#fff', border: 'none', borderRadius: 8, padding: '0.75rem 1.5rem', fontWeight: 700, fontSize: '0.875rem', cursor: payLoading ? 'not-allowed' : 'pointer', opacity: payLoading ? 0.7 : 1, marginBottom: '0.75rem' }}
+            >
+              {payLoading ? 'Redirecting to payment...' : `Pay Deposit — ${fmtAmount(project.deposit_amount, project.payment_currency)}`}
+            </button>
             {project.payment_instructions && (
-              <div style={{ background: '#fff', border: '1px solid #f6c90e', borderRadius: 8, padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#374151', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
-                {project.payment_instructions}
-              </div>
+              <details style={{ marginTop: '0.25rem' }}>
+                <summary style={{ fontSize: '0.75rem', color: '#854d0e', cursor: 'pointer' }}>Prefer bank transfer? View manual payment details</summary>
+                <div style={{ background: '#fff', border: '1px solid #f6c90e', borderRadius: 8, padding: '0.75rem 1rem', marginTop: '0.5rem', fontSize: '0.82rem', color: '#374151', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+                  {project.payment_instructions}
+                </div>
+                <p style={{ fontSize: '0.72rem', color: '#854d0e', margin: '0.4rem 0 0' }}>After bank transfer, email your reference to <strong>hello@theryters.com</strong>.</p>
+              </details>
             )}
-            <p style={{ fontSize: '0.75rem', color: '#854d0e', margin: '0.6rem 0 0' }}>Once payment is made, please email your payment reference to <strong>hello@theryters.com</strong>.</p>
           </div>
         )}
 
@@ -151,17 +190,28 @@ function ProjectCard({ project }: { project: Project }) {
           <div style={{ background: '#ede9fe', border: '1px solid #c4b5fd', borderRadius: 10, padding: '1rem 1.25rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: '#5b21b6', letterSpacing: '0.06em', marginBottom: 4 }}>Balance Payment Required</div>
             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', fontFamily: 'var(--font-serif)', marginBottom: '0.5rem' }}>
-              {fmtAmount(project.balance_amount)}
+              {fmtAmount(project.balance_amount, project.payment_currency)}
             </div>
-            <p style={{ fontSize: '0.82rem', color: '#374151', margin: '0 0 0.6rem', lineHeight: 1.6 }}>
-              Your work is complete! Please pay the remaining balance to receive your files.
+            <p style={{ fontSize: '0.82rem', color: '#374151', margin: '0 0 0.75rem', lineHeight: 1.6 }}>
+              Your work is complete! Pay the remaining balance to receive your files instantly.
             </p>
+            {payError && <p style={{ fontSize: '0.78rem', color: '#dc2626', margin: '0 0 0.5rem' }}>{payError}</p>}
+            <button
+              onClick={() => initiatePayment(project.id, 'balance', setPayLoading, setPayError)}
+              disabled={payLoading}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#5b21b6', color: '#fff', border: 'none', borderRadius: 8, padding: '0.75rem 1.5rem', fontWeight: 700, fontSize: '0.875rem', cursor: payLoading ? 'not-allowed' : 'pointer', opacity: payLoading ? 0.7 : 1, marginBottom: '0.75rem' }}
+            >
+              {payLoading ? 'Redirecting to payment...' : `Pay Balance — ${fmtAmount(project.balance_amount, project.payment_currency)}`}
+            </button>
             {project.payment_instructions && (
-              <div style={{ background: '#fff', border: '1px solid #c4b5fd', borderRadius: 8, padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#374151', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
-                {project.payment_instructions}
-              </div>
+              <details style={{ marginTop: '0.25rem' }}>
+                <summary style={{ fontSize: '0.75rem', color: '#5b21b6', cursor: 'pointer' }}>Prefer bank transfer? View manual payment details</summary>
+                <div style={{ background: '#fff', border: '1px solid #c4b5fd', borderRadius: 8, padding: '0.75rem 1rem', marginTop: '0.5rem', fontSize: '0.82rem', color: '#374151', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
+                  {project.payment_instructions}
+                </div>
+                <p style={{ fontSize: '0.72rem', color: '#5b21b6', margin: '0.4rem 0 0' }}>After bank transfer, email your reference to <strong>hello@theryters.com</strong>.</p>
+              </details>
             )}
-            <p style={{ fontSize: '0.75rem', color: '#5b21b6', margin: '0.6rem 0 0' }}>Once payment is made, please email your payment reference to <strong>hello@theryters.com</strong>.</p>
           </div>
         )}
 
@@ -238,6 +288,7 @@ function ProjectsContent() {
   const [loading, setLoading] = useState(true)
   const searchParams = useSearchParams()
   const submitted = searchParams.get('submitted')
+  const flwStatus = searchParams.get('flw_status')
 
   useEffect(() => {
     fetch('/api/projects')
@@ -257,6 +308,16 @@ function ProjectsContent() {
         <div style={{ background: '#f0fff4', border: '1px solid #9ae6b4', color: '#276749', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span style={{ fontSize: '1.25rem' }}>✓</span>
           <div><strong>Request submitted!</strong> We will review and respond within 1 business day.</div>
+        </div>
+      )}
+
+      {flwStatus === 'success' && (
+        <div style={{ background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+          <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>✅</span>
+          <div>
+            <strong>Payment received!</strong> Your payment is being confirmed — this usually takes under a minute.
+            <div style={{ fontSize: '0.82rem', marginTop: '4px', opacity: 0.8 }}>Your project status will update automatically. Refresh this page in a moment if needed.</div>
+          </div>
         </div>
       )}
 

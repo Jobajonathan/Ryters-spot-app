@@ -84,6 +84,7 @@ export default function ApplicationsPage() {
   const [depositAmount, setDepositAmount] = useState('')
   const [balanceAmount, setBalanceAmount] = useState('')
   const [paymentInstructions, setPaymentInstructions] = useState('')
+  const [paymentCurrency, setPaymentCurrency] = useState('NGN')
   const [deliverableFile, setDeliverableFile] = useState<File | null>(null)
   const [aiReportFile, setAiReportFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -101,6 +102,7 @@ export default function ApplicationsPage() {
     setDepositAmount(p.deposit_amount?.toString() || '')
     setBalanceAmount(p.balance_amount?.toString() || '')
     setPaymentInstructions(p.payment_instructions || '')
+    setPaymentCurrency((p as unknown as { payment_currency?: string }).payment_currency || 'NGN')
     setDeliverableFile(null)
     setAiReportFile(null)
     setUpdateMsg('')
@@ -128,10 +130,12 @@ export default function ApplicationsPage() {
     if (newStatus === 'accepted') {
       payload.deposit_amount = parseFloat(depositAmount) || null
       payload.payment_instructions = paymentInstructions || null
+      payload.payment_currency = paymentCurrency
     }
     if (newStatus === 'pending_balance') {
       payload.balance_amount = parseFloat(balanceAmount) || null
       payload.payment_instructions = paymentInstructions || null
+      payload.payment_currency = paymentCurrency
       if (delivPath) payload.deliverable_url = delivPath
       if (aiPath) payload.ai_report_url = aiPath
     }
@@ -307,7 +311,16 @@ export default function ApplicationsPage() {
                   <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', marginBottom: '1rem' }}>Accept or decline this application</div>
 
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Deposit Amount</label>
+                    <label style={label}>Currency</label>
+                    <select style={inputStyle} value={paymentCurrency} onChange={e => setPaymentCurrency(e.target.value)}>
+                      <option value="NGN">₦ NGN — Nigerian Naira</option>
+                      <option value="GBP">£ GBP — British Pound</option>
+                      <option value="EUR">€ EUR — Euro</option>
+                      <option value="USD">$ USD — US Dollar</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '0.85rem' }}>
+                    <label style={label}>Deposit Amount ({paymentCurrency})</label>
                     <input style={inputStyle} type="number" min="0" placeholder="e.g. 500" value={depositAmount} onChange={e => setDepositAmount(e.target.value)} />
                   </div>
                   <div style={{ marginBottom: '0.85rem' }}>
@@ -361,7 +374,16 @@ export default function ApplicationsPage() {
                   <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', margin: '1rem 0 0.85rem' }}>Ready to deliver? Upload files & request balance.</div>
 
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Balance Amount</label>
+                    <label style={label}>Currency</label>
+                    <select style={inputStyle} value={paymentCurrency} onChange={e => setPaymentCurrency(e.target.value)}>
+                      <option value="NGN">₦ NGN — Nigerian Naira</option>
+                      <option value="GBP">£ GBP — British Pound</option>
+                      <option value="EUR">€ EUR — Euro</option>
+                      <option value="USD">$ USD — US Dollar</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '0.85rem' }}>
+                    <label style={label}>Balance Amount ({paymentCurrency})</label>
                     <input style={inputStyle} type="number" min="0" placeholder="e.g. 300" value={balanceAmount} onChange={e => setBalanceAmount(e.target.value)} />
                   </div>
                   <div style={{ marginBottom: '0.85rem' }}>

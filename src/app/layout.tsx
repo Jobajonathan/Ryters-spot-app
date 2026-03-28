@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import WhatsAppWidget from '@/components/WhatsAppWidget'
 
 export const metadata: Metadata = {
   title: 'Ryters Spot — Research, Digital Transformation, Ed-Tech and Product Management',
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+        <WhatsAppWidget />
       </body>
     </html>
   )

@@ -74,10 +74,20 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   const body = await request.json()
-  const { service, title, description, deadline, urgency, budget_range } = body
+  const {
+    service, title, description, deadline, urgency, budget_range,
+    service_subtype, brief_type, word_count, brief_file_path,
+    dissertation_type, dissertation_field, dissertation_specialisation,
+  } = body
 
-  if (!service || !title || !description) {
-    return NextResponse.json({ error: 'Service, title and description are required.' }, { status: 400 })
+  const isWriting = service === 'research_academic' && service_subtype === 'writing'
+  const isDissertation = service === 'research_academic' && service_subtype === 'dissertation'
+
+  if (!service || !title) {
+    return NextResponse.json({ error: 'Service and title are required.' }, { status: 400 })
+  }
+  if (!isWriting && !isDissertation && !description) {
+    return NextResponse.json({ error: 'Project description is required.' }, { status: 400 })
   }
 
   // Get client profile
@@ -90,7 +100,17 @@ export async function POST(request: Request) {
   // Insert project
   const { data: project, error } = await supabase
     .from('projects')
-    .insert([{ client_id: user.id, service, title, description, deadline, urgency, budget_range, status: 'pending' }])
+    .insert([{
+      client_id: user.id, service, title, description: description || null,
+      deadline, urgency, budget_range, status: 'pending',
+      service_subtype: service_subtype || null,
+      word_count: word_count ? parseInt(word_count) : null,
+      brief_file_path: brief_file_path || null,
+      brief_type: brief_type || null,
+      dissertation_type: dissertation_type || null,
+      dissertation_field: dissertation_field || null,
+      dissertation_specialisation: dissertation_specialisation || null,
+    }])
     .select()
     .single()
 

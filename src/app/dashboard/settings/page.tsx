@@ -11,7 +11,7 @@ const COUNTRIES = [
 ]
 
 export default function SettingsPage() {
-  const [formData, setFormData] = useState({ full_name: '', country: '', company: '' })
+  const [formData, setFormData] = useState({ full_name: '', country: '', company: '', phone: '' })
   const [email, setEmail] = useState('')
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -27,6 +27,7 @@ export default function SettingsPage() {
           full_name: (user.user_metadata?.full_name as string) || '',
           country: (user.user_metadata?.country as string) || '',
           company: (user.user_metadata?.company as string) || '',
+          phone: (user.user_metadata?.phone as string) || '',
         })
       }
     }
@@ -95,6 +96,13 @@ export default function SettingsPage() {
             <div className="form-group">
               <label className="form-label" htmlFor="company">Company / Institution</label>
               <input className="form-control" type="text" id="company" name="company" value={formData.company} onChange={handleChange} placeholder="Your company or institution" autoComplete="organization" />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="phone">Phone / WhatsApp Number</label>
+              <input className="form-control" type="tel" id="phone" name="phone"
+                value={formData.phone} onChange={handleChange}
+                placeholder="+44 7700 900000" autoComplete="tel" />
             </div>
 
             <div className="form-group">
