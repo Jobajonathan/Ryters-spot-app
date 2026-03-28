@@ -41,7 +41,25 @@ export async function GET() {
       console.error('GET /api/projects error:', error.message)
       return NextResponse.json({ error: 'Could not load your projects. Please try again.' }, { status: 500 })
     }
-    return NextResponse.json(data)
+
+    // Generate 7-day signed URLs for completed projects with files
+    const projectsWithUrls = await Promise.all((data || []).map(async (project) => {
+      if (project.status === 'completed' && (project.deliverable_url || project.ai_report_url)) {
+        const extras: Record<string, string> = {}
+        if (project.deliverable_url) {
+          const { data: signed } = await adminSupabase.storage.from('deliverables').createSignedUrl(project.deliverable_url, 604800)
+          if (signed?.signedUrl) extras.deliverable_signed = signed.signedUrl
+        }
+        if (project.ai_report_url) {
+          const { data: signed } = await adminSupabase.storage.from('deliverables').createSignedUrl(project.ai_report_url, 604800)
+          if (signed?.signedUrl) extras.ai_report_signed = signed.signedUrl
+        }
+        return { ...project, ...extras }
+      }
+      return project
+    }))
+
+    return NextResponse.json(projectsWithUrls)
   } catch (err) {
     console.error('GET /api/projects unexpected error:', err)
     return NextResponse.json({ error: 'Could not load your projects. Please try again.' }, { status: 500 })
