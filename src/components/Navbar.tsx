@@ -61,10 +61,10 @@ export default function Navbar() {
             <li className="nav-dropdown">
               <Link className={`nav-link nav-dropdown-toggle${isActive('/services') ? ' active' : ''}`} href="/services" aria-haspopup="true">Services</Link>
               <div className="nav-dropdown-menu">
-                <Link className="nav-dropdown-item" href="/services#academic" onClick={closeMenu}>Research and Academic Enquiry</Link>
-                <Link className="nav-dropdown-item" href="/services#digital-transformation" onClick={closeMenu}>Digital Transformation and Automation</Link>
-                <Link className="nav-dropdown-item" href="/services#edtech" onClick={closeMenu}>Ed-Tech Services</Link>
-                <Link className="nav-dropdown-item" href="/services#product-management" onClick={closeMenu}>Product Management</Link>
+                <Link className="nav-dropdown-item" href="/services/ai-automation" onClick={closeMenu}>🤖 AI Automation</Link>
+                <Link className="nav-dropdown-item" href="/services/edtech" onClick={closeMenu}>🎓 EdTech Services</Link>
+                <Link className="nav-dropdown-item" href="/services/writing" onClick={closeMenu}>📖 Writing &amp; Research</Link>
+                <Link className="nav-dropdown-item" href="/services/product-management" onClick={closeMenu}>🚀 Product &amp; Project Management</Link>
               </div>
             </li>
             <li>
