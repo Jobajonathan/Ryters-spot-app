@@ -1,9 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+
+type Notification = {
+  id: string
+  type: string
+  title: string
+  body: string | null
+  link: string | null
+  read: boolean
+  created_at: string
+}
 
 const navItems = [
   { label: 'Overview', icon: '&#9732;', href: '/dashboard' },
@@ -21,6 +31,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [userName, setUserName] = useState('Client')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [pageTitle, setPageTitle] = useState('Dashboard')
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifOpen, setNotifOpen] = useState(false)
+  const notifRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     async function loadUser() {
@@ -39,6 +52,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const item = navItems.find(n => n.href === pathname)
     if (item) setPageTitle(item.label)
   }, [pathname])
+
+  useEffect(() => {
+    function loadNotifications() {
+      fetch('/api/notifications')
+        .then(r => r.json())
+        .then(data => setNotifications(Array.isArray(data) ? data : []))
+        .catch(() => {})
+    }
+    loadNotifications()
+    const interval = setInterval(loadNotifications, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function markAllRead() {
+    await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ markAllRead: true }) })
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+  }
+
+  async function markRead(id: string, link: string | null) {
+    await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+    setNotifOpen(false)
+    if (link) router.push(link)
+  }
 
   async function signOut() {
     const supabase = createClient()
@@ -110,6 +157,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         .dash-topbar-title { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; color: var(--clr-text); }
         .dash-topbar-right { display: flex; align-items: center; gap: 1rem; }
+        .notif-btn { position: relative; background: none; border: none; cursor: pointer; padding: 4px; font-size: 1.2rem; color: var(--clr-text-muted); line-height: 1; }
+        .notif-badge { position: absolute; top: 0; right: 0; width: 16px; height: 16px; background: #ef4444; border-radius: 50%; font-size: 0.6rem; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; }
+        .notif-panel { position: absolute; top: calc(100% + 8px); right: 0; width: 340px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 300; overflow: hidden; }
+        .notif-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid #f3f4f6; }
+        .notif-item { display: block; padding: 0.85rem 1.25rem; border-bottom: 1px solid #f9fafb; cursor: pointer; transition: background 0.15s; text-decoration: none; color: inherit; }
+        .notif-item:hover { background: #f9fafb; }
+        .notif-item.unread { background: #f0fdf4; }
+        .notif-item:last-child { border-bottom: none; }
         .dash-user-chip {
           display: flex;
           align-items: center;
@@ -186,10 +241,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span className="dash-topbar-title">{pageTitle}</span>
             </div>
             <div className="dash-topbar-right">
-              <span style={{ fontSize: '1.2rem', cursor: 'pointer' }} title="Notifications">&#128276;</span>
+              <div ref={notifRef} style={{ position: 'relative' }}>
+                <button className="notif-btn" onClick={() => setNotifOpen(o => !o)} title="Notifications">
+                  &#128276;
+                  {notifications.filter(n => !n.read).length > 0 && (
+                    <span className="notif-badge">{notifications.filter(n => !n.read).length > 9 ? '9+' : notifications.filter(n => !n.read).length}</span>
+                  )}
+                </button>
+                {notifOpen && (
+                  <div className="notif-panel">
+                    <div className="notif-header">
+                      <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>Notifications</span>
+                      {notifications.some(n => !n.read) && (
+                        <button onClick={markAllRead} style={{ fontSize: '0.75rem', color: '#1B4332', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+                    {notifications.length === 0 ? (
+                      <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem' }}>
+                        No notifications yet.
+                      </div>
+                    ) : (
+                      <div style={{ maxHeight: 380, overflowY: 'auto' }}>
+                        {notifications.slice(0, 20).map(n => (
+                          <div key={n.id} className={`notif-item${n.read ? '' : ' unread'}`} onClick={() => markRead(n.id, n.link)}>
+                            <div style={{ fontWeight: n.read ? 500 : 700, fontSize: '0.875rem', color: '#111827', marginBottom: '0.2rem' }}>{n.title}</div>
+                            {n.body && <div style={{ fontSize: '0.78rem', color: '#6b7280', lineHeight: 1.5 }}>{n.body}</div>}
+                            <div style={{ fontSize: '0.68rem', color: '#9ca3af', marginTop: '0.3rem' }}>
+                              {new Date(n.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="dash-user-chip">
                 <div className="dash-avatar">{userName.charAt(0).toUpperCase()}</div>
                 <span>{userName}</span>
+              </div>
               </div>
             </div>
           </div>

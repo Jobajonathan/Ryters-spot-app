@@ -9,6 +9,7 @@ type Thread = {
   service: string
   unread: number
   last_message: { body: string; created_at: string; is_admin: boolean } | null
+  profiles: { full_name: string; email: string } | null
 }
 
 type Message = {
@@ -32,10 +33,10 @@ const STATUS_LABELS: Record<string, string> = {
   pending_balance: 'Balance Due', completed: 'Completed',
 }
 
-export default function MessagesPage() {
+export default function AdminMessagesPage() {
   const [threads, setThreads] = useState<Thread[]>([])
   const [selected, setSelected] = useState<string | null>(null)
-  const [project, setProject] = useState<{ id: string; title: string } | null>(null)
+  const [project, setProject] = useState<{ id: string; title: string; profiles?: { full_name: string; email: string } | null } | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [body, setBody] = useState('')
   const [sending, setSending] = useState(false)
@@ -44,12 +45,10 @@ export default function MessagesPage() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  useEffect(() => {
-    loadThreads()
-  }, [])
+  useEffect(() => { loadThreads() }, [])
 
   function loadThreads() {
-    fetch('/api/messages')
+    fetch('/api/admin/messages')
       .then(r => r.json())
       .then(data => { setThreads(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
@@ -65,27 +64,21 @@ export default function MessagesPage() {
 
   function fetchMessages(id: string, silent = false) {
     if (!silent) setLoadingMsgs(true)
-    fetch(`/api/messages?project_id=${id}`)
+    fetch(`/api/admin/messages?project_id=${id}`)
       .then(r => r.json())
       .then(data => {
         if (data.project) setProject(data.project)
         if (Array.isArray(data.messages)) setMessages(data.messages)
         setLoadingMsgs(false)
         setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
-        // Update unread in threads list
         setThreads(prev => prev.map(t => t.id === id ? { ...t, unread: 0 } : t))
       })
       .catch(() => setLoadingMsgs(false))
   }
 
+  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current) }, [])
   useEffect(() => {
-    return () => { if (pollRef.current) clearInterval(pollRef.current) }
-  }, [])
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
-    }
+    if (messages.length > 0) setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
   }, [messages])
 
   async function send() {
@@ -93,15 +86,12 @@ export default function MessagesPage() {
     setSending(true)
     const text = body.trim()
     setBody('')
-    const res = await fetch('/api/messages', {
+    const res = await fetch('/api/admin/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ project_id: selected, body: text }),
     })
-    if (res.ok) {
-      fetchMessages(selected, true)
-      loadThreads()
-    }
+    if (res.ok) { fetchMessages(selected, true); loadThreads() }
     setSending(false)
   }
 
@@ -109,20 +99,20 @@ export default function MessagesPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
+  const totalUnread = threads.reduce((s, t) => s + t.unread, 0)
+
   return (
     <>
       <style>{`
-        .msg-wrap { display: flex; gap: 0; height: calc(100vh - 130px); min-height: 400px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
-        .msg-threads { width: 280px; flex-shrink: 0; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
-        .msg-threads-header { padding: 1rem 1.25rem; border-bottom: 1px solid #f3f4f6; font-weight: 700; font-size: 0.9rem; color: #111827; }
+        .msg-wrap { display: flex; gap: 0; height: calc(100vh - 150px); min-height: 400px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+        .msg-threads { width: 300px; flex-shrink: 0; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+        .msg-threads-header { padding: 1rem 1.25rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; }
         .msg-thread-item { padding: 0.85rem 1.25rem; cursor: pointer; border-bottom: 1px solid #f9fafb; transition: background 0.15s; }
         .msg-thread-item:hover { background: #f9fafb; }
         .msg-thread-item.active { background: #f0fdf4; border-right: 3px solid #1B4332; }
-        .msg-thread-title { font-weight: 600; font-size: 0.85rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; justify-content: space-between; align-items: center; }
-        .msg-thread-last { font-size: 0.75rem; color: #9ca3af; margin-top: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .msg-unread { background: #1B4332; color: #fff; border-radius: 100px; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; flex-shrink: 0; }
+        .msg-unread { background: #ef4444; color: #fff; border-radius: 100px; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; }
         .msg-chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .msg-chat-header { padding: 1rem 1.5rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 0.75rem; }
+        .msg-chat-header { padding: 1rem 1.5rem; border-bottom: 1px solid #f3f4f6; }
         .msg-messages { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
         .msg-bubble { max-width: 70%; padding: 0.65rem 1rem; border-radius: 14px; font-size: 0.875rem; line-height: 1.55; word-break: break-word; }
         .msg-bubble.mine { background: #1B4332; color: #fff; border-radius: 14px 14px 4px 14px; align-self: flex-end; }
@@ -131,48 +121,44 @@ export default function MessagesPage() {
         .msg-input-area { padding: 1rem 1.25rem; border-top: 1px solid #e5e7eb; display: flex; gap: 0.75rem; align-items: flex-end; }
         .msg-input-area textarea { flex: 1; padding: 0.65rem 0.9rem; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.875rem; resize: none; outline: none; font-family: inherit; line-height: 1.5; max-height: 120px; }
         .msg-input-area textarea:focus { border-color: #1B4332; }
-        .msg-send-btn { padding: 0.65rem 1.25rem; background: #1B4332; color: #fff; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+        .msg-send-btn { padding: 0.65rem 1.25rem; background: #1B4332; color: #fff; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 700; cursor: pointer; }
         .msg-send-btn:disabled { opacity: 0.5; cursor: default; }
-        @media (max-width: 700px) {
-          .msg-threads { width: 100%; display: ${selected ? 'none' : 'flex'}; }
-          .msg-chat { display: ${selected ? 'flex' : 'none'}; }
-          .msg-wrap { height: auto; min-height: 70vh; }
-        }
       `}</style>
 
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Messages</h1>
-        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Send and receive messages about your projects.</p>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>
+            Messages {totalUnread > 0 && <span style={{ fontSize: '0.9rem', background: '#ef4444', color: '#fff', borderRadius: '100px', padding: '2px 8px', verticalAlign: 'middle' }}>{totalUnread} unread</span>}
+          </h1>
+          <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Communicate with clients on their projects.</p>
+        </div>
       </div>
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>Loading...</div>
-      ) : threads.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💬</div>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '1.25rem', color: '#111827', margin: '0 0 0.5rem' }}>No active projects</h2>
-          <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Messages are tied to your projects. Submit a request to get started.</p>
-        </div>
       ) : (
         <div className="msg-wrap">
           {/* Thread list */}
           <div className="msg-threads">
-            <div className="msg-threads-header">Your Projects</div>
+            <div className="msg-threads-header">
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>Projects ({threads.length})</span>
+            </div>
             <div style={{ flex: 1, overflowY: 'auto' }}>
-              {threads.map(t => (
+              {threads.length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.82rem' }}>No active projects.</div>
+              ) : threads.map(t => (
                 <div key={t.id} className={`msg-thread-item${selected === t.id ? ' active' : ''}`} onClick={() => openThread(t.id)}>
-                  <div className="msg-thread-title">
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.title}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 4 }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.82rem', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{t.title}</div>
                     {t.unread > 0 && <span className="msg-unread">{t.unread}</span>}
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: '#1B4332', fontWeight: 600, marginTop: 2 }}>{STATUS_LABELS[t.status] || t.status}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: 2 }}>{t.profiles?.full_name || '—'}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#1B4332', fontWeight: 600 }}>{STATUS_LABELS[t.status] || t.status}</div>
                   {t.last_message ? (
-                    <div className="msg-thread-last">
-                      {t.last_message.is_admin ? 'Team: ' : 'You: '}{t.last_message.body.slice(0, 45)}{t.last_message.body.length > 45 ? '...' : ''}
+                    <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {t.last_message.is_admin ? 'You: ' : 'Client: '}{t.last_message.body.slice(0, 40)}{t.last_message.body.length > 40 ? '...' : ''}
                     </div>
-                  ) : (
-                    <div className="msg-thread-last" style={{ fontStyle: 'italic' }}>No messages yet</div>
-                  )}
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -188,34 +174,31 @@ export default function MessagesPage() {
             ) : (
               <>
                 <div className="msg-chat-header">
-                  {project && <>
-                    <button onClick={() => { setSelected(null); if (pollRef.current) clearInterval(pollRef.current) }}
-                      style={{ background: 'none', border: '1px solid #e5e7eb', borderRadius: 7, padding: '0.3rem 0.65rem', fontSize: '0.78rem', cursor: 'pointer', color: '#6b7280', display: 'none' }}
-                      className="msg-back">← Back
-                    </button>
+                  {project && (
                     <div>
                       <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>{project.title}</div>
-                      <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>Messages are replied to by the Ryters Spot team</div>
+                      <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>
+                        Client: {(project.profiles as { full_name?: string; email?: string } | null)?.full_name || '—'}
+                        {(project.profiles as { email?: string } | null)?.email && <> · {(project.profiles as { email?: string }).email}</>}
+                      </div>
                     </div>
-                  </>}
+                  )}
                 </div>
                 <div className="msg-messages">
                   {loadingMsgs && messages.length === 0 ? (
-                    <div style={{ textAlign: 'center', color: '#9ca3af', padding: '2rem' }}>Loading messages...</div>
+                    <div style={{ textAlign: 'center', color: '#9ca3af', padding: '2rem' }}>Loading...</div>
                   ) : messages.length === 0 ? (
                     <div style={{ textAlign: 'center', color: '#9ca3af', padding: '2rem', fontSize: '0.875rem' }}>
-                      No messages yet. Start the conversation below.
+                      No messages yet. Send the first message.
                     </div>
-                  ) : (
-                    messages.map(m => (
-                      <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: m.is_admin ? 'flex-start' : 'flex-end' }}>
-                        <div className={`msg-bubble ${m.is_admin ? 'theirs' : 'mine'}`}>{m.body}</div>
-                        <div className="msg-meta" style={{ textAlign: m.is_admin ? 'left' : 'right' }}>
-                          {m.is_admin ? (m.profiles?.full_name || 'Ryters Spot') : 'You'} · {fmtTime(m.created_at)}
-                        </div>
+                  ) : messages.map(m => (
+                    <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: m.is_admin ? 'flex-end' : 'flex-start' }}>
+                      <div className={`msg-bubble ${m.is_admin ? 'mine' : 'theirs'}`}>{m.body}</div>
+                      <div className="msg-meta" style={{ textAlign: m.is_admin ? 'right' : 'left' }}>
+                        {m.is_admin ? (m.profiles?.full_name || 'Admin') : 'Client'} · {fmtTime(m.created_at)}
                       </div>
-                    ))
-                  )}
+                    </div>
+                  ))}
                   <div ref={bottomRef} />
                 </div>
                 <div className="msg-input-area">
@@ -224,7 +207,7 @@ export default function MessagesPage() {
                     value={body}
                     onChange={e => setBody(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Write a message... (Enter to send)"
+                    placeholder="Reply to client... (Enter to send)"
                     disabled={sending}
                   />
                   <button className="msg-send-btn" onClick={send} disabled={!body.trim() || sending}>

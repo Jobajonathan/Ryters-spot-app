@@ -250,6 +250,52 @@ export async function PATCH(request: Request) {
       }
     }
 
+    // Send in-app notification to client
+    if (project.client_id) {
+      const notifMessages: Record<string, { title: string; body: string; link: string }> = {
+        in_review: {
+          title: 'Application under review',
+          body: `Your project "${project.title}" is being reviewed by our team.`,
+          link: '/dashboard/projects',
+        },
+        accepted: {
+          title: 'Application accepted!',
+          body: `Great news! "${project.title}" has been accepted. A deposit is required to begin.`,
+          link: '/dashboard/projects',
+        },
+        in_progress: {
+          title: 'Work has started!',
+          body: `Our team has started working on "${project.title}".`,
+          link: '/dashboard/projects',
+        },
+        pending_balance: {
+          title: 'Your work is ready — balance due',
+          body: `Work on "${project.title}" is complete. Pay the balance to receive your files.`,
+          link: '/dashboard/projects',
+        },
+        completed: {
+          title: 'Files delivered!',
+          body: `Your files for "${project.title}" are ready for download.`,
+          link: '/dashboard/deliverables',
+        },
+        cancelled: {
+          title: 'Application update',
+          body: `We are unable to proceed with "${project.title}" at this time.`,
+          link: '/dashboard/projects',
+        },
+      }
+      const notif = notifMessages[status]
+      if (notif) {
+        await adminSupabase.from('notifications').insert({
+          user_id: project.client_id,
+          type: status,
+          title: notif.title,
+          body: notif.body,
+          link: notif.link,
+        }).catch(() => {}) // Don't fail if notifications table doesn't exist yet
+      }
+    }
+
     return NextResponse.json({ success: true, project })
   } catch (err) {
     console.error('PATCH /api/admin/projects unexpected error:', err)
