@@ -36,6 +36,22 @@ export default function LoginPage() {
           setError(authError.message)
         }
       } else {
+        // Block admin accounts from using the client portal
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+          if (profile && ['admin', 'superadmin'].includes(profile.role)) {
+            await supabase.auth.signOut()
+            setError('This is an admin account. Please sign in at the admin portal instead.')
+            setLoading(false)
+            return
+          }
+        }
         router.push('/dashboard')
         router.refresh()
       }
@@ -127,7 +143,18 @@ export default function LoginPage() {
 
             <SocialAuth mode="login" />
 
-            {error && <div className="auth-error">{error}</div>}
+            {error && (
+              <div className="auth-error">
+                {error}
+                {error.includes('admin') && (
+                  <div style={{ marginTop: '0.6rem' }}>
+                    <Link href="/admin/login" style={{ color: 'inherit', fontWeight: 700, textDecoration: 'underline' }}>
+                      Go to Admin Portal →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
 
             {unconfirmed && !resendSuccess && (
               <div className="auth-warning">

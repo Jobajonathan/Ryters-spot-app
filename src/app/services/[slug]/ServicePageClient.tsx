@@ -96,7 +96,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
             <p className="svc-tagline">{service.tagline}</p>
             <p className="svc-desc">{service.description}</p>
             <div className="svc-btns">
-              <Link href="/get-started" className="btn btn-accent btn-lg">{service.ctaLabel}</Link>
+              <Link href="/signup" className="btn btn-accent btn-lg">{service.ctaLabel}</Link>
               <Link href="/services" className="btn-ghost-white">All Services</Link>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
               <h3>{service.features[activeFeature].title}</h3>
               <p>{service.features[activeFeature].desc}</p>
               <div className="feat-divider">
-                <Link href="/get-started" className="btn btn-primary btn-sm">Enquire About This →</Link>
+                <Link href="/signup" className="btn btn-primary btn-sm">Enquire About This →</Link>
               </div>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
           <h2>{service.ctaLabel}</h2>
           <p>Talk to one of our specialists. We will assess your needs and recommend the right approach for your organisation — no obligation.</p>
           <div className="svc-cta-btns">
-            <Link href="/get-started" className="btn btn-accent btn-lg">Create a Free Account</Link>
+            <Link href="/signup" className="btn btn-accent btn-lg">Create a Free Account</Link>
             <Link href="/contact" className="btn-ghost-white">Talk to an Expert</Link>
           </div>
         </div>

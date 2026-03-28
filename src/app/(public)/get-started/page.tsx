@@ -77,14 +77,14 @@ export default function GetStartedPage() {
 
           <div className="gs-grid">
             {services.map(s => (
-              <Link key={s.slug} href={`/services/${s.slug}`} className="gs-card">
+              <Link key={s.slug} href="/signup" className="gs-card">
                 <div className="gs-icon">{s.icon}</div>
                 <div className="gs-title">{s.title}</div>
                 <div className="gs-desc">{s.desc}</div>
                 <div className="gs-tags">
                   {s.tags.map(t => <span key={t} className="gs-tag">{t}</span>)}
                 </div>
-                <span className="gs-learn">Learn more →</span>
+                <span className="gs-learn">Create a free account →</span>
               </Link>
             ))}
           </div>
