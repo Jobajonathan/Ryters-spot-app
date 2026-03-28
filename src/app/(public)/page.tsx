@@ -27,7 +27,7 @@ export default function HomePage() {
     <>
       <style>{`
         /* ── Hero: compact, viewport-height, centred ── */
-        .hero-centred { padding: 4.5rem 0 4rem; text-align: center; }
+        .hero-centred { padding: 2.5rem 0 3.5rem; text-align: center; }
         .hero-centred .hero-content { max-width: 680px; margin: 0 auto; }
         .hero-centred h1 { margin-bottom: 1.25rem; }
         .hero-centred .hero-sub { max-width: 540px; margin: 0 auto 2.25rem; font-size: 1.05rem; }
@@ -57,12 +57,7 @@ export default function HomePage() {
       <section className="hero" aria-label="Welcome to Ryters Spot">
         <div className="container hero-centred">
           <div className="hero-content fade-up">
-            <div className="hero-label" style={{ justifyContent: 'center', marginBottom: '1.5rem' }}>
-              <span className="hero-label-dot"></span>
-              Specialist Consultancy — AI · EdTech · Writing · Product Management
-            </div>
-
-            <h1>Your <span>Strategic</span><br />Consultancy Partner</h1>
+            <h1 style={{ marginBottom: '1.25rem' }}>Your <span>Strategic</span><br />Consultancy Partner</h1>
 
             <p className="hero-sub">
               Ryters Spot delivers AI automation, EdTech, writing &amp; research, and product management consultancy to organisations across the UK, Europe, North America and Africa.

@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navLinks = [
-  { href: '/services/ai-automation', label: 'AI Automation' },
+  { href: '/services/ai-automation', label: 'Automation' },
   { href: '/services/edtech', label: 'EdTech' },
-  { href: '/services/writing', label: 'Writing & Research' },
+  { href: '/services/writing', label: 'Research' },
   { href: '/services/product-management', label: 'Product Management' },
   { href: '/contact', label: 'Contact' },
 ]
@@ -97,9 +97,11 @@ export default function Navbar() {
           .mobile-toggle { display: none !important; }
           .mobile-menu-actions { display: none; }
         }
-        /* ── Navbar link sizing on desktop — keep compact ── */
-        @media (min-width: 1025px) and (max-width: 1280px) {
-          .nav-link { font-size: 0.82rem !important; padding: 0.4rem 0.6rem !important; }
+        /* ── Navbar link sizing — compact on all desktop sizes ── */
+        @media (min-width: 1025px) {
+          .nav-link { font-size: 0.85rem !important; padding: 0.4rem 0.7rem !important; letter-spacing: 0 !important; }
+          .navbar-logo-text { font-size: 1rem !important; }
+          .navbar-inner { gap: 0.5rem !important; }
         }
       `}</style>
 
