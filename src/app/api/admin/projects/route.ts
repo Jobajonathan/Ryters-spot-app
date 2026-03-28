@@ -23,7 +23,7 @@ async function getUser() {
 
 async function isAdmin(userId: string) {
   const { data } = await adminSupabase.from('profiles').select('role').eq('id', userId).single()
-  return data?.role === 'admin'
+  return data?.role && ['admin', 'superadmin', 'finance', 'support', 'operations'].includes(data.role)
 }
 
 // GET all projects with client info

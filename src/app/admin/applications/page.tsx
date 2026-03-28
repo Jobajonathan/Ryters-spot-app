@@ -201,7 +201,31 @@ export default function ApplicationsPage() {
             </div>
 
             <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '1.5rem' }}>
-              <div className="panel-label" style={{ marginBottom: '0.6rem' }}>Update Status</div>
+              {/* Quick action buttons */}
+              <div className="panel-label" style={{ marginBottom: '0.6rem' }}>Quick Actions</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                {[
+                  { label: 'Accept', status: 'in_review', bg: '#1B4332', color: '#fff' },
+                  { label: 'In Progress', status: 'in_progress', bg: '#2563eb', color: '#fff' },
+                  { label: 'Completed', status: 'completed', bg: '#16a34a', color: '#fff' },
+                  { label: 'Decline', status: 'cancelled', bg: '#dc2626', color: '#fff' },
+                ].map(action => (
+                  <button key={action.status}
+                    onClick={() => { setNewStatus(action.status) }}
+                    disabled={updating || newStatus === action.status}
+                    style={{
+                      padding: '0.55rem 0.5rem', fontSize: '0.78rem', fontWeight: 700,
+                      background: newStatus === action.status ? action.bg : '#f9fafb',
+                      color: newStatus === action.status ? action.color : '#374151',
+                      border: `1px solid ${newStatus === action.status ? action.bg : '#e5e7eb'}`,
+                      borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s',
+                    }}>
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="panel-label" style={{ marginBottom: '0.4rem' }}>Status</div>
               <select value={newStatus} onChange={e => setNewStatus(e.target.value)}
                 style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: '0.875rem', marginBottom: '0.75rem', outline: 'none', background: '#fff' }}>
                 {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}

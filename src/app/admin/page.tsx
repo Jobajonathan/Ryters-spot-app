@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 type Stats = {
   totalProjects: number
@@ -41,9 +42,11 @@ const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }
   cancelled:   { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' },
 }
 
-function KpiCard({ label, value, sub, color, icon }: { label: string; value: number; sub?: string; color: string; icon: string }) {
-  return (
-    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+function KpiCard({ label, value, sub, color, icon, href }: { label: string; value: number; sub?: string; color: string; icon: string; href?: string }) {
+  const inner = (
+    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', transition: 'box-shadow 0.15s, border-color 0.15s', cursor: href ? 'pointer' : 'default' }}
+      onMouseEnter={e => { if (href) { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(27,67,50,0.1)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#1B4332' } }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; (e.currentTarget as HTMLDivElement).style.borderColor = '#e5e7eb' }}>
       <div style={{ width: 44, height: 44, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
         {icon}
       </div>
@@ -54,9 +57,11 @@ function KpiCard({ label, value, sub, color, icon }: { label: string; value: num
       </div>
     </div>
   )
+  return href ? <Link href={href} style={{ textDecoration: 'none' }}>{inner}</Link> : inner
 }
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [stats, setStats] = useState<Stats | null>(null)
   const [recent, setRecent] = useState<RecentApp[]>([])
   const [statusBreak, setStatusBreak] = useState<StatusBreak[]>([])
@@ -119,10 +124,10 @@ export default function AdminDashboard() {
 
       {/* KPI row */}
       <div className="dash-grid">
-        <KpiCard label="Total Clients" value={stats?.totalClients || 0} sub={`+${stats?.newClientsThisMonth || 0} this month`} color="#1B4332" icon="👥" />
-        <KpiCard label="Total Projects" value={stats?.totalProjects || 0} sub={trend !== null ? `${trend >= 0 ? '+' : ''}${trend}% vs last month` : undefined} color="#C9A84C" icon="📋" />
-        <KpiCard label="Active Projects" value={stats?.activeProjects || 0} sub="In review + in progress" color="#2563eb" icon="⚡" />
-        <KpiCard label="Pending Review" value={stats?.pendingProjects || 0} sub={stats?.pendingProjects ? 'Needs attention' : 'All clear'} color={stats?.pendingProjects ? '#dc2626' : '#16a34a'} icon="⏳" />
+        <KpiCard label="Total Clients" value={stats?.totalClients || 0} sub={`+${stats?.newClientsThisMonth || 0} this month`} color="#1B4332" icon="👥" href="/admin/users" />
+        <KpiCard label="Total Projects" value={stats?.totalProjects || 0} sub={trend !== null ? `${trend >= 0 ? '+' : ''}${trend}% vs last month` : undefined} color="#C9A84C" icon="📋" href="/admin/applications" />
+        <KpiCard label="Active Projects" value={stats?.activeProjects || 0} sub="In review + in progress" color="#2563eb" icon="⚡" href="/admin/applications" />
+        <KpiCard label="Pending Review" value={stats?.pendingProjects || 0} sub={stats?.pendingProjects ? 'Needs attention' : 'All clear'} color={stats?.pendingProjects ? '#dc2626' : '#16a34a'} icon="⏳" href="/admin/applications" />
       </div>
 
       <div className="dash-grid-2">
@@ -147,7 +152,7 @@ export default function AdminDashboard() {
                 {recent.map(app => {
                   const s = STATUS_COLORS[app.status] || STATUS_COLORS.pending
                   return (
-                    <tr key={app.id}>
+                    <tr key={app.id} onClick={() => router.push('/admin/applications')} style={{ cursor: 'pointer' }}>
                       <td>
                         <div style={{ fontWeight: 600, color: '#111827' }}>{app.title}</div>
                         <div style={{ fontSize: '0.72rem', color: '#9ca3af' }}>{SERVICE_LABELS[app.service] || app.service}</div>
