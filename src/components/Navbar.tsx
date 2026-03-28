@@ -132,7 +132,7 @@ export default function Navbar() {
               {/* Mobile-only: auth buttons inside the overlay */}
               <li className="mobile-menu-actions">
                 <Link href="/login" className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)}>Log In</Link>
-                <Link href="/get-started" className="btn btn-accent btn-sm" onClick={() => setMenuOpen(false)}>Get Started</Link>
+                <Link href="/signup" className="btn btn-accent btn-sm" onClick={() => setMenuOpen(false)}>Get Started</Link>
               </li>
             </ul>
 
@@ -142,7 +142,7 @@ export default function Navbar() {
                 <span className="theme-icon">{theme === 'dark' ? '☀️' : '🌙'}</span>
               </button>
               <Link href="/login" className="btn btn-ghost btn-sm" style={{ display: 'var(--desktop-only, flex)' }}>Log In</Link>
-              <Link href="/get-started" className="btn btn-primary btn-sm" style={{ display: 'var(--desktop-only, flex)' }}>Get Started</Link>
+              <Link href="/signup" className="btn btn-primary btn-sm" style={{ display: 'var(--desktop-only, flex)' }}>Get Started</Link>
               <button
                 className="mobile-toggle"
                 aria-label={menuOpen ? 'Close menu' : 'Open menu'}

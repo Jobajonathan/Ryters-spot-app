@@ -88,7 +88,6 @@ export default function SocialAuth({ mode, onToggleEmail, emailOpen }: SocialAut
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--clr-border)'; e.currentTarget.style.color = 'var(--clr-text-muted)' }}
         >
           <span>✉ Continue with email</span>
-          <span style={{ transition: 'transform 0.2s', transform: emailOpen ? 'rotate(180deg)' : 'rotate(0deg)', display: 'inline-block', fontSize: '0.7rem' }}>▼</span>
         </button>
       ) : (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '1.1rem 0 0' }}>

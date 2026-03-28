@@ -14,14 +14,20 @@ function isValidUrl(url: string): boolean {
 }
 
 export async function updateSession(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
   const supabaseResponse = NextResponse.next({ request })
 
-  // If Supabase is not configured, only protect dashboard/admin routes
+  // If Supabase is not configured, guard dashboard/admin routes
   if (!isValidUrl(SUPABASE_URL) || !SUPABASE_ANON_KEY) {
-    const { pathname } = request.nextUrl
-    if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
+    if (pathname.startsWith('/dashboard')) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
+    if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin/login'
       return NextResponse.redirect(url)
     }
     return supabaseResponse
@@ -48,25 +54,53 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protect dashboard routes
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  // ── Unauthenticated guards ──────────────────────────────────────────────
+  // Dashboard requires client login
+  if (!user && pathname.startsWith('/dashboard')) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Protect admin routes
-  if (!user && request.nextUrl.pathname.startsWith('/admin')) {
+  // Admin area (except /admin/login itself) requires admin login
+  if (!user && pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/admin/login'
     return NextResponse.redirect(url)
   }
 
-  // Redirect logged-in users away from auth pages
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  // ── Authenticated redirects ─────────────────────────────────────────────
+  if (user) {
+    // Fetch role once for routing decisions
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role ?? 'client'
+    const isAdmin = ['admin', 'superadmin'].includes(role)
+
+    // Logged-in users hitting /login or /signup → send to the right place
+    if (pathname === '/login' || pathname === '/signup') {
+      const url = request.nextUrl.clone()
+      url.pathname = isAdmin ? '/admin' : '/dashboard'
+      return NextResponse.redirect(url)
+    }
+
+    // Logged-in admin hitting /admin/login → skip, go to admin dashboard
+    if (isAdmin && pathname === '/admin/login') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin'
+      return NextResponse.redirect(url)
+    }
+
+    // Non-admin hitting /admin/* → send to client portal
+    if (!isAdmin && pathname.startsWith('/admin') && pathname !== '/admin/login') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
   }
 
   return response
