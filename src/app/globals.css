@@ -16,11 +16,12 @@
   --clr-accent:         #C9A84C;
   --clr-accent-hover:   #B8962E;
 
-  /* Light mode surfaces */
-  --clr-bg:             #F8FAF7;
+  /* Light mode surfaces — clean white */
+  --clr-bg:             #FFFFFF;
   --clr-surface:        #FFFFFF;
-  --clr-surface-2:      #EFF5F1;
-  --clr-border:         #D6E4DC;
+  --clr-surface-2:      #F7F7F5;
+  --clr-bg-alt:         #F7F7F5;
+  --clr-border:         #E8EAED;
 
   /* Light mode text */
   --clr-text:           #111C17;

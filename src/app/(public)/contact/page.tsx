@@ -66,7 +66,7 @@ export default function ContactPage() {
             <div>
               <span className="section-label">Get In Touch</span>
               <h2 style={{ marginBottom: 'var(--space-lg)' }}>We are Here to Help</h2>
-              <p style={{ marginBottom: 'var(--space-2xl)' }}>Our team responds within one business day. For urgent enquiries, please indicate this in your message and we will prioritise accordingly.</p>
+              <p style={{ marginBottom: 'var(--space-2xl)' }}>We are a global platform — available across all time zones. Our team responds to every enquiry within 24 hours. For urgent matters, please indicate this in your message.</p>
 
               <div className="contact-info-item reveal">
                 <div className="contact-info-icon">&#128205;</div>
@@ -80,7 +80,7 @@ export default function ContactPage() {
                 <div className="contact-info-icon">&#128231;</div>
                 <div>
                   <p className="contact-info-label">Email</p>
-                  <p className="contact-info-val"><a href="mailto:hello@ryters-spot.com" style={{ color: 'var(--clr-primary-light)' }}>hello@ryters-spot.com</a></p>
+                  <p className="contact-info-val"><a href="mailto:hello@theryters.com" style={{ color: 'var(--clr-primary-light)' }}>hello@theryters.com</a></p>
                 </div>
               </div>
 
@@ -93,10 +93,10 @@ export default function ContactPage() {
               </div>
 
               <div className="contact-info-item reveal">
-                <div className="contact-info-icon">&#128336;</div>
+                <div className="contact-info-icon">🌍</div>
                 <div>
-                  <p className="contact-info-label">Business Hours</p>
-                  <p className="contact-info-val">Monday to Friday: 8:00 AM to 6:00 PM WAT<br /><span style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }}>Weekends by appointment</span></p>
+                  <p className="contact-info-label">Availability</p>
+                  <p className="contact-info-val">Available globally, across all time zones<br /><span style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }}>We respond to every enquiry within 24 hours</span></p>
                 </div>
               </div>
 
