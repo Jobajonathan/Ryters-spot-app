@@ -68,7 +68,7 @@ function hasAccess(roles: string | string[], role: Role): boolean {
 // Main layout — skips sidebar on login page
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  if (pathname === '/admin/login') return <>{children}</>
+  if (pathname === '/admin/login' || pathname === '/admin/set-password') return <>{children}</>
   return <AdminShell>{children}</AdminShell>
 }
 

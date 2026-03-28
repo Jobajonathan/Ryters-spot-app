@@ -25,7 +25,7 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/login'
       return NextResponse.redirect(url)
     }
-    if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    if (pathname.startsWith('/admin') && !['/admin/login', '/admin/set-password'].includes(pathname)) {
       const url = request.nextUrl.clone()
       url.pathname = '/admin/login'
       return NextResponse.redirect(url)
@@ -63,7 +63,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Admin area (except /admin/login itself) requires admin login
-  if (!user && pathname.startsWith('/admin') && pathname !== '/admin/login') {
+  const adminPublicPaths = ['/admin/login', '/admin/set-password']
+  if (!user && pathname.startsWith('/admin') && !adminPublicPaths.includes(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
     return NextResponse.redirect(url)
@@ -96,7 +97,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     // Non-admin hitting /admin/* → send to client portal
-    if (!isAdmin && pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    if (!isAdmin && pathname.startsWith('/admin') && !adminPublicPaths.includes(pathname)) {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'
       return NextResponse.redirect(url)
