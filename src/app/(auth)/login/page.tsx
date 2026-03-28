@@ -89,7 +89,7 @@ export default function LoginPage() {
         .auth-split { display: flex; min-height: 100vh; }
         .auth-panel-left {
           flex: 1; background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-mid) 60%, var(--clr-primary-light) 100%);
-          padding: 3rem; display: flex; flex-direction: column; justify-content: center; color: #fff;
+          padding: 3rem; padding-top: 4rem; display: flex; flex-direction: column; justify-content: flex-start; color: #fff;
         }
         .auth-panel-right {
           flex: 1; display: flex; align-items: center; justify-content: center;

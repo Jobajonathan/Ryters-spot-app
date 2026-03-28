@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [detectingLocation, setDetectingLocation] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [showEmailForm, setShowEmailForm] = useState(false)
 
   // Auto-detect country from IP on mount
   useEffect(() => {
@@ -111,7 +112,8 @@ export default function SignupPage() {
         .auth-split { display: flex; min-height: 100vh; }
         .auth-panel-left {
           flex: 1; background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-mid) 60%, var(--clr-primary-light) 100%);
-          padding: 3rem; display: flex; flex-direction: column; justify-content: center; color: #fff;
+          padding: 3rem; display: flex; flex-direction: column; justify-content: flex-start;
+          padding-top: 4rem; color: #fff;
         }
         .auth-panel-right {
           flex: 1; display: flex; align-items: flex-start; justify-content: center;
@@ -176,9 +178,13 @@ export default function SignupPage() {
               </div>
             ) : (
               <>
-                <SocialAuth mode="signup" />
+                <SocialAuth
+                  mode="signup"
+                  onToggleEmail={() => setShowEmailForm(v => !v)}
+                  emailOpen={showEmailForm}
+                />
 
-                <form onSubmit={handleSubmit} noValidate>
+                {showEmailForm && <form onSubmit={handleSubmit} noValidate>
                   {error && <div className="auth-error">{error}</div>}
 
                   <div className="form-grid-2">
@@ -263,7 +269,13 @@ export default function SignupPage() {
                   <p className="auth-link-row" style={{ marginTop: '1.25rem' }}>
                     Already have an account? <Link href="/login">Sign in</Link>
                   </p>
-                </form>
+                </form>}
+
+                {!showEmailForm && (
+                  <p className="auth-link-row" style={{ marginTop: '1rem' }}>
+                    Already have an account? <Link href="/login">Sign in</Link>
+                  </p>
+                )}
               </>
             )}
 
