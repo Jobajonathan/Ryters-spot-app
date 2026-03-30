@@ -56,6 +56,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         .post-title { font-family: Georgia, serif; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: #fff; line-height: 1.25; margin: 0 0 1.25rem; }
         .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
         .post-meta-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.4); display: inline-block; }
+        .post-cover { width: 100%; max-height: 400px; object-fit: cover; display: block; }
       `}</style>
 
       <header className="post-hero">
@@ -81,6 +82,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
         </div>
       </header>
+
+      {post.cover_image_url && (
+        <img
+          src={post.cover_image_url}
+          alt={post.title}
+          className="post-cover"
+        />
+      )}
 
       <div className="container">
         <div className="post-body">

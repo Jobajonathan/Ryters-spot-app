@@ -12,10 +12,51 @@ type ContentRow = {
 
 const SECTIONS: Record<string, string> = {
   hero: 'Homepage Hero',
-  about: 'About Section',
+  stats: 'Homepage Stats',
+  trust_bar: 'Trust Bar',
+  cta_banner: 'CTA Banner',
+  footer: 'Footer',
   contact: 'Contact Details',
   social: 'Social Media Links',
-  seo: 'SEO Settings',
+  seo: 'SEO & Analytics',
+}
+
+const HINTS: Record<string, string> = {
+  hero_headline: 'Main heading shown in the homepage hero section',
+  hero_subheadline: 'Paragraph text below the main heading',
+  hero_cta1_text: 'Primary green button text in the hero',
+  hero_cta2_text: 'Secondary button text in the hero',
+  trust_bar_label: 'Text above the trust logos bar',
+  stat1_count: 'Number shown in stat 1 (e.g. 500)',
+  stat1_suffix: 'Symbol after the number (e.g. +)',
+  stat1_label: 'Label below the number (e.g. Projects Delivered)',
+  stat2_count: 'Number shown in stat 2',
+  stat2_suffix: 'Symbol after stat 2 number',
+  stat2_label: 'Label for stat 2',
+  stat3_count: 'Number shown in stat 3',
+  stat3_suffix: 'Symbol after stat 3 number',
+  stat3_label: 'Label for stat 3',
+  stat4_count: 'Number shown in stat 4',
+  stat4_suffix: 'Symbol after stat 4 number',
+  stat4_label: 'Label for stat 4',
+  cta_banner_heading: 'Big heading in the green call-to-action banner',
+  cta_banner_subtext: 'Paragraph text under the CTA banner heading',
+  cta_banner_cta1_text: 'Primary button text in the CTA banner',
+  footer_tagline: 'Tagline shown below "Ryters Spot" in the footer',
+  contact_email: 'Primary contact email address',
+  contact_phone: 'Primary phone/WhatsApp number',
+  contact_address: 'Office location shown on contact page and footer',
+  contact_whatsapp: 'WhatsApp number with country code (no + or spaces)',
+  social_linkedin: 'Full LinkedIn profile URL (https://linkedin.com/company/...)',
+  social_twitter: 'Full Twitter/X URL (https://x.com/...)',
+  social_facebook: 'Full Facebook page URL',
+  social_instagram: 'Full Instagram URL',
+  social_youtube: 'Full YouTube channel URL',
+  seo_title: 'Page title shown in Google search results (50-60 characters)',
+  seo_description: 'Description shown in Google search results (150-160 characters)',
+  seo_keywords: 'Comma-separated keywords for search engines',
+  seo_og_image: 'Full URL of image shown when the site is shared on social media (1200x630px recommended)',
+  ga4_measurement_id: 'Google Analytics 4 ID starting with G- (e.g. G-ABC12345XY). Get this from analytics.google.com',
 }
 
 export default function ContentPage() {
@@ -107,22 +148,52 @@ export default function ContentPage() {
           <p style={{ color: '#9ca3af', fontSize: '0.875rem', maxWidth: 440, margin: '0 auto 1.5rem' }}>
             Run the SQL migration below to seed the initial content rows, then come back to edit them.
           </p>
-          <div style={{ background: '#1a1a2e', color: '#a8ff78', padding: '1.25rem', borderRadius: 10, textAlign: 'left', fontSize: '0.78rem', fontFamily: 'monospace', maxWidth: 680, margin: '0 auto', overflowX: 'auto' }}>
+          <div style={{ background: '#1a1a2e', color: '#a8ff78', padding: '1.25rem', borderRadius: 10, textAlign: 'left', fontSize: '0.78rem', fontFamily: 'monospace', maxWidth: 780, margin: '0 auto', overflowX: 'auto' }}>
             <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`-- Run in Supabase SQL editor
 INSERT INTO site_content (key, label, section, value) VALUES
-  ('hero_headline','Hero Headline','hero','Professional Writing & Research Consulting'),
-  ('hero_subheadline','Hero Sub-headline','hero','From academic research to corporate content strategies — delivered with precision and expertise.'),
-  ('hero_cta','Hero CTA Text','hero','Get Started Today'),
-  ('about_headline','About Headline','about','Experts in writing, research, and digital strategy'),
-  ('about_body','About Body Text','about','Ryters Spot is a boutique consultancy specialising in professional writing, academic research, and digital transformation strategy.'),
+  -- Hero
+  ('hero_headline','Hero Headline','hero','Your Strategic Consultancy Partner'),
+  ('hero_subheadline','Hero Sub-headline','hero','Ryters Spot delivers AI automation, EdTech, writing & research, and product management consultancy to organisations across the UK, Europe, North America and Africa.'),
+  ('hero_cta1_text','Hero CTA 1 Text','hero','Get Started'),
+  ('hero_cta2_text','Hero CTA 2 Text','hero','Book a Consultation'),
+  -- Stats
+  ('stat1_count','Stat 1 Count','stats','500'),
+  ('stat1_suffix','Stat 1 Suffix','stats','+'),
+  ('stat1_label','Stat 1 Label','stats','Projects Delivered'),
+  ('stat2_count','Stat 2 Count','stats','200'),
+  ('stat2_suffix','Stat 2 Suffix','stats','+'),
+  ('stat2_label','Stat 2 Label','stats','Clients Served'),
+  ('stat3_count','Stat 3 Count','stats','98'),
+  ('stat3_suffix','Stat 3 Suffix','stats','%'),
+  ('stat3_label','Stat 3 Label','stats','Client Satisfaction'),
+  ('stat4_count','Stat 4 Count','stats','7'),
+  ('stat4_suffix','Stat 4 Suffix','stats','+'),
+  ('stat4_label','Stat 4 Label','stats','Years of Excellence'),
+  -- Trust Bar
+  ('trust_bar_label','Trust Bar Label','trust_bar','Trusted by organisations & institutions across the UK, Europe, North America and Africa'),
+  -- CTA Banner
+  ('cta_banner_heading','CTA Banner Heading','cta_banner','Ready to Transform Your Organisation?'),
+  ('cta_banner_subtext','CTA Banner Subtext','cta_banner','Whether you need AI automation, EdTech solutions, writing & research support, or expert product management — Ryters Spot is your strategic partner.'),
+  ('cta_banner_cta1_text','CTA Banner Button Text','cta_banner','Get Started Free'),
+  -- Footer
+  ('footer_tagline','Footer Tagline','footer','Specialist research, technology and advisory services for organisations and scholars worldwide.'),
+  -- Contact
   ('contact_email','Contact Email','contact','hello@theryters.com'),
   ('contact_phone','Contact Phone','contact','+234 706 205 7116'),
-  ('contact_address','Office Address','contact','Lagos, Nigeria'),
-  ('social_twitter','Twitter / X URL','social',''),
+  ('contact_address','Office Address','contact','Abuja, Nigeria'),
+  ('contact_whatsapp','WhatsApp Number','contact','2347062057116'),
+  -- Social
   ('social_linkedin','LinkedIn URL','social',''),
+  ('social_twitter','Twitter / X URL','social',''),
+  ('social_facebook','Facebook URL','social',''),
   ('social_instagram','Instagram URL','social',''),
-  ('seo_title','Site Title','seo','Ryters Spot — Professional Writing & Research Consulting'),
-  ('seo_description','Meta Description','seo','Ryters Spot provides professional writing, academic research, and digital strategy services.')
+  ('social_youtube','YouTube URL','social',''),
+  -- SEO
+  ('seo_title','Site Title','seo','Ryters Spot — Research, Writing & Digital Consultancy'),
+  ('seo_description','Meta Description','seo','Ryters Spot delivers specialist writing, research, digital transformation and EdTech consultancy to organisations across Africa, the UK, Europe and North America.'),
+  ('seo_keywords','Meta Keywords','seo','academic writing, dissertation help, digital transformation, edtech, Nigeria, UK, Africa'),
+  ('seo_og_image','OG Image URL','seo',''),
+  ('ga4_measurement_id','GA4 Measurement ID','seo','')
 ON CONFLICT (key) DO NOTHING;`}</pre>
           </div>
         </div>
@@ -142,7 +213,8 @@ ON CONFLICT (key) DO NOTHING;`}</pre>
               <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>No fields in this section yet. Run the SQL migration to populate them.</p>
             ) : (
               sectionRows.map(row => {
-                const isLong = row.key.includes('body') || row.key.includes('subheadline') || row.key.includes('description') || row.key.includes('address')
+                const isLong = ['body', 'subheadline', 'description', 'address', 'subtext', 'keywords', 'tagline', 'sub', 'label', 'text'].some(k => row.key.includes(k))
+                const hint = HINTS[row.key]
                 return (
                   <div key={row.key} className="cms-field">
                     <label>{row.label || row.key}</label>
@@ -161,7 +233,8 @@ ON CONFLICT (key) DO NOTHING;`}</pre>
                         placeholder={`Enter ${row.label || row.key}...`}
                       />
                     )}
-                    <div className="cms-hint">Key: <code>{row.key}</code></div>
+                    {hint && <div className="cms-hint">{hint}</div>}
+                    <div className="cms-hint" style={{ marginTop: hint ? '0.1rem' : '0.3rem' }}>Key: <code>{row.key}</code></div>
                   </div>
                 )
               })

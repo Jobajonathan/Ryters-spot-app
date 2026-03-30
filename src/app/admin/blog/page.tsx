@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 type Post = {
   id: string
@@ -11,11 +11,12 @@ type Post = {
   published_at: string | null
   created_at: string
   author_name?: string
+  cover_image_url?: string | null
 }
 
 const CATEGORIES = ['Research', 'Ed-Tech', 'Digital Transformation', 'Product Management', 'AI & Automation', 'Company News', 'Tips & Guides']
 
-const EMPTY_POST = { title: '', excerpt: '', content: '', category: CATEGORIES[0], status: 'draft' as const }
+const EMPTY_POST = { title: '', excerpt: '', content: '', category: CATEGORIES[0], status: 'draft' as const, cover_image_url: '' }
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<Post[]>([])
@@ -26,6 +27,9 @@ export default function BlogPage() {
   const [msg, setMsg] = useState('')
   const [msgOk, setMsgOk] = useState(true)
   const [filter, setFilter] = useState<'all' | 'draft' | 'published'>('all')
+  const [uploadingImg, setUploadingImg] = useState(false)
+  const [imgError, setImgError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { loadPosts() }, [])
 
@@ -64,6 +68,25 @@ export default function BlogPage() {
     setPosts(prev => prev.filter(p => p.id !== id))
   }
 
+  async function handleImageUpload(file: File) {
+    setUploadingImg(true)
+    setImgError('')
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/admin/blog/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.success && data.url) {
+        setEditing(p => ({ ...p, cover_image_url: data.url }))
+      } else {
+        setImgError(data.error || 'Upload failed.')
+      }
+    } catch {
+      setImgError('Upload failed. Please try again.')
+    }
+    setUploadingImg(false)
+  }
+
   const filtered = filter === 'all' ? posts : posts.filter(p => p.status === filter)
 
   const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
@@ -83,6 +106,9 @@ export default function BlogPage() {
           .blog-field { margin-bottom: 1.25rem; }
           .blog-field label { display: block; font-size: 0.72rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
           .blog-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+          .img-upload-area { border: 2px dashed #e5e7eb; border-radius: 10px; padding: 1.25rem; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+          .img-upload-area:hover { border-color: #1B4332; }
+          .img-upload-area input[type=file] { display: none; }
         `}</style>
         <div className="blog-editor">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
@@ -134,6 +160,53 @@ export default function BlogPage() {
             <div className="blog-field">
               <label>Excerpt (shown in blog listings)</label>
               <textarea rows={2} value={editing.excerpt || ''} onChange={e => setEditing(p => ({ ...p, excerpt: e.target.value }))} placeholder="A short summary of the post..." />
+            </div>
+
+            {/* Cover Image Upload */}
+            <div className="blog-field">
+              <label>Cover Image</label>
+              {editing.cover_image_url ? (
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <img
+                    src={editing.cover_image_url}
+                    alt="Cover preview"
+                    style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb', display: 'block' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setEditing(p => ({ ...p, cover_image_url: '' }))}
+                    style={{ marginTop: '0.5rem', padding: '0.3rem 0.75rem', background: '#fff5f5', color: '#991b1b', border: '1px solid #fecaca', borderRadius: 6, fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Remove Image
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="img-upload-area"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {uploadingImg ? (
+                    <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>Uploading image...</div>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🖼️</div>
+                      <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>Click to upload a cover image</div>
+                      <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>JPEG, PNG, WebP or GIF — max 5MB</div>
+                    </>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (file) handleImageUpload(file)
+                      e.target.value = ''
+                    }}
+                  />
+                </div>
+              )}
+              {imgError && <p style={{ fontSize: '0.78rem', color: '#c53030', marginTop: '0.35rem' }}>{imgError}</p>}
             </div>
 
             <div className="blog-field">
@@ -193,6 +266,13 @@ You can use basic formatting:
             const s = STATUS_STYLES[post.status] || STATUS_STYLES.draft
             return (
               <div key={post.id} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                {post.cover_image_url && (
+                  <img
+                    src={post.cover_image_url}
+                    alt=""
+                    style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid #e5e7eb' }}
+                  />
+                )}
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
                     <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#111827' }}>{post.title}</span>

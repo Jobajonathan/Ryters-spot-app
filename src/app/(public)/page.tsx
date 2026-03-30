@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useScrollReveal, useCounterAnimation } from '@/hooks/useScrollReveal'
 
@@ -22,6 +22,23 @@ export default function HomePage() {
   useScrollReveal()
   useCounterAnimation()
   const [activeWhy, setActiveWhy] = useState(0)
+  const [content, setContent] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    fetch('/api/content')
+      .then(r => r.json())
+      .then(data => setContent(data))
+      .catch(() => {})
+  }, [])
+
+  function c(key: string, fallback: string) { return content[key] || fallback }
+
+  const stats = [
+    { count: parseInt(c('stat1_count', '500')), suffix: c('stat1_suffix', '+'), label: c('stat1_label', 'Projects Delivered') },
+    { count: parseInt(c('stat2_count', '200')), suffix: c('stat2_suffix', '+'), label: c('stat2_label', 'Clients Served') },
+    { count: parseInt(c('stat3_count', '98')), suffix: c('stat3_suffix', '%'), label: c('stat3_label', 'Client Satisfaction') },
+    { count: parseInt(c('stat4_count', '7')), suffix: c('stat4_suffix', '+'), label: c('stat4_label', 'Years of Excellence') },
+  ]
 
   return (
     <>
@@ -57,15 +74,15 @@ export default function HomePage() {
       <section className="hero" aria-label="Welcome to Ryters Spot">
         <div className="container hero-centred">
           <div className="hero-content fade-up">
-            <h1 style={{ marginBottom: '1.25rem' }}>Your <span>Strategic</span><br />Consultancy Partner</h1>
+            <h1 style={{ marginBottom: '1.25rem' }}>{c('hero_headline', 'Your Strategic Consultancy Partner')}</h1>
 
             <p className="hero-sub">
-              Ryters Spot delivers AI automation, EdTech, writing &amp; research, and product management consultancy to organisations across the UK, Europe, North America and Africa.
+              {c('hero_subheadline', 'Ryters Spot delivers AI automation, EdTech, writing & research, and product management consultancy to organisations across the UK, Europe, North America and Africa.')}
             </p>
 
             <div className="hero-ctas">
-              <Link href="/get-started" className="btn btn-accent btn-lg">Get Started</Link>
-              <Link href="/contact" className="btn btn-lg" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', borderColor: 'rgba(255,255,255,0.3)' }}>Book a Consultation</Link>
+              <Link href="/get-started" className="btn btn-accent btn-lg">{c('hero_cta1_text', 'Get Started')}</Link>
+              <Link href="/contact" className="btn btn-lg" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', borderColor: 'rgba(255,255,255,0.3)' }}>{c('hero_cta2_text', 'Book a Consultation')}</Link>
             </div>
 
             <div className="hero-personas-row">
@@ -82,7 +99,7 @@ export default function HomePage() {
       {/* ── TRUST BAR ── */}
       <div className="trust-bar">
         <div className="container">
-          <p className="trust-bar-label">Trusted by organisations &amp; institutions across the UK, Europe, North America and Africa</p>
+          <p className="trust-bar-label">{c('trust_bar_label', 'Trusted by organisations & institutions across the UK, Europe, North America and Africa')}</p>
           <div className="trust-logos">
             {['Enterprise Partners', 'Academic Institutions', 'Government Agencies', 'SMEs & Startups', 'NGOs', 'Research Bodies'].map(t => (
               <span key={t} className="trust-logo">{t}</span>
@@ -125,12 +142,7 @@ export default function HomePage() {
       <section className="section section-alt" aria-labelledby="stats-heading">
         <div className="container">
           <div className="stats-grid">
-            {[
-              { count: 500, suffix: '+', label: 'Projects Delivered' },
-              { count: 200, suffix: '+', label: 'Clients Served' },
-              { count: 98, suffix: '%', label: 'Client Satisfaction' },
-              { count: 7, suffix: '+', label: 'Years of Excellence' },
-            ].map((s, i) => (
+            {stats.map((s, i) => (
               <div key={s.label} className={`stat-item reveal${i > 0 ? ` fade-up-delay-${i}` : ''}`}>
                 <span className="stat-num" data-count={s.count} data-suffix={s.suffix}>0{s.suffix}</span>
                 <span className="stat-label">{s.label}</span>
@@ -169,10 +181,10 @@ export default function HomePage() {
       {/* ── CTA BANNER ── */}
       <section className="cta-banner" aria-label="Call to action">
         <div className="container">
-          <h2 className="reveal">Ready to Transform Your Organisation?</h2>
-          <p className="reveal">Whether you need AI automation, EdTech solutions, writing &amp; research support, or expert product management — Ryters Spot is your strategic partner.</p>
+          <h2 className="reveal">{c('cta_banner_heading', 'Ready to Transform Your Organisation?')}</h2>
+          <p className="reveal">{c('cta_banner_subtext', 'Whether you need AI automation, EdTech solutions, writing & research support, or expert product management — Ryters Spot is your strategic partner.')}</p>
           <div className="cta-banner-btns reveal">
-            <Link href="/get-started" className="btn btn-accent btn-lg">Get Started Free</Link>
+            <Link href="/get-started" className="btn btn-accent btn-lg">{c('cta_banner_cta1_text', 'Get Started Free')}</Link>
             <Link href="/services" className="btn btn-white btn-lg">Browse Services</Link>
           </div>
         </div>

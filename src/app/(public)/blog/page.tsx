@@ -12,6 +12,7 @@ type Post = {
   category: string | null
   published_at: string | null
   author_name: string | null
+  cover_image_url: string | null
 }
 
 const CATEGORIES = [
@@ -113,7 +114,17 @@ export default function BlogPage() {
               <div className="container">
                 <span className="section-label">Featured</span>
                 <article className="blog-featured reveal" style={{ marginTop: '1rem' }}>
-                  <div className="blog-featured-img">✍️</div>
+                  <div className="blog-featured-img" style={featured.cover_image_url ? { padding: 0, overflow: 'hidden' } : { display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>
+                    {featured.cover_image_url ? (
+                      <img
+                        src={featured.cover_image_url}
+                        alt={featured.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
+                    ) : (
+                      '✍️'
+                    )}
+                  </div>
                   <div className="blog-featured-body">
                     {featured.category && <span className="blog-tag">{featured.category}</span>}
                     <h2 className="blog-featured-title">{featured.title}</h2>
@@ -149,8 +160,16 @@ export default function BlogPage() {
                 <div className="blog-grid">
                   {gridPosts.map((post, i) => (
                     <article key={post.id} className={`blog-card reveal${i % 3 === 1 ? ' fade-up-delay-1' : i % 3 === 2 ? ' fade-up-delay-2' : ''}`}>
-                      <div className="blog-card-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>
-                        ✍️
+                      <div className="blog-card-img" style={post.cover_image_url ? { padding: 0, overflow: 'hidden' } : { display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>
+                        {post.cover_image_url ? (
+                          <img
+                            src={post.cover_image_url}
+                            alt={post.title}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          />
+                        ) : (
+                          '✍️'
+                        )}
                       </div>
                       <div className="blog-card-body">
                         {post.category && <span className="blog-tag">{post.category}</span>}

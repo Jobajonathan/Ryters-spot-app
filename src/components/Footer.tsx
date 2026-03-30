@@ -1,12 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [subStatus, setSubStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'exists'>('idle')
   const [subMsg, setSubMsg] = useState('')
+  const [content, setContent] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    fetch('/api/content')
+      .then(r => r.json())
+      .then(data => setContent(data))
+      .catch(() => {})
+  }, [])
+
+  function c(key: string, fallback: string) { return content[key] || fallback }
 
   async function handleSubscribe(e: React.FormEvent) {
     e.preventDefault()
@@ -35,6 +45,11 @@ export default function Footer() {
     }
   }
 
+  const linkedinUrl = c('social_linkedin', '')
+  const twitterUrl = c('social_twitter', '')
+  const facebookUrl = c('social_facebook', '')
+  const instagramUrl = c('social_instagram', '')
+
   return (
     <footer className="footer" role="contentinfo">
       <div className="container">
@@ -45,12 +60,12 @@ export default function Footer() {
               <img src="/images/logo.png" alt="Ryters Spot" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
               <span className="footer-logo-text">Ryters Spot</span>
             </div>
-            <p className="footer-tagline">Specialist research, technology and advisory services for organisations and scholars worldwide.</p>
+            <p className="footer-tagline">{c('footer_tagline', 'Specialist research, technology and advisory services for organisations and scholars worldwide.')}</p>
             <div className="footer-social">
-              <a className="footer-social-link" href="#" aria-label="LinkedIn">in</a>
-              <a className="footer-social-link" href="#" aria-label="Twitter/X">&#120143;</a>
-              <a className="footer-social-link" href="#" aria-label="Facebook">f</a>
-              <a className="footer-social-link" href="#" aria-label="Instagram">ig</a>
+              <a className="footer-social-link" href={linkedinUrl || '#'} aria-label="LinkedIn" target={linkedinUrl ? '_blank' : undefined} rel={linkedinUrl ? 'noopener noreferrer' : undefined}>in</a>
+              <a className="footer-social-link" href={twitterUrl || '#'} aria-label="Twitter/X" target={twitterUrl ? '_blank' : undefined} rel={twitterUrl ? 'noopener noreferrer' : undefined}>&#120143;</a>
+              <a className="footer-social-link" href={facebookUrl || '#'} aria-label="Facebook" target={facebookUrl ? '_blank' : undefined} rel={facebookUrl ? 'noopener noreferrer' : undefined}>f</a>
+              <a className="footer-social-link" href={instagramUrl || '#'} aria-label="Instagram" target={instagramUrl ? '_blank' : undefined} rel={instagramUrl ? 'noopener noreferrer' : undefined}>ig</a>
             </div>
             <div className="footer-newsletter">
               <p className="footer-newsletter-label">Get fortnightly insights, free</p>
@@ -104,12 +119,12 @@ export default function Footer() {
               <li><Link className="footer-link" href="/terms">Terms of Service</Link></li>
             </ul>
             <div style={{ marginTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
-              <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.4rem' }}>Abuja, Nigeria</p>
+              <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.4rem' }}>{c('contact_address', 'Abuja, Nigeria')}</p>
               <p style={{ fontSize: '0.78rem', marginBottom: '0.4rem' }}>
-                <a href="mailto:hello@theryters.com" style={{ color: 'rgba(255,255,255,0.55)' }}>hello@theryters.com</a>
+                <a href={`mailto:${c('contact_email', 'hello@theryters.com')}`} style={{ color: 'rgba(255,255,255,0.55)' }}>{c('contact_email', 'hello@theryters.com')}</a>
               </p>
               <p style={{ fontSize: '0.78rem' }}>
-                <a href="tel:+2347062057116" style={{ color: 'rgba(255,255,255,0.55)' }}>+234 706 205 7116</a>
+                <a href={`tel:${c('contact_phone', '+234 706 205 7116').replace(/\s/g, '')}`} style={{ color: 'rgba(255,255,255,0.55)' }}>{c('contact_phone', '+234 706 205 7116')}</a>
               </p>
             </div>
           </div>
