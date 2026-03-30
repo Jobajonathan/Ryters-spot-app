@@ -46,6 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: { canonical: 'https://theryters.com' },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
     icons: { icon: '/favicon.ico', shortcut: '/favicon.ico', apple: '/favicon.ico' },
+    verification: { other: { 'msvalidate.01': '8D04BA47665965B6CF63E776C0AD32E6' } },
   }
 }
 
