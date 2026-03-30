@@ -282,7 +282,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="dash-avatar">{userName.charAt(0).toUpperCase()}</div>
                 <span>{userName}</span>
               </div>
-              </div>
             </div>
           </div>
 

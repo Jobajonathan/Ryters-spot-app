@@ -286,13 +286,15 @@ export async function PATCH(request: Request) {
       }
       const notif = notifMessages[status]
       if (notif) {
-        await adminSupabase.from('notifications').insert({
-          user_id: project.client_id,
-          type: status,
-          title: notif.title,
-          body: notif.body,
-          link: notif.link,
-        }).catch(() => {}) // Don't fail if notifications table doesn't exist yet
+        try {
+          await adminSupabase.from('notifications').insert({
+            user_id: project.client_id,
+            type: status,
+            title: notif.title,
+            body: notif.body,
+            link: notif.link,
+          })
+        } catch { /* Don't fail if notification insert errors */ }
       }
     }
 
