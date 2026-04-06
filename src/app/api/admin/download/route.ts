@@ -19,20 +19,46 @@ async function getUser() {
   return user
 }
 
-async function isAdmin(userId: string) {
+async function getUserRole(userId: string) {
   const { data } = await adminSupabase.from('profiles').select('role').eq('id', userId).single()
-  return data?.role && ['admin', 'superadmin', 'finance', 'support', 'operations'].includes(data.role)
+  return data?.role as string | null
 }
 
 export async function GET(request: Request) {
   const user = await getUser()
-  if (!user || !(await isAdmin(user.id))) {
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
-  }
+  if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   const { searchParams } = new URL(request.url)
   const path = searchParams.get('path')
   if (!path) return NextResponse.json({ error: 'No path provided.' }, { status: 400 })
+
+  const role = await getUserRole(user.id)
+  const isAdmin = role && ['admin', 'superadmin', 'finance', 'support', 'operations'].includes(role)
+
+  if (isAdmin) {
+    // Admins: verify path exists in projects table to prevent path guessing
+    const { data: project } = await adminSupabase
+      .from('projects')
+      .select('id')
+      .or(`deliverable_path.eq.${path},ai_report_path.eq.${path}`)
+      .maybeSingle()
+
+    if (!project) {
+      return NextResponse.json({ error: 'File not found.' }, { status: 404 })
+    }
+  } else {
+    // Clients: verify path belongs to one of their own projects
+    const { data: project } = await adminSupabase
+      .from('projects')
+      .select('id')
+      .eq('client_id', user.id)
+      .or(`deliverable_path.eq.${path},ai_report_path.eq.${path}`)
+      .maybeSingle()
+
+    if (!project) {
+      return NextResponse.json({ error: 'File not found.' }, { status: 404 })
+    }
+  }
 
   const { data, error } = await adminSupabase.storage.from('deliverables').createSignedUrl(path, 3600)
   if (error || !data?.signedUrl) {

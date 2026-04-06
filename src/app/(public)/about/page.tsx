@@ -1,11 +1,19 @@
 'use client'
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import { useScrollReveal, useCounterAnimation } from '@/hooks/useScrollReveal'
 
 export default function AboutPage() {
   useScrollReveal()
   useCounterAnimation()
+  const [content, setContent] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    fetch('/api/content').then(r => r.json()).then(setContent).catch(() => {})
+  }, [])
+
+  function c(key: string, fallback: string) { return content[key] || fallback }
 
   return (
     <>
@@ -16,8 +24,8 @@ export default function AboutPage() {
             <span className="breadcrumb-sep">&#8250;</span>
             <span>About</span>
           </nav>
-          <h1>We Are Ryters Spot</h1>
-          <p>A specialist writing, research and advisory firm. We have been helping clients across Europe, North America and beyond communicate with authority, execute with precision and lead with confidence.</p>
+          <h1>{c('about_hero_heading', 'We Are Ryters Spot')}</h1>
+          <p>{c('about_hero_subtext', 'A specialist writing, research and advisory firm. We have been helping clients across Europe, North America and beyond communicate with authority, execute with precision and lead with confidence.')}</p>
         </div>
       </header>
 
@@ -29,7 +37,7 @@ export default function AboutPage() {
             <div className="reveal">
               <span className="section-label">Our Story</span>
               <h2 style={{ marginBottom: 'var(--space-lg)' }}>Built on a Simple Conviction</h2>
-              <p style={{ marginBottom: 'var(--space-lg)' }}>Ryters Spot was founded on a conviction that has never changed: exceptional writing is not a luxury. It is the single most powerful instrument for building authority, advancing ideas and driving results in any field.</p>
+              <p style={{ marginBottom: 'var(--space-lg)' }}>{c('about_story_body', 'Ryters Spot was founded on a conviction that has never changed: exceptional writing is not a luxury. It is the single most powerful instrument for building authority, advancing ideas and driving results in any field.')}</p>
               <p style={{ marginBottom: 'var(--space-lg)' }}>Over the years, we have grown from a focused writing consultancy into a full-spectrum advisory firm, serving PhD candidates at leading universities in the UK and Canada, executives at Fortune 500 organisations, government agencies, global NGOs, and entrepreneurs building category-defining businesses.</p>
               <p style={{ marginBottom: 'var(--space-lg)' }}>What has never changed is our standard. Every project we take on receives the same rigour, the same depth of expertise and the same uncompromising commitment to quality that our clients have come to expect and depend on.</p>
               <p>We work quietly, we work precisely, and we deliver results that speak for themselves.</p>
@@ -40,17 +48,17 @@ export default function AboutPage() {
                 <div>
                   <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>&#127919;</div>
                   <h4 style={{ marginBottom: '6px', color: 'var(--clr-primary)' }}>Our Mission</h4>
-                  <p style={{ fontSize: '0.9rem' }}>To deliver writing, research and advisory services of the highest quality, enabling our clients to achieve their academic, professional and business objectives with clarity and confidence.</p>
+                  <p style={{ fontSize: '0.9rem' }}>{c('about_mission', 'To deliver writing, research and advisory services of the highest quality, enabling our clients to achieve their academic, professional and business objectives with clarity and confidence.')}</p>
                 </div>
                 <div>
                   <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>&#128301;</div>
                   <h4 style={{ marginBottom: '6px', color: 'var(--clr-primary)' }}>Our Vision</h4>
-                  <p style={{ fontSize: '0.9rem' }}>To be the most trusted specialist writing and advisory partner for ambitious individuals and organisations worldwide, recognised for excellence, discretion and transformative results.</p>
+                  <p style={{ fontSize: '0.9rem' }}>{c('about_vision', 'To be the most trusted specialist writing and advisory partner for ambitious individuals and organisations worldwide, recognised for excellence, discretion and transformative results.')}</p>
                 </div>
                 <div>
                   <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>&#128161;</div>
                   <h4 style={{ marginBottom: '6px', color: 'var(--clr-primary)' }}>Our Approach</h4>
-                  <p style={{ fontSize: '0.9rem' }}>We combine deep subject-matter expertise with genuinely personalised service. Every engagement is tailored to your specific context, objectives and audience. We do not apply templates. We apply thinking.</p>
+                  <p style={{ fontSize: '0.9rem' }}>{c('about_approach', 'We combine deep subject-matter expertise with genuinely personalised service. Every engagement is tailored to your specific context, objectives and audience. We do not apply templates. We apply thinking.')}</p>
                 </div>
               </div>
             </div>

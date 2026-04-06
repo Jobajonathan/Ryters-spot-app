@@ -1,3 +1,8 @@
+/** HTML-escape user-supplied strings to prevent injection in email templates */
+function esc(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
 const BRAND = {
   primary: '#1B4332',
   gold: '#C9A84C',
@@ -58,7 +63,7 @@ function baseTemplate(content: string) {
 // ── Welcome / Verify Email ─────────────────────────────────────────
 export function welcomeEmail(name: string, verifyUrl: string) {
   return baseTemplate(`
-    <h1 style="font-family:Georgia,serif;font-size:24px;color:${BRAND.primary};margin:0 0 8px;">Welcome to Ryters Spot, ${name}!</h1>
+    <h1 style="font-family:Georgia,serif;font-size:24px;color:${BRAND.primary};margin:0 0 8px;">Welcome to Ryters Spot, ${esc(name)}!</h1>
     <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Please verify your email address to activate your account.</p>
 
     <p style="font-size:15px;line-height:1.7;margin:0 0 24px;">
@@ -82,7 +87,7 @@ export function welcomeEmail(name: string, verifyUrl: string) {
 export function passwordResetEmail(name: string, resetUrl: string) {
   return baseTemplate(`
     <h1 style="font-family:Georgia,serif;font-size:24px;color:${BRAND.primary};margin:0 0 8px;">Reset your password</h1>
-    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${name}, we received a request to reset your password.</p>
+    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${esc(name)}, we received a request to reset your password.</p>
 
     <p style="font-size:15px;line-height:1.7;margin:0 0 24px;">
       Click the button below to set a new password. This link is valid for 1 hour.
@@ -111,21 +116,21 @@ export function projectConfirmedEmail(name: string, projectTitle: string, servic
 
   return baseTemplate(`
     <h1 style="font-family:Georgia,serif;font-size:24px;color:${BRAND.primary};margin:0 0 8px;">Your project has been confirmed</h1>
-    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${name}, great news &mdash; your project is now underway.</p>
+    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${esc(name)}, great news &mdash; your project is now underway.</p>
 
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px 24px;margin:0 0 24px;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="font-size:13px;color:${BRAND.muted};padding-bottom:8px;">Project</td>
-          <td style="font-size:14px;font-weight:600;color:${BRAND.text};text-align:right;padding-bottom:8px;">${projectTitle}</td>
+          <td style="font-size:14px;font-weight:600;color:${BRAND.text};text-align:right;padding-bottom:8px;">${esc(projectTitle)}</td>
         </tr>
         <tr>
           <td style="font-size:13px;color:${BRAND.muted};padding-bottom:8px;">Service</td>
-          <td style="font-size:14px;color:${BRAND.text};text-align:right;padding-bottom:8px;">${serviceLabels[service] ?? service}</td>
+          <td style="font-size:14px;color:${BRAND.text};text-align:right;padding-bottom:8px;">${esc(serviceLabels[service] ?? service)}</td>
         </tr>
         <tr>
           <td style="font-size:13px;color:${BRAND.muted};">Deadline</td>
-          <td style="font-size:14px;color:${BRAND.text};text-align:right;">${deadline}</td>
+          <td style="font-size:14px;color:${BRAND.text};text-align:right;">${esc(deadline)}</td>
         </tr>
       </table>
     </div>
@@ -147,11 +152,11 @@ export function projectConfirmedEmail(name: string, projectTitle: string, servic
 export function workDeliveredEmail(name: string, projectTitle: string) {
   return baseTemplate(`
     <h1 style="font-family:Georgia,serif;font-size:24px;color:${BRAND.primary};margin:0 0 8px;">Your work is ready</h1>
-    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${name}, your deliverable for <strong>${projectTitle}</strong> has been uploaded.</p>
+    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${esc(name)}, your deliverable for <strong>${esc(projectTitle)}</strong> has been uploaded.</p>
 
     <div style="background:${BRAND.primary};border-radius:10px;padding:24px;text-align:center;margin:0 0 28px;">
       <div style="font-size:40px;margin-bottom:8px;">&#128196;</div>
-      <p style="color:#fff;font-size:16px;font-weight:600;margin:0;">${projectTitle}</p>
+      <p style="color:#fff;font-size:16px;font-weight:600;margin:0;">${esc(projectTitle)}</p>
       <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:6px 0 0;">Ready to download from your secure portal</p>
     </div>
 
@@ -176,21 +181,21 @@ export function workDeliveredEmail(name: string, projectTitle: string) {
 export function invoiceReadyEmail(name: string, projectTitle: string, amount: string, currency: string, dueDate: string, payUrl: string) {
   return baseTemplate(`
     <h1 style="font-family:Georgia,serif;font-size:24px;color:${BRAND.primary};margin:0 0 8px;">Invoice ready for payment</h1>
-    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${name}, an invoice has been generated for your project.</p>
+    <p style="color:${BRAND.muted};font-size:14px;margin:0 0 24px;">Hi ${esc(name)}, an invoice has been generated for your project.</p>
 
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:20px 24px;margin:0 0 24px;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="font-size:13px;color:${BRAND.muted};padding-bottom:8px;">Project</td>
-          <td style="font-size:14px;font-weight:600;color:${BRAND.text};text-align:right;padding-bottom:8px;">${projectTitle}</td>
+          <td style="font-size:14px;font-weight:600;color:${BRAND.text};text-align:right;padding-bottom:8px;">${esc(projectTitle)}</td>
         </tr>
         <tr>
           <td style="font-size:13px;color:${BRAND.muted};padding-bottom:8px;">Amount</td>
-          <td style="font-size:18px;font-weight:700;color:${BRAND.primary};text-align:right;padding-bottom:8px;">${currency} ${amount}</td>
+          <td style="font-size:18px;font-weight:700;color:${BRAND.primary};text-align:right;padding-bottom:8px;">${esc(currency)} ${esc(amount)}</td>
         </tr>
         <tr>
           <td style="font-size:13px;color:${BRAND.muted};">Due Date</td>
-          <td style="font-size:14px;color:${BRAND.text};text-align:right;">${dueDate}</td>
+          <td style="font-size:14px;color:${BRAND.text};text-align:right;">${esc(dueDate)}</td>
         </tr>
       </table>
     </div>

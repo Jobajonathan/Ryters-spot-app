@@ -72,8 +72,50 @@ export async function POST(request: Request) {
       .single()
 
     const tx_ref = `rs-${project_id.slice(0, 8)}-${payment_type[0]}-${Date.now()}`
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://theryters.com'
 
-    // Save pending payment record
+    // Create Flutterwave payment first (before saving to DB to avoid orphaned records)
+    const flwController = new AbortController()
+    const flwTimeout = setTimeout(() => flwController.abort(), 10000)
+
+    let flwData: Record<string, unknown>
+    try {
+      const flwRes = await fetch('https://api.flutterwave.com/v3/payments', {
+        method: 'POST',
+        signal: flwController.signal,
+        headers: {
+          Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tx_ref,
+          amount,
+          currency,
+          redirect_url: `${siteUrl}/dashboard/projects?flw_status=success&tx_ref=${encodeURIComponent(tx_ref)}`,
+          customer: {
+            email: profile?.email || user.email,
+            name: profile?.full_name || 'Valued Client',
+            phonenumber: profile?.phone || undefined,
+          },
+          customizations: {
+            title: 'Ryters Spot',
+            description: `${payment_type === 'deposit' ? 'Deposit' : 'Balance'} payment — ${project.title}`,
+            logo: `${siteUrl}/favicon.ico`,
+          },
+          meta: { project_id, payment_type },
+        }),
+      })
+      flwData = await flwRes.json()
+    } finally {
+      clearTimeout(flwTimeout)
+    }
+
+    if (flwData.status !== 'success' || !(flwData.data as Record<string, unknown>)?.link) {
+      console.error('Flutterwave error:', flwData)
+      return NextResponse.json({ error: 'Could not create payment. Please try again.' }, { status: 500 })
+    }
+
+    // Save payment record only after Flutterwave confirms
     await adminSupabase.from('payments').insert({
       project_id,
       client_id: user.id,
@@ -84,45 +126,7 @@ export async function POST(request: Request) {
       status: 'pending',
     })
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://theryters.com'
-
-    // Create Flutterwave payment
-    const flwRes = await fetch('https://api.flutterwave.com/v3/payments', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        tx_ref,
-        amount,
-        currency,
-        redirect_url: `${siteUrl}/dashboard/projects?flw_status=success&tx_ref=${encodeURIComponent(tx_ref)}`,
-        customer: {
-          email: profile?.email || user.email,
-          name: profile?.full_name || 'Valued Client',
-          phonenumber: profile?.phone || undefined,
-        },
-        customizations: {
-          title: 'Ryters Spot',
-          description: `${payment_type === 'deposit' ? 'Deposit' : 'Balance'} payment — ${project.title}`,
-          logo: `${siteUrl}/favicon.ico`,
-        },
-        meta: {
-          project_id,
-          payment_type,
-        },
-      }),
-    })
-
-    const flwData = await flwRes.json()
-
-    if (flwData.status !== 'success' || !flwData.data?.link) {
-      console.error('Flutterwave error:', flwData)
-      return NextResponse.json({ error: 'Could not create payment. Please try again.' }, { status: 500 })
-    }
-
-    return NextResponse.json({ redirect_url: flwData.data.link })
+    return NextResponse.json({ redirect_url: (flwData.data as Record<string, unknown>).link })
   } catch (err) {
     console.error('POST /api/payments/initiate error:', err)
     return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })

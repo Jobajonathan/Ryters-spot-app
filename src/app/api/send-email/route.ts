@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import {
   welcomeEmail,
   passwordResetEmail,
@@ -11,8 +13,22 @@ import {
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Ryters Spot <noreply@theryters.com>'
 
+async function getSessionUser() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => cookieStore.getAll(), setAll: (c) => c.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } }
+  )
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
 export async function POST(req: NextRequest) {
   try {
+    const user = await getSessionUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
     const body = await req.json()
     const { type, to, name } = body
 

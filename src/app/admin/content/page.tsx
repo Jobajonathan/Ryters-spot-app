@@ -15,8 +15,9 @@ const SECTIONS: Record<string, string> = {
   stats: 'Homepage Stats',
   trust_bar: 'Trust Bar',
   cta_banner: 'CTA Banner',
-  footer: 'Footer',
+  about: 'About Page',
   contact: 'Contact Details',
+  footer: 'Footer',
   social: 'Social Media Links',
   seo: 'SEO & Analytics',
 }
@@ -57,6 +58,14 @@ const HINTS: Record<string, string> = {
   seo_keywords: 'Comma-separated keywords for search engines',
   seo_og_image: 'Full URL of image shown when the site is shared on social media (1200x630px recommended)',
   ga4_measurement_id: 'Google Analytics 4 ID starting with G- (e.g. G-ABC12345XY). Get this from analytics.google.com',
+  about_hero_heading: 'Main heading on the About page hero banner',
+  about_hero_subtext: 'Paragraph text under the About page hero heading',
+  about_story_body: 'Main story paragraph shown in the "Our Story" section',
+  about_mission: 'Mission statement text',
+  about_vision: 'Vision statement text',
+  about_approach: 'Our approach description text',
+  contact_hero_heading: 'Main heading on the Contact page',
+  contact_hero_subtext: 'Paragraph under the Contact page heading',
 }
 
 export default function ContentPage() {
@@ -193,7 +202,17 @@ INSERT INTO site_content (key, label, section, value) VALUES
   ('seo_description','Meta Description','seo','Ryters Spot delivers specialist writing, research, digital transformation and EdTech consultancy to organisations across Africa, the UK, Europe and North America.'),
   ('seo_keywords','Meta Keywords','seo','academic writing, dissertation help, digital transformation, edtech, Nigeria, UK, Africa'),
   ('seo_og_image','OG Image URL','seo',''),
-  ('ga4_measurement_id','GA4 Measurement ID','seo','')
+  ('ga4_measurement_id','GA4 Measurement ID','seo',''),
+  -- About Page
+  ('about_hero_heading','About Hero Heading','about','We Are Ryters Spot'),
+  ('about_hero_subtext','About Hero Subtext','about','A specialist writing, research and advisory firm. We have been helping clients across Europe, North America and beyond communicate with authority, execute with precision and lead with confidence.'),
+  ('about_story_body','Our Story Body','about','Ryters Spot was founded on a conviction that has never changed: exceptional writing is not a luxury. It is the single most powerful instrument for building authority, advancing ideas and driving results in any field.'),
+  ('about_mission','Mission Statement','about','To deliver writing, research and advisory services of the highest quality, enabling our clients to achieve their academic, professional and business objectives with clarity and confidence.'),
+  ('about_vision','Vision Statement','about','To be the most trusted specialist writing and advisory partner for ambitious individuals and organisations worldwide, recognised for excellence, discretion and transformative results.'),
+  ('about_approach','Our Approach','about','We combine deep subject-matter expertise with genuinely personalised service. Every engagement is tailored to your specific context, objectives and audience. We do not apply templates. We apply thinking.'),
+  -- Contact Page
+  ('contact_hero_heading','Contact Hero Heading','contact','Let us Start a Conversation'),
+  ('contact_hero_subtext','Contact Hero Subtext','contact','Whether you have a project in mind, a question about our services or want to explore a partnership, we would love to hear from you.')
 ON CONFLICT (key) DO NOTHING;`}</pre>
           </div>
         </div>

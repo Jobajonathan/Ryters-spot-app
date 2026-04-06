@@ -1,11 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 
 export default function ContactPage() {
   useScrollReveal()
+  const [cms, setCms] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    fetch('/api/content').then(r => r.json()).then(setCms).catch(() => {})
+  }, [])
+
+  function c(key: string, fallback: string) { return cms[key] || fallback }
 
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', phone: '',
@@ -54,8 +61,8 @@ export default function ContactPage() {
             <span className="breadcrumb-sep">&#8250;</span>
             <span>Contact</span>
           </nav>
-          <h1>Let us Start a Conversation</h1>
-          <p>Whether you have a project in mind, a question about our services or want to explore a partnership, we would love to hear from you.</p>
+          <h1>{c('contact_hero_heading', 'Let us Start a Conversation')}</h1>
+          <p>{c('contact_hero_subtext', 'Whether you have a project in mind, a question about our services or want to explore a partnership, we would love to hear from you.')}</p>
         </div>
       </header>
 
@@ -72,7 +79,7 @@ export default function ContactPage() {
                 <div className="contact-info-icon">&#128205;</div>
                 <div>
                   <p className="contact-info-label">Our Office</p>
-                  <p className="contact-info-val">Abuja, Nigeria<br /><span style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }}>Serving clients in the UK, Canada, USA and Europe</span></p>
+                  <p className="contact-info-val">{c('contact_address', 'Abuja, Nigeria')}<br /><span style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }}>Serving clients in the UK, Canada, USA and Europe</span></p>
                 </div>
               </div>
 
@@ -80,7 +87,7 @@ export default function ContactPage() {
                 <div className="contact-info-icon">&#128231;</div>
                 <div>
                   <p className="contact-info-label">Email</p>
-                  <p className="contact-info-val"><a href="mailto:hello@theryters.com" style={{ color: 'var(--clr-primary-light)' }}>hello@theryters.com</a></p>
+                  <p className="contact-info-val"><a href={`mailto:${c('contact_email', 'hello@theryters.com')}`} style={{ color: 'var(--clr-primary-light)' }}>{c('contact_email', 'hello@theryters.com')}</a></p>
                 </div>
               </div>
 
@@ -88,7 +95,7 @@ export default function ContactPage() {
                 <div className="contact-info-icon">&#128222;</div>
                 <div>
                   <p className="contact-info-label">Phone / WhatsApp</p>
-                  <p className="contact-info-val"><a href="tel:+2347062057116" style={{ color: 'var(--clr-primary-light)' }}>+234 706 205 7116</a></p>
+                  <p className="contact-info-val"><a href={`tel:${c('contact_phone', '+234 706 205 7116')}`} style={{ color: 'var(--clr-primary-light)' }}>{c('contact_phone', '+234 706 205 7116')}</a></p>
                 </div>
               </div>
 
