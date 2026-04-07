@@ -66,6 +66,7 @@ export default function AdminDashboard() {
   const [recent, setRecent] = useState<RecentApp[]>([])
   const [statusBreak, setStatusBreak] = useState<StatusBreak[]>([])
   const [loading, setLoading] = useState(true)
+  const [popupDismissed, setPopupDismissed] = useState(false)
 
   useEffect(() => {
     fetch('/api/admin/analytics')
@@ -121,6 +122,29 @@ export default function AdminDashboard() {
         <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: 0, marginBottom: '0.25rem' }}>Dashboard</h1>
         <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Welcome back. Here is what is happening today.</p>
       </div>
+
+      {/* Pending applications popup banner */}
+      {!popupDismissed && stats && stats.pendingProjects > 0 && (
+        <div style={{ background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: 10, padding: '1rem 1.25rem', marginBottom: '1.75rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+          <div style={{ fontSize: '1.5rem', flexShrink: 0 }}>📋</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#92400e', marginBottom: '0.25rem' }}>
+              {stats.pendingProjects} pending application{stats.pendingProjects > 1 ? 's' : ''} awaiting review
+            </div>
+            <div style={{ fontSize: '0.82rem', color: '#92400e', lineHeight: 1.6 }}>
+              {recent.filter(r => r.status === 'pending' || r.status === 'in_review').slice(0, 3).map(r => (
+                <div key={r.id} style={{ marginTop: 2 }}>
+                  &bull; <strong>{r.title}</strong> — {r.profiles?.full_name || 'Unknown client'}
+                </div>
+              ))}
+            </div>
+            <Link href="/admin/applications" style={{ display: 'inline-block', marginTop: '0.6rem', fontSize: '0.82rem', fontWeight: 700, color: '#92400e', textDecoration: 'underline' }}>
+              Review all applications →
+            </Link>
+          </div>
+          <button onClick={() => setPopupDismissed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#92400e', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.25rem', flexShrink: 0 }} aria-label="Dismiss">✕</button>
+        </div>
+      )}
 
       {/* KPI row */}
       <div className="dash-grid">

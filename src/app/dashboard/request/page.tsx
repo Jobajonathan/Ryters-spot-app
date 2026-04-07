@@ -203,8 +203,8 @@ export default function RequestPage() {
             <div className="svc-grid">
               {SERVICES.map(s => (
                 <div key={s.id} className={`svc-card${form.service === s.id ? ' selected' : ''}`}
-                  onClick={() => update('service', s.id)} role="button" tabIndex={0}
-                  onKeyDown={e => e.key === 'Enter' && update('service', s.id)}>
+                  onClick={() => { update('service', s.id); setStep(2) }} role="button" tabIndex={0}
+                  onKeyDown={e => { if (e.key === 'Enter') { update('service', s.id); setStep(2) } }}>
                   <div className="svc-icon">{s.icon}</div>
                   <div className="svc-badge">{s.badge}</div>
                   <div className="svc-title">{s.title}</div>
