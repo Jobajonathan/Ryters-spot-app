@@ -9,16 +9,28 @@ export default async function DashboardPage() {
   const firstName = fullName ? fullName.split(' ')[0] : (user?.email?.split('@')[0] ?? 'there')
 
   // Fetch real project stats
-  const { data: projects } = await supabase.from('projects').select('status').eq('client_id', user?.id ?? '')
+  const { data: projects } = await supabase.from('projects').select('id, status').eq('client_id', user?.id ?? '')
   const activeCount = projects?.filter(p => ['pending','in_review','in_progress'].includes(p.status)).length ?? 0
   const completedCount = projects?.filter(p => p.status === 'completed').length ?? 0
   const totalCount = projects?.length ?? 0
+
+  // Fetch unread message count (admin messages not yet read by client)
+  const projectIds = projects?.map(p => p.id) ?? []
+  let unreadMessages = 0
+  if (projectIds.length > 0) {
+    const { count } = await supabase.from('messages')
+      .select('id', { count: 'exact', head: true })
+      .in('project_id', projectIds)
+      .eq('is_admin', true)
+      .eq('read_by_client', false)
+    unreadMessages = count ?? 0
+  }
 
   const stats = [
     { label: 'Active Projects', value: activeCount, icon: '&#128193;', note: null },
     { label: 'Completed Projects', value: completedCount, icon: '&#9989;', note: null },
     { label: 'Total Requests', value: totalCount, icon: '&#128203;', note: null },
-    { label: 'Messages', value: 0, icon: '&#128172;', note: 'Soon' },
+    { label: 'Unread Messages', value: unreadMessages, icon: '&#128172;', note: unreadMessages > 0 ? 'New' : null },
   ]
 
   return (

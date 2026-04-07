@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const adminSupabase = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -141,11 +144,21 @@ export async function POST(request: Request) {
     // Send in-app notification to client
     await adminSupabase.from('notifications').insert({
       user_id: project.client_id,
-      type: 'message',
       title: 'New message from Ryters Spot',
-      body: `Re: ${project.title} — ${body.trim().slice(0, 80)}${body.trim().length > 80 ? '...' : ''}`,
+      message: `Re: ${project.title} — ${body.trim().slice(0, 80)}${body.trim().length > 80 ? '...' : ''}`,
       link: '/dashboard/messages',
-    })
+    }).catch(() => {})
+
+    // Email the client
+    const { data: clientProfile } = await adminSupabase.from('profiles').select('email, full_name').eq('id', project.client_id).single()
+    if (clientProfile?.email) {
+      await resend.emails.send({
+        from: 'Ryters Spot <noreply@theryters.com>',
+        to: clientProfile.email,
+        subject: `New message on your project — ${project.title}`,
+        html: `<p>Hi ${clientProfile.full_name || 'there'},</p><p>The Ryters Spot team sent you a message on your project: <strong>${project.title}</strong></p><blockquote style="border-left:3px solid #1B4332;padding-left:12px;margin:12px 0;color:#374151;">${body.trim()}</blockquote><p><a href="https://theryters.com/dashboard/messages" style="display:inline-block;background:#1B4332;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;">View & Reply →</a></p><p style="font-size:12px;color:#9ca3af;">Ryters Spot — theryters.com</p>`,
+      }).catch(() => {})
+    }
 
     return NextResponse.json({ success: true, message: data })
   } catch {

@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const adminSupabase = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -138,6 +141,19 @@ export async function POST(request: Request) {
       .single()
 
     if (error) return NextResponse.json({ error: 'Could not send message.' }, { status: 500 })
+
+    // Get client name for the email
+    const { data: profile } = await adminSupabase.from('profiles').select('full_name, email').eq('id', user.id).single()
+    const clientName = profile?.full_name || profile?.email || 'A client'
+
+    // Notify admin by email
+    await resend.emails.send({
+      from: 'Ryters Spot <noreply@theryters.com>',
+      to: process.env.ADMIN_EMAIL || 'hello@theryters.com',
+      subject: `New message from ${clientName} — ${project.title || project.id}`,
+      html: `<p><strong>${clientName}</strong> sent a message on project: <strong>${project.title || project.id}</strong></p><blockquote style="border-left:3px solid #1B4332;padding-left:12px;margin:12px 0;color:#374151;">${body.trim()}</blockquote><p><a href="https://theryters.com/admin/messages">Reply in Admin Dashboard →</a></p>`,
+    }).catch(() => {}) // don't fail the request if email fails
+
     return NextResponse.json({ success: true, message: data })
   } catch {
     return NextResponse.json({ error: 'Could not send message.' }, { status: 500 })

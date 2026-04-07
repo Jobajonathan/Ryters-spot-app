@@ -71,7 +71,8 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    const tx_ref = `rs-${project_id.slice(0, 8)}-${payment_type[0]}-${Date.now()}`
+    const seg = (n: number) => Array.from({ length: n }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]).join('')
+    const tx_ref = `RYT-${seg(3)}-${seg(3)}-${seg(3)}`
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://theryters.com'
 
     // Create Flutterwave payment first (before saving to DB to avoid orphaned records)
