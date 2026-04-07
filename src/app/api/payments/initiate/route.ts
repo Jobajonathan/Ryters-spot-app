@@ -64,6 +64,17 @@ export async function POST(request: Request) {
 
     const currency = project.payment_currency || 'NGN'
 
+    // Calculate gross amount so customer bears the Flutterwave transaction fee
+    // NGN: 1.4% capped at ₦2,000. International: 3.8%
+    let fee = 0
+    if (currency === 'NGN') {
+      fee = Math.min(amount * 0.014, 2000)
+    } else {
+      fee = amount * 0.038
+    }
+    fee = Math.round(fee * 100) / 100
+    const grossAmount = Math.round((amount + fee) * 100) / 100
+
     // Fetch client profile
     const { data: profile } = await adminSupabase
       .from('profiles')
@@ -90,7 +101,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           tx_ref,
-          amount,
+          amount: grossAmount,
           currency,
           redirect_url: `${siteUrl}/dashboard/projects?flw_status=success&tx_ref=${encodeURIComponent(tx_ref)}`,
           customer: {
@@ -129,7 +140,7 @@ export async function POST(request: Request) {
       status: 'pending',
     })
 
-    return NextResponse.json({ redirect_url: (flwData.data as Record<string, unknown>).link })
+    return NextResponse.json({ redirect_url: (flwData.data as Record<string, unknown>).link, fee, grossAmount })
   } catch (err) {
     console.error('POST /api/payments/initiate error:', err)
     return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })

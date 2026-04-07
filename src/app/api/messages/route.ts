@@ -149,7 +149,7 @@ export async function POST(request: Request) {
     // Notify admin by email
     await resend.emails.send({
       from: 'Ryters Spot <noreply@theryters.com>',
-      to: process.env.ADMIN_EMAIL || 'hello@theryters.com',
+      to: process.env.ADMIN_EMAIL || 'jonathan@theryters.com',
       subject: `New message from ${clientName} — ${project.title || project.id}`,
       html: `<p><strong>${clientName}</strong> sent a message on project: <strong>${project.title || project.id}</strong></p><blockquote style="border-left:3px solid #1B4332;padding-left:12px;margin:12px 0;color:#374151;">${body.trim()}</blockquote><p><a href="https://theryters.com/admin/messages">Reply in Admin Dashboard →</a></p>`,
     }).catch(() => {}) // don't fail the request if email fails

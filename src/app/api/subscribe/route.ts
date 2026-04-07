@@ -100,7 +100,7 @@ export async function POST(request: Request) {
     // Notify admin
     await resend.emails.send({
       from: 'Ryters Spot <noreply@theryters.com>',
-      to: 'hello@theryters.com',
+      to: process.env.ADMIN_EMAIL || 'jonathan@theryters.com',
       subject: `New Newsletter Subscriber: ${email}`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:24px;">

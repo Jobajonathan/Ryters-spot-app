@@ -435,18 +435,27 @@ export default function RequestPage() {
                 min={new Date().toISOString().split('T')[0]} />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Budget range</label>
-              <select className="form-control" value={form.budget_range}
-                onChange={e => update('budget_range', e.target.value)}>
-                <option value="">Select a range (optional)</option>
-                {budgetRanges.map(b => <option key={b}>{b}</option>)}
-              </select>
-              <p style={{ fontSize: '0.78rem', color: 'var(--clr-text-muted)', marginTop: '6px' }}>
-                We will confirm exact pricing after reviewing your project brief.
-                {isWriting && estimatedPrice > 0 && <> Writing estimate: <strong>₦{estimatedPrice.toLocaleString('en-NG')}</strong> (₦20/word).</>}
-              </p>
-            </div>
+            {isResearchAcademic ? (
+              <div className="form-group">
+                <label className="form-label">Budget range</label>
+                <select className="form-control" value={form.budget_range}
+                  onChange={e => update('budget_range', e.target.value)}>
+                  <option value="">Select a range (optional)</option>
+                  {budgetRanges.map(b => <option key={b}>{b}</option>)}
+                </select>
+                <p style={{ fontSize: '0.78rem', color: 'var(--clr-text-muted)', marginTop: '6px' }}>
+                  We will confirm exact pricing after reviewing your project brief.
+                  {isWriting && estimatedPrice > 0 && <> Writing estimate: <strong>₦{estimatedPrice.toLocaleString('en-NG')}</strong> (₦20/word).</>}
+                </p>
+              </div>
+            ) : (
+              <div className="form-group">
+                <label className="form-label">Budget</label>
+                <div style={{ background: 'rgba(27,67,50,0.05)', border: '1px solid rgba(27,67,50,0.15)', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', fontSize: '0.875rem', color: 'var(--clr-primary)' }}>
+                  Pricing for this service is determined after reviewing your requirements. Our team will provide a custom quote within one business day.
+                </div>
+              </div>
+            )}
           </>
         )}
 

@@ -143,12 +143,19 @@ function ProjectCard({ project }: { project: Project }) {
         {/* ACCEPTED — pay deposit */}
         {project.status === 'accepted' && (
           <div style={{ background: '#fef9c3', border: '1px solid #f6c90e', borderRadius: 10, padding: '1rem 1.25rem' }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: '#854d0e', letterSpacing: '0.06em', marginBottom: 4 }}>Deposit Payment Required</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', fontFamily: 'var(--font-serif)', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: '#854d0e', letterSpacing: '0.06em', marginBottom: 4 }}>
+              {project.balance_amount ? 'Deposit Payment Required' : 'Payment Required'}
+            </div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', fontFamily: 'var(--font-serif)', marginBottom: '0.25rem' }}>
               {fmtAmount(project.deposit_amount, project.payment_currency)}
             </div>
+            {project.deposit_amount && (
+              <div style={{ fontSize: '0.75rem', color: '#92400e', marginBottom: '0.5rem' }}>
+                + processing fee ({project.payment_currency === 'NGN' ? `₦${Math.round(Math.min(project.deposit_amount * 0.014, 2000)).toLocaleString()}` : `${Math.round(project.deposit_amount * 0.038 * 100) / 100}`}) charged by payment gateway
+              </div>
+            )}
             <p style={{ fontSize: '0.82rem', color: '#374151', margin: '0 0 0.75rem', lineHeight: 1.6 }}>
-              Your application has been accepted! Pay your deposit securely via card to begin work.
+              {project.balance_amount ? 'Your application has been accepted! Pay your deposit securely via card to begin work.' : 'Your application has been accepted! Pay the full amount securely via card to begin work.'}
             </p>
             {payError && <p style={{ fontSize: '0.78rem', color: '#dc2626', margin: '0 0 0.5rem' }}>{payError}</p>}
             <button
@@ -156,7 +163,7 @@ function ProjectCard({ project }: { project: Project }) {
               disabled={payLoading}
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#1B4332', color: '#fff', border: 'none', borderRadius: 8, padding: '0.75rem 1.5rem', fontWeight: 700, fontSize: '0.875rem', cursor: payLoading ? 'not-allowed' : 'pointer', opacity: payLoading ? 0.7 : 1, marginBottom: '0.75rem' }}
             >
-              {payLoading ? 'Redirecting to payment...' : `Pay Deposit — ${fmtAmount(project.deposit_amount, project.payment_currency)}`}
+              {payLoading ? 'Redirecting to payment...' : `Pay ${project.balance_amount ? 'Deposit' : ''} — ${fmtAmount(project.deposit_amount, project.payment_currency)}`}
             </button>
             {project.payment_instructions && (
               <details style={{ marginTop: '0.25rem' }}>

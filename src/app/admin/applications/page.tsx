@@ -85,6 +85,7 @@ export default function ApplicationsPage() {
   const [balanceAmount, setBalanceAmount] = useState('')
   const [paymentInstructions, setPaymentInstructions] = useState('')
   const [paymentCurrency, setPaymentCurrency] = useState('NGN')
+  const [paymentSplit, setPaymentSplit] = useState(false) // false = one-time, true = deposit + balance
   const [deliverableFile, setDeliverableFile] = useState<File | null>(null)
   const [aiReportFile, setAiReportFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -106,6 +107,7 @@ export default function ApplicationsPage() {
     setDeliverableFile(null)
     setAiReportFile(null)
     setUpdateMsg('')
+    setPaymentSplit(!!(p.balance_amount && p.balance_amount > 0))
   }
 
   async function executeAction(newStatus: string) {
@@ -129,6 +131,7 @@ export default function ApplicationsPage() {
     }
     if (newStatus === 'accepted') {
       payload.deposit_amount = parseFloat(depositAmount) || null
+      payload.balance_amount = paymentSplit ? (parseFloat(balanceAmount) || null) : null
       payload.payment_instructions = paymentInstructions || null
       payload.payment_currency = paymentCurrency
     }
@@ -310,6 +313,21 @@ export default function ApplicationsPage() {
                 <div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', marginBottom: '1rem' }}>Accept or decline this application</div>
 
+                  {/* Payment type toggle */}
+                  <div style={{ marginBottom: '0.85rem' }}>
+                    <label style={label}>Payment Structure</label>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button type="button" onClick={() => setPaymentSplit(false)}
+                        style={{ flex: 1, padding: '0.6rem', border: `2px solid ${!paymentSplit ? '#1B4332' : '#e5e7eb'}`, borderRadius: 8, background: !paymentSplit ? 'rgba(27,67,50,0.06)' : '#fff', fontWeight: 700, fontSize: '0.8rem', color: !paymentSplit ? '#1B4332' : '#6b7280', cursor: 'pointer' }}>
+                        One-time Payment
+                      </button>
+                      <button type="button" onClick={() => setPaymentSplit(true)}
+                        style={{ flex: 1, padding: '0.6rem', border: `2px solid ${paymentSplit ? '#1B4332' : '#e5e7eb'}`, borderRadius: 8, background: paymentSplit ? 'rgba(27,67,50,0.06)' : '#fff', fontWeight: 700, fontSize: '0.8rem', color: paymentSplit ? '#1B4332' : '#6b7280', cursor: 'pointer' }}>
+                        Instalment (Deposit + Balance)
+                      </button>
+                    </div>
+                  </div>
+
                   <div style={{ marginBottom: '0.85rem' }}>
                     <label style={label}>Currency</label>
                     <select style={inputStyle} value={paymentCurrency} onChange={e => setPaymentCurrency(e.target.value)}>
@@ -320,9 +338,15 @@ export default function ApplicationsPage() {
                     </select>
                   </div>
                   <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Deposit Amount ({paymentCurrency})</label>
-                    <input style={inputStyle} type="number" min="0" placeholder="e.g. 500" value={depositAmount} onChange={e => setDepositAmount(e.target.value)} />
+                    <label style={label}>{paymentSplit ? `Deposit Amount (${paymentCurrency})` : `Full Payment Amount (${paymentCurrency})`}</label>
+                    <input style={inputStyle} type="number" min="0" placeholder="e.g. 500000" value={depositAmount} onChange={e => setDepositAmount(e.target.value)} />
                   </div>
+                  {paymentSplit && (
+                    <div style={{ marginBottom: '0.85rem' }}>
+                      <label style={label}>Balance Amount ({paymentCurrency}) — due on delivery</label>
+                      <input style={inputStyle} type="number" min="0" placeholder="e.g. 300000" value={balanceAmount} onChange={e => setBalanceAmount(e.target.value)} />
+                    </div>
+                  )}
                   <div style={{ marginBottom: '0.85rem' }}>
                     <label style={label}>Payment Instructions (sent to client)</label>
                     <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' } as React.CSSProperties} value={paymentInstructions} onChange={e => setPaymentInstructions(e.target.value)} placeholder="Bank name, account number, sort code, or payment link..." />
@@ -371,49 +395,75 @@ export default function ApplicationsPage() {
                     {selected.expected_delivery_at && <div style={{ fontSize: '0.82rem', color: '#065f46' }}>Expected delivery: {fmtDate(selected.expected_delivery_at)}</div>}
                   </div>
 
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', margin: '1rem 0 0.85rem' }}>Ready to deliver? Upload files & request balance.</div>
-
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Currency</label>
-                    <select style={inputStyle} value={paymentCurrency} onChange={e => setPaymentCurrency(e.target.value)}>
-                      <option value="NGN">₦ NGN — Nigerian Naira</option>
-                      <option value="GBP">£ GBP — British Pound</option>
-                      <option value="EUR">€ EUR — Euro</option>
-                      <option value="USD">$ USD — US Dollar</option>
-                    </select>
-                  </div>
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Balance Amount ({paymentCurrency})</label>
-                    <input style={inputStyle} type="number" min="0" placeholder="e.g. 300" value={balanceAmount} onChange={e => setBalanceAmount(e.target.value)} />
-                  </div>
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Payment Instructions (sent to client)</label>
-                    <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' } as React.CSSProperties} value={paymentInstructions} onChange={e => setPaymentInstructions(e.target.value)} placeholder="Bank name, account number, sort code, or payment link..." />
-                  </div>
-
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Deliverable File</label>
-                    <label className="file-input-wrap">
-                      <input type="file" accept=".pdf,.doc,.docx,.zip" onChange={e => setDeliverableFile(e.target.files?.[0] || null)} />
-                      <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>{deliverableFile ? deliverableFile.name : 'Click to select file (PDF, Word, ZIP)'}</div>
-                    </label>
-                  </div>
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>AI / Similarity Report</label>
-                    <label className="file-input-wrap">
-                      <input type="file" accept=".pdf,.doc,.docx" onChange={e => setAiReportFile(e.target.files?.[0] || null)} />
-                      <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>{aiReportFile ? aiReportFile.name : 'Click to select file (PDF, Word)'}</div>
-                    </label>
-                  </div>
-
-                  <div style={{ marginBottom: '0.85rem' }}>
-                    <label style={label}>Internal Notes (optional)</label>
-                    <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' } as React.CSSProperties} value={adminNotes} onChange={e => setAdminNotes(e.target.value)} placeholder="Notes for your team" />
-                  </div>
-
-                  <button style={btnPrimary} disabled={updating || uploading || !balanceAmount} onClick={() => executeAction('pending_balance')}>
-                    {uploading ? 'Uploading files...' : updating ? 'Sending...' : 'Upload Files & Request Balance Payment'}
-                  </button>
+                  {/* One-time payment: no balance step */}
+                  {!selected.balance_amount ? (
+                    <>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', margin: '1rem 0 0.85rem' }}>One-time payment already received. Upload files and mark complete.</div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Deliverable File</label>
+                        <label className="file-input-wrap">
+                          <input type="file" accept=".pdf,.doc,.docx,.zip" onChange={e => setDeliverableFile(e.target.files?.[0] || null)} />
+                          <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>{deliverableFile ? deliverableFile.name : 'Click to select file (PDF, Word, ZIP)'}</div>
+                        </label>
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>AI / Similarity Report (optional)</label>
+                        <label className="file-input-wrap">
+                          <input type="file" accept=".pdf,.doc,.docx" onChange={e => setAiReportFile(e.target.files?.[0] || null)} />
+                          <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>{aiReportFile ? aiReportFile.name : 'Click to select file (PDF, Word)'}</div>
+                        </label>
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Notes to client (optional)</label>
+                        <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' } as React.CSSProperties} value={adminNotes} onChange={e => setAdminNotes(e.target.value)} placeholder="Delivery notes for the client" />
+                      </div>
+                      <button style={btnPrimary} disabled={updating || uploading} onClick={() => executeAction('completed')}>
+                        {uploading ? 'Uploading files...' : updating ? 'Delivering...' : 'Upload Files & Mark Delivered'}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', margin: '1rem 0 0.85rem' }}>Ready to deliver? Upload files & request balance.</div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Currency</label>
+                        <select style={inputStyle} value={paymentCurrency} onChange={e => setPaymentCurrency(e.target.value)}>
+                          <option value="NGN">₦ NGN — Nigerian Naira</option>
+                          <option value="GBP">£ GBP — British Pound</option>
+                          <option value="EUR">€ EUR — Euro</option>
+                          <option value="USD">$ USD — US Dollar</option>
+                        </select>
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Balance Amount ({paymentCurrency})</label>
+                        <input style={inputStyle} type="number" min="0" placeholder="e.g. 300000" value={balanceAmount} onChange={e => setBalanceAmount(e.target.value)} />
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Payment Instructions (sent to client)</label>
+                        <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' } as React.CSSProperties} value={paymentInstructions} onChange={e => setPaymentInstructions(e.target.value)} placeholder="Bank name, account number, sort code, or payment link..." />
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Deliverable File</label>
+                        <label className="file-input-wrap">
+                          <input type="file" accept=".pdf,.doc,.docx,.zip" onChange={e => setDeliverableFile(e.target.files?.[0] || null)} />
+                          <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>{deliverableFile ? deliverableFile.name : 'Click to select file (PDF, Word, ZIP)'}</div>
+                        </label>
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>AI / Similarity Report</label>
+                        <label className="file-input-wrap">
+                          <input type="file" accept=".pdf,.doc,.docx" onChange={e => setAiReportFile(e.target.files?.[0] || null)} />
+                          <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>{aiReportFile ? aiReportFile.name : 'Click to select file (PDF, Word)'}</div>
+                        </label>
+                      </div>
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <label style={label}>Internal Notes (optional)</label>
+                        <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' } as React.CSSProperties} value={adminNotes} onChange={e => setAdminNotes(e.target.value)} placeholder="Notes for your team" />
+                      </div>
+                      <button style={btnPrimary} disabled={updating || uploading || !balanceAmount} onClick={() => executeAction('pending_balance')}>
+                        {uploading ? 'Uploading files...' : updating ? 'Sending...' : 'Upload Files & Request Balance Payment'}
+                      </button>
+                    </>
+                  )}
                   {updateMsg && <div className={updateMsg.startsWith('Error') ? 'msg-error' : 'msg-success'}>{updateMsg}</div>}
                 </div>
               )}

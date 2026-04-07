@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     // Notify admin — full details
     await resend.emails.send({
       from: 'Ryters Spot <noreply@theryters.com>',
-      to: 'hello@theryters.com',
+      to: process.env.ADMIN_EMAIL || 'jonathan@theryters.com',
       subject: `New Enquiry from ${first_name} ${last_name} — ${inquiry_type || 'General'}`,
       html: `
         <!DOCTYPE html>

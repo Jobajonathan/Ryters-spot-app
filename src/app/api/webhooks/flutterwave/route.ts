@@ -130,7 +130,7 @@ export async function POST(request: Request) {
       // Notify admin
       await resend.emails.send({
         from: 'Ryters Spot <noreply@theryters.com>',
-        to: 'hello@theryters.com',
+        to: process.env.ADMIN_EMAIL || 'jonathan@theryters.com',
         subject: `Deposit received — ${projectTitle} (${currency} ${Number(amount).toLocaleString()})`,
         html: `<p>Deposit payment confirmed via Flutterwave.</p><p>Client: ${clientName}<br>Project: ${projectTitle}<br>Amount: ${currency} ${Number(amount).toLocaleString()}<br>FLW Ref: ${flw_ref}</p><p><a href="https://theryters.com/admin/applications">View in Admin</a></p>`,
       })
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
       // Notify admin
       await resend.emails.send({
         from: 'Ryters Spot <noreply@theryters.com>',
-        to: 'hello@theryters.com',
+        to: process.env.ADMIN_EMAIL || 'jonathan@theryters.com',
         subject: `Balance received — ${projectTitle} delivered (${currency} ${Number(amount).toLocaleString()})`,
         html: `<p>Balance payment confirmed via Flutterwave. Files delivered to client.</p><p>Client: ${clientName}<br>Project: ${projectTitle}<br>Amount: ${currency} ${Number(amount).toLocaleString()}<br>FLW Ref: ${flw_ref}</p><p><a href="https://theryters.com/admin/payments">View Payments</a></p>`,
       })

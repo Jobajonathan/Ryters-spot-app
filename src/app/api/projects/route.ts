@@ -130,7 +130,7 @@ export async function POST(request: Request) {
   // Notify admin
   await resend.emails.send({
     from: 'Ryters Spot <noreply@theryters.com>',
-    to: 'hello@theryters.com',
+    to: process.env.ADMIN_EMAIL || 'jonathan@theryters.com',
     subject: `New Project Request: ${title}`,
     html: `
       <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/></head>
