@@ -111,8 +111,9 @@ export async function POST(request: Request) {
     }
 
     if (flwData.status !== 'success' || !(flwData.data as Record<string, unknown>)?.link) {
-      console.error('Flutterwave error:', flwData)
-      return NextResponse.json({ error: 'Could not create payment. Please try again.' }, { status: 500 })
+      console.error('Flutterwave error:', JSON.stringify(flwData))
+      const flwMessage = (flwData.message as string) || JSON.stringify(flwData)
+      return NextResponse.json({ error: `Payment gateway error: ${flwMessage}` }, { status: 500 })
     }
 
     // Save payment record only after Flutterwave confirms
