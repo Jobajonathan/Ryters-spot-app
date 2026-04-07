@@ -102,6 +102,13 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/dashboard'
       return NextResponse.redirect(url)
     }
+
+    // Admin hitting /dashboard/* → send to admin portal
+    if (isAdmin && pathname.startsWith('/dashboard')) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin'
+      return NextResponse.redirect(url)
+    }
   }
 
   return response

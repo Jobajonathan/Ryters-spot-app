@@ -45,14 +45,15 @@ export default function ServicesPage() {
   const [msg, setMsg] = useState('')
   const [msgType, setMsgType] = useState<'ok' | 'err'>('ok')
 
-  useEffect(() => { loadServices() }, [])
-
   function loadServices() {
     fetch('/api/admin/services')
       .then(r => r.json())
       .then(data => { setServices(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadServices() }, [])
 
   function openNew() { setEditing({ ...EMPTY }); setIsNew(true); setMsg('') }
   function openEdit(s: Service) { setEditing({ ...s }); setIsNew(false); setMsg('') }

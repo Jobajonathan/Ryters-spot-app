@@ -31,14 +31,15 @@ export default function BlogPage() {
   const [imgError, setImgError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { loadPosts() }, [])
-
   function loadPosts() {
     fetch('/api/admin/blog')
       .then(r => r.json())
       .then(data => { setPosts(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadPosts() }, [])
 
   async function save() {
     if (!editing?.title) { setMsg('Title is required.'); setMsgOk(false); return }

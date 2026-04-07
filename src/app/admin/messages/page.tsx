@@ -45,14 +45,15 @@ export default function AdminMessagesPage() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  useEffect(() => { loadThreads() }, [])
-
   function loadThreads() {
     fetch('/api/admin/messages')
       .then(r => r.json())
       .then(data => { setThreads(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadThreads() }, [])
 
   function openThread(id: string) {
     setSelected(id)
