@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     // Verify client owns this project
     const { data: project } = await adminSupabase
       .from('projects')
-      .select('id, client_id')
+      .select('id, title, client_id')
       .eq('id', project_id)
       .eq('client_id', user.id)
       .single()

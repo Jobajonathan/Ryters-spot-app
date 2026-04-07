@@ -141,13 +141,13 @@ export async function POST(request: Request) {
 
     if (error) return NextResponse.json({ error: 'Could not send message.' }, { status: 500 })
 
-    // Send in-app notification to client
-    await adminSupabase.from('notifications').insert({
+    // Send in-app notification to client (fire and forget)
+    void adminSupabase.from('notifications').insert({
       user_id: project.client_id,
       title: 'New message from Ryters Spot',
       message: `Re: ${project.title} — ${body.trim().slice(0, 80)}${body.trim().length > 80 ? '...' : ''}`,
       link: '/dashboard/messages',
-    }).catch(() => {})
+    })
 
     // Email the client
     const { data: clientProfile } = await adminSupabase.from('profiles').select('email, full_name').eq('id', project.client_id).single()

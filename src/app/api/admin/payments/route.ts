@@ -97,13 +97,13 @@ export async function POST(request: Request) {
       await adminSupabase.from('projects').update({ status: 'completed', balance_paid_at: paidAt }).eq('id', project_id)
     }
 
-    // Notify client in-app
-    await adminSupabase.from('notifications').insert({
+    // Notify client in-app (fire and forget)
+    void adminSupabase.from('notifications').insert({
       user_id: project.client_id,
       title: 'Payment confirmed',
       message: `Your ${payment_type} payment of ${currency || 'NGN'} ${Number(amount).toLocaleString()} for "${project.title}" has been confirmed.`,
       link: '/dashboard/payments',
-    }).catch(() => {})
+    })
 
     return NextResponse.json({ success: true, tx_ref })
   } catch (err) {
