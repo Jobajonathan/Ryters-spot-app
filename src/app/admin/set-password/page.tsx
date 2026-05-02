@@ -37,8 +37,8 @@ export default function SetPasswordPage() {
       <style>{`
         .sp-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0A1810; padding: 2rem; }
         .sp-card { background: #fff; border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 400px; }
-        .sp-logo { font-family: Georgia, serif; font-size: 1.5rem; font-weight: 700; color: #1B4332; margin-bottom: 1.5rem; text-align: center; }
-        .sp-heading { font-family: Georgia, serif; font-size: 1.4rem; color: #111827; margin: 0 0 0.35rem; }
+        .sp-logo { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.5rem; font-weight: 700; color: #1B4332; margin-bottom: 1.5rem; text-align: center; }
+        .sp-heading { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.4rem; color: #111827; margin: 0 0 0.35rem; }
         .sp-sub { font-size: 0.875rem; color: #6b7280; margin: 0 0 1.5rem; }
         .sp-input { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; outline: none; box-sizing: border-box; }
         .sp-label { font-size: 0.78rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.35rem; }

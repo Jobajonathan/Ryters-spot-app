@@ -198,7 +198,7 @@ export default function UsersPage() {
       `}</style>
 
       <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Users & CRM</h1>
+        <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Users & CRM</h1>
         <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Manage clients and the admin team.</p>
       </div>
 
@@ -339,7 +339,7 @@ export default function UsersPage() {
 
           {/* Invite form */}
           <div className="invite-card">
-            <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1rem', marginBottom: '0.25rem', marginTop: 0 }}>Invite Admin Team Member</h3>
+            <h3 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1rem', marginBottom: '0.25rem', marginTop: 0 }}>Invite Admin Team Member</h3>
             <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '1.25rem' }}>They will receive an email to set their password and access the admin portal.</p>
             {inviteMsg && (
               <div style={{ padding: '10px 14px', borderRadius: 8, marginBottom: '1rem', background: inviteOk ? '#f0fff4' : '#fff5f5', border: `1px solid ${inviteOk ? '#9ae6b4' : '#feb2b2'}`, color: inviteOk ? '#276749' : '#c53030', fontSize: '0.82rem' }}>
@@ -416,7 +416,7 @@ export default function UsersPage() {
       {editingPrivileges && (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setEditingPrivileges(null)}>
           <div className="modal">
-            <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1.1rem', margin: '0 0 0.25rem' }}>Edit Privileges</h3>
+            <h3 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.1rem', margin: '0 0 0.25rem' }}>Edit Privileges</h3>
             <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '1.25rem' }}>{editingPrivileges.full_name || editingPrivileges.email}</p>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
               {PRIVILEGES.map(p => (

@@ -30,7 +30,7 @@ export default function GetStartedPage() {
     <>
       <style>{`
         .gs-hero { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%); padding: 4rem 0; text-align: center; color: #fff; }
-        .gs-hero h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.8rem, 4vw, 2.8rem); color: #fff; margin-bottom: 0.75rem; }
+        .gs-hero h1 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.8rem, 4vw, 2.8rem); color: #fff; margin-bottom: 0.75rem; }
         .gs-hero p { color: rgba(255,255,255,0.7); font-size: 1.05rem; max-width: 520px; margin: 0 auto; line-height: 1.7; }
 
         .gs-section { padding: 4rem 0; }
@@ -38,7 +38,7 @@ export default function GetStartedPage() {
         .gs-card { border: 1px solid var(--clr-border); border-radius: 16px; padding: 2rem; background: var(--clr-surface); transition: border-color 0.2s, box-shadow 0.2s; text-decoration: none; display: block; }
         .gs-card:hover { border-color: #40916C; box-shadow: 0 4px 24px rgba(27,67,50,0.1); }
         .gs-icon { font-size: 2rem; margin-bottom: 1rem; }
-        .gs-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
+        .gs-title { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
         .gs-desc { font-size: 0.88rem; color: var(--clr-text-muted); line-height: 1.7; margin-bottom: 1rem; }
         .gs-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
         .gs-tag { font-size: 0.72rem; padding: 2px 8px; background: #EFF5F1; color: #1B4332; border-radius: 100px; font-weight: 500; }
@@ -46,7 +46,7 @@ export default function GetStartedPage() {
         .gs-learn { font-size: 0.82rem; color: #40916C; font-weight: 600; margin-top: 1.25rem; display: block; }
 
         .gs-cta-box { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: 20px; padding: 3rem; text-align: center; max-width: 560px; margin: 3rem auto 0; }
-        .gs-cta-box h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.6rem; color: var(--clr-text); margin-bottom: 0.75rem; }
+        .gs-cta-box h2 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.6rem; color: var(--clr-text); margin-bottom: 0.75rem; }
         .gs-cta-box p { color: var(--clr-text-muted); line-height: 1.7; margin-bottom: 2rem; font-size: 0.95rem; }
         .gs-cta-btns { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; }
         .gs-cta-btns .btn { width: 100%; max-width: 320px; justify-content: center; }
@@ -72,7 +72,7 @@ export default function GetStartedPage() {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
             <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#40916C' }}>Our Services</span>
-            <h2 style={{ fontFamily: 'Playfair Display, Georgia, serif', fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--clr-text)', marginTop: '0.5rem' }}>What Would You Like Help With?</h2>
+            <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--clr-text)', marginTop: '0.5rem' }}>What Would You Like Help With?</h2>
           </div>
 
           <div className="gs-grid">

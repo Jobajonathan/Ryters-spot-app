@@ -53,7 +53,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         .post-hero .container { max-width: 800px; }
         .post-body { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
         .post-category { display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 12px; border-radius: 100px; background: rgba(201,168,76,0.2); color: #C9A84C; margin-bottom: 1rem; }
-        .post-title { font-family: Georgia, serif; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: #fff; line-height: 1.25; margin: 0 0 1.25rem; }
+        .post-title { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: #fff; line-height: 1.25; margin: 0 0 1.25rem; }
         .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
         .post-meta-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.4); display: inline-block; }
         .post-cover { width: 100%; max-height: 400px; object-fit: cover; display: block; }

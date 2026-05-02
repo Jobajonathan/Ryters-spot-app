@@ -133,7 +133,7 @@ export default function ServicesPage() {
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Services & Pricing</h1>
+          <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Services & Pricing</h1>
           <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Manage your service catalogue with multi-currency pricing.</p>
         </div>
         <button onClick={openNew} style={{ padding: '0.6rem 1.25rem', background: '#1B4332', color: '#fff', border: 'none', borderRadius: 8, fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -200,7 +200,7 @@ export default function ServicesPage() {
         <div className="form-overlay" onClick={e => e.target === e.currentTarget && setEditing(null)}>
           <div className="form-modal">
             <div className="form-modal-header">
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '1.1rem', margin: 0 }}>{isNew ? 'Add New Service' : 'Edit Service'}</h2>
+              <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.1rem', margin: 0 }}>{isNew ? 'Add New Service' : 'Edit Service'}</h2>
               <button onClick={() => setEditing(null)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
             </div>
             <div className="form-modal-body">

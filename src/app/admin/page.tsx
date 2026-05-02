@@ -44,16 +44,16 @@ const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }
 
 function KpiCard({ label, value, sub, color, icon, href }: { label: string; value: number; sub?: string; color: string; icon: string; href?: string }) {
   const inner = (
-    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', transition: 'box-shadow 0.15s, border-color 0.15s', cursor: href ? 'pointer' : 'default' }}
-      onMouseEnter={e => { if (href) { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(27,67,50,0.1)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#1B4332' } }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; (e.currentTarget as HTMLDivElement).style.borderColor = '#e5e7eb' }}>
-      <div style={{ width: 44, height: 44, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+    <div style={{ background: '#fff', border: '1.5px solid #e8eaed', borderRadius: 14, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem', transition: 'box-shadow 0.15s, border-color 0.15s, transform 0.15s', cursor: href ? 'pointer' : 'default' }}
+      onMouseEnter={e => { if (href) { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 6px 20px rgba(27,67,50,0.1)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#1B4332'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' } }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; (e.currentTarget as HTMLDivElement).style.borderColor = '#e8eaed'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}>
+      <div style={{ width: 44, height: 44, borderRadius: 11, background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
         {icon}
       </div>
       <div>
-        <div style={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827', lineHeight: 1, fontFamily: 'Georgia, serif' }}>{value}</div>
-        <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: 3 }}>{label}</div>
-        {sub && <div style={{ fontSize: '0.72rem', color: color, marginTop: 4, fontWeight: 600 }}>{sub}</div>}
+        <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f1923', lineHeight: 1, fontFamily: 'var(--font-heading, DM Sans, sans-serif)', letterSpacing: '-0.03em' }}>{value}</div>
+        <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: 4, fontWeight: 500 }}>{label}</div>
+        {sub && <div style={{ fontSize: '0.7rem', color: color, marginTop: 3, fontWeight: 700 }}>{sub}</div>}
       </div>
     </div>
   )
@@ -101,11 +101,11 @@ export default function AdminDashboard() {
         @keyframes spin { to { transform: rotate(360deg); } }
         .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
         .dash-grid-2 { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; }
-        .dash-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
-        .dash-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
-        .dash-card-title { font-size: 0.875rem; font-weight: 700; color: #111827; }
+        .dash-card { background: #fff; border: 1.5px solid #e8eaed; border-radius: 14px; }
+        .dash-card-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+        .dash-card-title { font-family: var(--font-heading, 'DM Sans', sans-serif); font-size: 0.875rem; font-weight: 700; color: #0f1923; letter-spacing: -0.01em; }
         .recent-table { width: 100%; border-collapse: collapse; }
-        .recent-table th { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; padding: 0.75rem 1.25rem; text-align: left; border-bottom: 1px solid #f3f4f6; }
+        .recent-table th { font-family: var(--font-heading, 'DM Sans', sans-serif); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: #9ca3af; padding: 0.7rem 1.25rem; text-align: left; border-bottom: 1px solid #f3f4f6; }
         .recent-table td { padding: 0.85rem 1.25rem; font-size: 0.82rem; border-bottom: 1px solid #f9fafb; vertical-align: middle; }
         .recent-table tr:last-child td { border-bottom: none; }
         .recent-table tr:hover td { background: #f9fafb; }
@@ -119,8 +119,8 @@ export default function AdminDashboard() {
       `}</style>
 
       <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: 0, marginBottom: '0.25rem' }}>Dashboard</h1>
-        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Welcome back. Here is what is happening today.</p>
+        <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.65rem', fontWeight: 800, color: '#0f1923', margin: 0, marginBottom: '0.25rem', letterSpacing: '-0.025em' }}>Dashboard</h1>
+        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Welcome back. Here&rsquo;s what&rsquo;s happening today.</p>
       </div>
 
       {/* Pending applications popup banner */}

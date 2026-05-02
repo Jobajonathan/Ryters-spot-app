@@ -100,7 +100,7 @@ export default function BlogPage() {
         <section className="section">
           <div className="container" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✍️</div>
-            <h2 style={{ fontFamily: 'Georgia, serif', color: 'var(--clr-text)', marginBottom: '0.5rem' }}>Coming Soon</h2>
+            <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', color: 'var(--clr-text)', marginBottom: '0.5rem' }}>Coming Soon</h2>
             <p style={{ color: 'var(--clr-text-muted)', maxWidth: '40ch', margin: '0 auto' }}>
               Our team is working on thought-leadership content. Check back soon for expert insights.
             </p>

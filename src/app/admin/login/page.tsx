@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
           box-shadow: 0 24px 64px rgba(0,0,0,0.5);
         }
         .admin-login-logo {
-          font-family: Georgia, serif;
+          font-family: var(--font-heading, DM Sans, sans-serif);
           font-size: 1.5rem;
           font-weight: 700;
           color: #fff;
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
           margin-bottom: 2rem;
         }
         .admin-login-heading {
-          font-family: Georgia, serif;
+          font-family: var(--font-heading, DM Sans, sans-serif);
           font-size: 1.5rem;
           color: #fff;
           margin-bottom: 0.4rem;

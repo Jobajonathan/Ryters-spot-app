@@ -130,7 +130,7 @@ export default function ContentPage() {
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Website Content</h1>
+          <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Website Content</h1>
           <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Edit homepage text, contact details, social links, and SEO settings.</p>
         </div>
         <button
@@ -227,7 +227,7 @@ ON CONFLICT (key) DO NOTHING;`}</pre>
           </nav>
 
           <div className="cms-panel">
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '1.1rem', color: '#111827', margin: '0 0 1.5rem' }}>{SECTIONS[activeSection]}</h2>
+            <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.1rem', color: '#111827', margin: '0 0 1.5rem' }}>{SECTIONS[activeSection]}</h2>
             {sectionRows.length === 0 ? (
               <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>No fields in this section yet. Run the SQL migration to populate them.</p>
             ) : (

@@ -140,7 +140,7 @@ export default function MessagesPage() {
       `}</style>
 
       <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Messages</h1>
+        <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Messages</h1>
         <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Send and receive messages about your projects.</p>
       </div>
 
@@ -149,7 +149,7 @@ export default function MessagesPage() {
       ) : threads.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💬</div>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '1.25rem', color: '#111827', margin: '0 0 0.5rem' }}>No active projects</h2>
+          <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.25rem', color: '#111827', margin: '0 0 0.5rem' }}>No active projects</h2>
           <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Messages are tied to your projects. Submit a request to get started.</p>
         </div>
       ) : (

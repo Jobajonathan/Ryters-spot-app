@@ -58,9 +58,9 @@ export default function Footer() {
           <div className="footer-brand">
             <div className="footer-logo">
               <img src="/images/logo.png" alt="Ryters Spot" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
-              <span className="footer-logo-text">Ryters Spot</span>
+              <span className="footer-logo-text" style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, letterSpacing: '-0.02em' }}>Ryters Spot</span>
             </div>
-            <p className="footer-tagline">{c('footer_tagline', 'Specialist research, technology and advisory services for organisations and scholars worldwide.')}</p>
+            <p className="footer-tagline" style={{ fontFamily: 'var(--font-sans)' }}>{c('footer_tagline', 'Specialist research, technology and advisory services for organisations and scholars worldwide.')}</p>
             <div className="footer-social">
               <a className="footer-social-link" href={linkedinUrl || '#'} aria-label="LinkedIn" target={linkedinUrl ? '_blank' : undefined} rel={linkedinUrl ? 'noopener noreferrer' : undefined}>in</a>
               <a className="footer-social-link" href={twitterUrl || '#'} aria-label="Twitter/X" target={twitterUrl ? '_blank' : undefined} rel={twitterUrl ? 'noopener noreferrer' : undefined}>&#120143;</a>

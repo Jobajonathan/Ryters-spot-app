@@ -202,7 +202,7 @@ export default function ApplicationsPage() {
 
       <div style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Applications</h1>
+          <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Applications</h1>
           <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Review and manage all client service requests.</p>
         </div>
         <input type="text" placeholder="Search by title or client..." value={search} onChange={e => setSearch(e.target.value)}
@@ -256,7 +256,7 @@ export default function ApplicationsPage() {
             {/* Header */}
             <div className="panel-head">
               <div>
-                <div style={{ fontFamily: 'Georgia, serif', fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: 6 }}>{selected.title}</div>
+                <div style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.1rem', fontWeight: 700, color: '#111827', marginBottom: 6 }}>{selected.title}</div>
                 <StatusBadge status={selected.status} />
               </div>
               <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#9ca3af', padding: 4 }}>✕</button>

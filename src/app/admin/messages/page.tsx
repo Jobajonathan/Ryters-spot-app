@@ -128,7 +128,7 @@ export default function AdminMessagesPage() {
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>
+          <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>
             Messages {totalUnread > 0 && <span style={{ fontSize: '0.9rem', background: '#ef4444', color: '#fff', borderRadius: '100px', padding: '2px 8px', verticalAlign: 'middle' }}>{totalUnread} unread</span>}
           </h1>
           <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Communicate with clients on their projects.</p>

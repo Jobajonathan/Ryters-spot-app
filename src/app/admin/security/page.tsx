@@ -58,7 +58,7 @@ export default function SecurityPage() {
       `}</style>
 
       <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Security Settings</h1>
+        <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Security Settings</h1>
         <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Manage your account credentials and security preferences.</p>
       </div>
 

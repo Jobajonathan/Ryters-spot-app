@@ -116,7 +116,7 @@ export default function BlogPage() {
             <button onClick={() => setEditing(null)} style={{ background: 'none', border: '1px solid #e5e7eb', color: '#6b7280', padding: '0.45rem 0.85rem', borderRadius: 8, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               ← Back to posts
             </button>
-            <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.35rem', fontWeight: 700, color: '#111827', margin: 0, flex: 1 }}>
+            <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.35rem', fontWeight: 700, color: '#111827', margin: 0, flex: 1 }}>
               {isNew ? 'New Blog Post' : 'Edit Post'}
             </h1>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -231,7 +231,7 @@ You can use basic formatting:
     <>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Blog Posts</h1>
+          <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Blog Posts</h1>
           <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Create and manage content for the Ryters Spot blog.</p>
         </div>
         <button onClick={() => { setEditing({ ...EMPTY_POST }); setIsNew(true) }}

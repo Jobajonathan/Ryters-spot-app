@@ -159,30 +159,31 @@ function AdminShell({ children }: { children: ReactNode }) {
         @keyframes spin { to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
         body { margin: 0; }
-        .admin-shell { display: flex; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .admin-shell { display: flex; min-height: 100vh; font-family: var(--font-sans, 'Lato', system-ui, sans-serif); }
 
         /* Sidebar */
         .admin-sidebar {
-          width: 240px; min-height: 100vh; background: #0f1a14;
+          width: 248px; min-height: 100vh; background: #0b1912;
           display: flex; flex-direction: column;
           position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
           transition: transform 0.25s ease;
         }
         .admin-sidebar-logo {
-          padding: 1.5rem 1.25rem 1rem;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          padding: 1.25rem 1rem 1rem;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
         }
         .admin-sidebar-logo-mark {
-          display: flex; align-items: center; gap: 0.6rem; text-decoration: none;
+          display: flex; align-items: center; gap: 0.65rem; text-decoration: none;
         }
         .admin-sidebar-logo-badge {
-          width: 32px; height: 32px; background: #1B4332;
-          border-radius: 8px; display: flex; align-items: center; justify-content: center;
-          font-family: Georgia, serif; font-size: 0.9rem; font-weight: 700; color: #C9A84C;
+          width: 34px; height: 34px; background: #1B4332;
+          border-radius: 9px; display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-heading, DM Sans, sans-serif); font-size: 0.85rem; font-weight: 800; color: #C9A84C;
+          letter-spacing: -0.01em; flex-shrink: 0;
         }
         .admin-sidebar-logo-text { line-height: 1.2; }
-        .admin-sidebar-logo-name { font-family: Georgia, serif; font-size: 0.95rem; font-weight: 700; color: #fff; }
-        .admin-sidebar-logo-sub { font-size: 0.65rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; }
+        .admin-sidebar-logo-name { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 0.95rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+        .admin-sidebar-logo-sub { font-size: 0.62rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.1em; }
 
         /* Nav */
         .admin-sidebar-nav { flex: 1; overflow-y: auto; padding: 0.75rem 0; }
@@ -192,16 +193,17 @@ function AdminShell({ children }: { children: ReactNode }) {
           color: rgba(255,255,255,0.3); padding: 0.75rem 0.5rem 0.35rem;
         }
         .admin-nav-item {
-          display: flex; align-items: center; gap: 0.6rem;
-          padding: 0.55rem 0.75rem; border-radius: 7px; margin-bottom: 2px;
-          text-decoration: none; font-size: 0.875rem; font-weight: 500;
-          color: rgba(255,255,255,0.6); cursor: pointer;
-          transition: all 0.15s; border-left: 3px solid transparent;
+          display: flex; align-items: center; gap: 0.65rem;
+          padding: 0.55rem 0.75rem; border-radius: 9px; margin-bottom: 1px;
+          text-decoration: none;
+          font-family: var(--font-heading, DM Sans, sans-serif);
+          font-size: 0.85rem; font-weight: 500;
+          color: rgba(255,255,255,0.55); cursor: pointer;
+          transition: all 0.15s;
         }
-        .admin-nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+        .admin-nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.88); }
         .admin-nav-item.active {
-          background: rgba(201,168,76,0.12); color: #C9A84C;
-          border-left-color: #C9A84C; font-weight: 600;
+          background: rgba(201,168,76,0.13); color: #C9A84C; font-weight: 600;
         }
         .admin-nav-item svg { flex-shrink: 0; opacity: 0.7; }
         .admin-nav-item.active svg { opacity: 1; }
@@ -231,15 +233,15 @@ function AdminShell({ children }: { children: ReactNode }) {
         .admin-logout-btn:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: #f87171; }
 
         /* Main content */
-        .admin-main { margin-left: 240px; flex: 1; background: #f4f6f8; min-height: 100vh; display: flex; flex-direction: column; }
+        .admin-main { margin-left: 248px; flex: 1; background: #f4f6f8; min-height: 100vh; display: flex; flex-direction: column; }
         .admin-topbar {
-          height: 56px; background: #fff; border-bottom: 1px solid #e5e7eb;
+          height: 58px; background: #fff; border-bottom: 1px solid #e8eaed;
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 2rem; flex-shrink: 0; position: sticky; top: 0; z-index: 40;
+          box-shadow: 0 1px 0 #f0f0f0;
         }
-        .admin-topbar-title { font-size: 0.875rem; font-weight: 600; color: #374151; }
-        .admin-topbar-breadcrumb { font-size: 0.78rem; color: #9ca3af; }
-        .admin-content { flex: 1; padding: 2rem; max-width: 1200px; width: 100%; }
+        .admin-topbar-title { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 0.9rem; font-weight: 700; color: #1f2937; letter-spacing: -0.01em; }
+        .admin-content { flex: 1; padding: 2rem; max-width: 1280px; width: 100%; }
 
         /* Mobile hamburger */
         .admin-hamburger {
@@ -250,12 +252,13 @@ function AdminShell({ children }: { children: ReactNode }) {
           display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .admin-sidebar { transform: translateX(-100%); }
-          .admin-sidebar.open { transform: translateX(0); }
+          .admin-sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.2); }
           .admin-main { margin-left: 0; }
           .admin-hamburger { display: flex; }
           .admin-overlay.show { display: block; }
+          .admin-content { padding: 1.5rem 1rem; }
         }
       `}</style>
 
@@ -338,7 +341,7 @@ function AdminShell({ children }: { children: ReactNode }) {
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center' }}>
           <div style={{ background:'#fff', borderRadius:'16px', padding:'2.5rem 2rem', maxWidth:'380px', width:'90%', textAlign:'center', boxShadow:'0 20px 60px rgba(0,0,0,0.3)' }}>
             <div style={{ fontSize:'2.5rem', marginBottom:'0.75rem' }}>⏱️</div>
-            <h3 style={{ fontFamily:'Georgia,serif', fontSize:'1.2rem', fontWeight:700, color:'#111827', margin:'0 0 0.5rem' }}>Session Expiring Soon</h3>
+            <h3 style={{ fontFamily:'var(--font-heading, DM Sans, sans-serif)', fontSize:'1.2rem', fontWeight:700, color:'#111827', margin:'0 0 0.5rem' }}>Session Expiring Soon</h3>
             <p style={{ fontSize:'0.9rem', color:'#6b7280', margin:'0 0 1.5rem', lineHeight:1.6 }}>
               You will be automatically signed out in <strong>2 minutes</strong> due to inactivity.
             </p>

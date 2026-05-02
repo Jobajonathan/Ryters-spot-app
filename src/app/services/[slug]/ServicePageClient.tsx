@@ -36,7 +36,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
           font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.9);
           margin-bottom: 1.5rem;
         }
-        .svc-hero h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.2; }
+        .svc-hero h1 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.2; }
         .svc-tagline { font-size: 1.15rem; color: rgba(255,255,255,0.75); margin-bottom: 1rem; line-height: 1.6; }
         .svc-desc { font-size: 1rem; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 2rem; }
         .svc-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -48,14 +48,14 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
 
         .feat-section { padding: 5rem 0; background: var(--clr-bg); }
         .feat-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clr-primary-light, #40916C); margin-bottom: 0.5rem; display: block; }
-        .feat-heading { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--clr-text); margin-bottom: 2.5rem; }
+        .feat-heading { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--clr-text); margin-bottom: 2.5rem; }
         .feat-grid { display: grid; grid-template-columns: 260px 1fr; gap: 2.5rem; align-items: start; }
         .feat-tab-list { display: flex; flex-direction: column; gap: 0.4rem; }
         .feat-btn { text-align: left; padding: 0.85rem 1.1rem; background: transparent; border: 1px solid var(--clr-border, #E8EAED); border-radius: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 500; color: var(--clr-text-muted); transition: all 0.2s; font-family: inherit; line-height: 1.4; }
         .feat-btn:hover { border-color: #40916C; color: var(--clr-text); }
         .feat-btn.active { background: #1B4332; color: #fff; border-color: #1B4332; font-weight: 600; }
         .feat-panel { background: var(--clr-surface, #fff); border: 1px solid var(--clr-border, #E8EAED); border-radius: 16px; padding: 2.5rem; }
-        .feat-panel h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.35rem; color: var(--clr-text); margin-bottom: 1rem; }
+        .feat-panel h3 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.35rem; color: var(--clr-text); margin-bottom: 1rem; }
         .feat-panel p { color: var(--clr-text-muted); line-height: 1.8; }
         .feat-divider { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--clr-border, #E8EAED); }
 
@@ -63,11 +63,11 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
         .offerings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
         .offering-card { background: var(--clr-bg, #FAFAFA); border: 1px solid var(--clr-border, #E8EAED); border-radius: 14px; padding: 1.75rem; }
         .offering-num { font-size: 0.7rem; font-weight: 700; color: #40916C; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.75rem; }
-        .offering-name { font-family: 'Playfair Display', Georgia, serif; font-size: 1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
+        .offering-name { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
         .offering-desc { font-size: 0.85rem; color: var(--clr-text-muted); line-height: 1.7; }
 
         .svc-cta { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%); padding: 5rem 0; text-align: center; color: #fff; }
-        .svc-cta h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.8rem, 3.5vw, 2.5rem); color: #fff; margin-bottom: 1rem; }
+        .svc-cta h2 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.5rem); color: #fff; margin-bottom: 1rem; }
         .svc-cta p { color: rgba(255,255,255,0.7); max-width: 560px; margin: 0 auto 2rem; line-height: 1.7; }
         .svc-cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
@@ -168,7 +168,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
       {/* RELATED */}
       <section className="related-section">
         <div className="container">
-          <h3 style={{ fontFamily: 'Playfair Display, Georgia, serif', color: 'var(--clr-text)', marginBottom: '0.25rem' }}>Explore Related Services</h3>
+          <h3 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', color: 'var(--clr-text)', marginBottom: '0.25rem' }}>Explore Related Services</h3>
           <p style={{ color: 'var(--clr-text-muted)', fontSize: '0.9rem' }}>Many clients combine services for greater impact.</p>
           <div className="related-grid">
             {service.relatedSlugs.map(s => (

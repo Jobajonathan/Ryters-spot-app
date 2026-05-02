@@ -56,7 +56,7 @@ export default function DashboardPaymentsPage() {
         .pay-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
         .pay-kpi { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem 1.5rem; }
         .pay-kpi-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 0.4rem; }
-        .pay-kpi-value { font-size: 1.6rem; font-weight: 700; color: #111827; font-family: Georgia, serif; line-height: 1; }
+        .pay-kpi-value { font-size: 1.6rem; font-weight: 700; color: #111827; font-family: var(--font-heading, DM Sans, sans-serif); line-height: 1; }
         .pay-kpi-sub { font-size: 0.72rem; color: #9ca3af; margin-top: 4px; }
         .pay-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; font-size: 0.82rem; }
         .pay-table th { background: #f9fafb; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
@@ -68,7 +68,7 @@ export default function DashboardPaymentsPage() {
       `}</style>
 
       <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Payments</h1>
+        <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Payments</h1>
         <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Your payment history and transaction records.</p>
       </div>
 
