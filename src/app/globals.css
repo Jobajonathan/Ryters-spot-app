@@ -16,12 +16,12 @@
   --clr-accent:         #C9A84C;
   --clr-accent-hover:   #B8962E;
 
-  /* Light mode surfaces — clean white */
-  --clr-bg:             #FFFFFF;
-  --clr-surface:        #FFFFFF;
-  --clr-surface-2:      #F7F7F5;
-  --clr-bg-alt:         #F7F7F5;
-  --clr-border:         #E8EAED;
+  /* Light mode surfaces — warm ivory */
+  --clr-bg:             #f7f4ee;
+  --clr-surface:        #faf8f3;
+  --clr-surface-2:      #ede9e0;
+  --clr-bg-alt:         #ede9e0;
+  --clr-border:         #ddd8cd;
 
   /* Light mode text */
   --clr-text:           #111C17;
@@ -62,10 +62,10 @@
 
 /* ---------- Dark Mode Tokens ---------- */
 [data-theme="dark"] {
-  --clr-bg:          #0A1810;
-  --clr-surface:     #112215;
-  --clr-surface-2:   #182D1F;
-  --clr-border:      #1E3A28;
+  --clr-bg:          #0d1209;
+  --clr-surface:     #131a0f;
+  --clr-surface-2:   #1a2515;
+  --clr-border:      #253520;
 
   --clr-text:        #EEF5EC;
   --clr-text-muted:  #9ABFA9;
@@ -88,11 +88,16 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background: var(--clr-bg);
+  background-color: var(--clr-bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='0.038'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(201,168,76,0.055) 0%, transparent 65%);
+  background-repeat: repeat, no-repeat;
+  background-size: 256px 256px, 100% 100%;
   color: var(--clr-text);
   line-height: 1.65;
   font-weight: 400;
-  transition: background var(--transition-slow), color var(--transition-slow);
+  transition: background-color var(--transition-slow), color var(--transition-slow);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
