@@ -112,15 +112,15 @@ export default function HomePage() {
           position: relative;
           overflow: hidden;
           padding: 6rem 0 5rem;
-          background: linear-gradient(150deg, #0f2d21 0%, var(--clr-primary) 45%, #2D6A4F 100%);
+          background: #121410;
         }
         .hero-v2::before {
           content: '';
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(ellipse at 75% 40%, rgba(201,168,76,0.10) 0%, transparent 55%),
-            radial-gradient(ellipse at 20% 80%, rgba(64,145,108,0.15) 0%, transparent 45%);
+            radial-gradient(ellipse at 72% 18%, rgba(201,168,76,0.07) 0%, transparent 48%),
+            radial-gradient(ellipse at 18% 85%, rgba(255,255,255,0.015) 0%, transparent 40%);
           pointer-events: none;
         }
         .hero-v2-grid {
@@ -194,72 +194,67 @@ export default function HomePage() {
         .hero-v2-visual {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
         }
-        .hero-stat-card {
-          background: rgba(255,255,255,0.06);
-          backdrop-filter: blur(14px);
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 16px;
-          padding: 1.5rem;
+        .hero-credential-card {
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 12px;
+          padding: 2rem;
         }
-        .hero-stat-card-title {
-          font-family: var(--font-heading);
-          font-size: 0.78rem;
+        .hero-cred-label {
+          font-size: 0.68rem;
           font-weight: 600;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.5);
-          margin-bottom: 1rem;
+          color: rgba(255,255,255,0.32);
+          margin-bottom: 1.75rem;
         }
-        .hero-stat-row-v2 {
+        .hero-cred-stats {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem 2.5rem;
+          margin-bottom: 1.75rem;
         }
-        .hero-stat-v2 {}
-        .hero-stat-v2-num {
+        .hero-cred-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+        .hero-cred-num {
           font-family: var(--font-heading);
-          font-size: 2rem;
-          font-weight: 800;
-          color: #C9A84C;
-          line-height: 1;
+          font-size: 1.9rem;
+          font-weight: 700;
+          color: rgba(255,255,255,0.88);
           letter-spacing: -0.03em;
-          margin-bottom: 0.3rem;
-          display: block;
+          line-height: 1;
         }
-        .hero-stat-v2-label {
-          font-size: 0.78rem;
-          color: rgba(255,255,255,0.55);
+        .hero-cred-desc {
+          font-size: 0.7rem;
+          color: rgba(255,255,255,0.35);
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
           font-weight: 500;
         }
-        .hero-services-list {
-          background: rgba(255,255,255,0.06);
-          backdrop-filter: blur(14px);
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 16px;
-          padding: 1.25rem 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.6rem;
+        .hero-cred-divider {
+          height: 1px;
+          background: rgba(255,255,255,0.08);
+          margin-bottom: 1.5rem;
         }
-        .hero-service-item {
+        .hero-cred-sub {
+          font-size: 0.65rem;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.28);
+          margin-bottom: 0.5rem;
+        }
+        .hero-cred-discipline {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          gap: 0.65rem;
+          padding: 0.7rem 0;
+          border-top: 1px solid rgba(255,255,255,0.06);
           font-size: 0.875rem;
-          color: rgba(255,255,255,0.8);
+          color: rgba(255,255,255,0.65);
           font-weight: 500;
-          padding: 0.4rem 0;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          letter-spacing: 0.01em;
         }
-        .hero-service-item:last-child { border-bottom: none; }
-        .hero-service-dot {
-          width: 8px; height: 8px;
-          border-radius: 50%;
-          background: #C9A84C;
-          flex-shrink: 0;
-        }
+        .hero-cred-arrow { color: rgba(255,255,255,0.2); font-size: 0.75rem; }
 
         @media (max-width: 900px) {
           .hero-v2 { padding: 4rem 0 3rem; }
@@ -442,50 +437,44 @@ export default function HomePage() {
 
             {/* Left: copy */}
             <div className="hero-v2-content fade-up">
-              <div className="hero-v2-eyebrow">
-                <span className="hero-v2-eyebrow-dot" />
-                Strategic Consultancy Partner
-              </div>
               <h1>
                 {c('hero_headline', 'The Writing &')}<br />
                 <span>{c('hero_headline_highlight', 'Research Partner')}</span><br />
                 {c('hero_headline_end', 'You Can Trust')}
               </h1>
               <p className="hero-v2-sub">
-                {c('hero_subheadline', 'Ryters Spot delivers AI automation, EdTech, writing & research, and product management consultancy to organisations across the UK, Europe, North America and Africa.')}
+                {c('hero_subheadline', 'Ryters Spot delivers writing & research, AI automation, EdTech and product management consultancy to organisations across the UK, Europe, North America and Africa.')}
               </p>
               <div className="hero-v2-ctas">
                 <Link href="/get-started" className="btn btn-accent btn-lg">{c('hero_cta1_text', 'Start Your Project')}</Link>
-                <Link href="/contact" className="btn btn-lg" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', borderColor: 'rgba(255,255,255,0.25)', fontWeight: 600 }}>{c('hero_cta2_text', 'Book a Consultation')}</Link>
+                <Link href="/contact" className="btn btn-lg" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.18)', fontWeight: 500 }}>{c('hero_cta2_text', 'Book a Consultation')}</Link>
               </div>
               <div className="hero-v2-tags">
-                <Link href="/services/ai-automation" className="hero-v2-tag">⚡ AI Automation</Link>
-                <Link href="/services/edtech" className="hero-v2-tag">🎓 EdTech</Link>
-                <Link href="/services/writing" className="hero-v2-tag">📖 Writing & Research</Link>
-                <Link href="/services/product-management" className="hero-v2-tag">🚀 Product Management</Link>
+                <Link href="/services/ai-automation" className="hero-v2-tag">AI Automation</Link>
+                <Link href="/services/edtech" className="hero-v2-tag">EdTech</Link>
+                <Link href="/services/writing" className="hero-v2-tag">Writing & Research</Link>
+                <Link href="/services/product-management" className="hero-v2-tag">Product Management</Link>
               </div>
             </div>
 
-            {/* Right: visual cards */}
+            {/* Right: credentials */}
             <div className="hero-v2-visual fade-up fade-up-delay-1">
-              <div className="hero-stat-card">
-                <p className="hero-stat-card-title">Our Impact at a Glance</p>
-                <div className="hero-stat-row-v2">
+              <div className="hero-credential-card">
+                <p className="hero-cred-label">Selected work since 2017</p>
+                <div className="hero-cred-stats">
                   {stats.map(s => (
-                    <div key={s.label} className="hero-stat-v2">
-                      <span className="hero-stat-v2-num" data-count={s.count} data-suffix={s.suffix}>
-                        {s.count}{s.suffix}
-                      </span>
-                      <span className="hero-stat-v2-label">{s.label}</span>
+                    <div key={s.label} className="hero-cred-stat">
+                      <span className="hero-cred-num" data-count={s.count} data-suffix={s.suffix}>{s.count}{s.suffix}</span>
+                      <span className="hero-cred-desc">{s.label}</span>
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="hero-services-list">
+                <div className="hero-cred-divider" />
+                <p className="hero-cred-sub">Areas of practice</p>
                 {services.map(s => (
-                  <div key={s.slug} className="hero-service-item">
-                    <span className="hero-service-dot" />
+                  <div key={s.slug} className="hero-cred-discipline">
                     <span>{s.title}</span>
+                    <span className="hero-cred-arrow">→</span>
                   </div>
                 ))}
               </div>
