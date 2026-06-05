@@ -190,71 +190,65 @@ export default function HomePage() {
           color: #fff;
         }
 
-        /* Hero right panel */
-        .hero-v2-visual {
-          display: flex;
-          flex-direction: column;
-        }
-        .hero-credential-card {
-          border: 1px solid rgba(255,255,255,0.09);
-          border-radius: 12px;
-          padding: 2rem;
-        }
-        .hero-cred-label {
-          font-size: 0.68rem;
-          font-weight: 600;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.32);
-          margin-bottom: 1.75rem;
+        /* Hero right panel — pure typographic composition, no card */
+        .hero-v2-visual { display: flex; flex-direction: column; justify-content: center; }
+        .hero-cred-panel { padding: 0; }
+        .hero-cred-gold-rule {
+          width: 28px;
+          height: 2px;
+          background: var(--clr-accent);
+          margin-bottom: 2.75rem;
         }
         .hero-cred-stats {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 1.5rem 2.5rem;
-          margin-bottom: 1.75rem;
+          gap: 2.25rem 3rem;
+          margin-bottom: 2.75rem;
         }
-        .hero-cred-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+        .hero-cred-stat { display: flex; flex-direction: column; gap: 0.5rem; }
         .hero-cred-num {
           font-family: var(--font-heading);
-          font-size: 1.9rem;
-          font-weight: 700;
-          color: rgba(255,255,255,0.88);
-          letter-spacing: -0.03em;
+          font-size: clamp(2.6rem, 4vw, 3.4rem);
+          font-weight: 300;
+          color: rgba(255,255,255,0.90);
+          letter-spacing: -0.04em;
           line-height: 1;
         }
         .hero-cred-desc {
-          font-size: 0.7rem;
-          color: rgba(255,255,255,0.35);
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          font-weight: 500;
-        }
-        .hero-cred-divider {
-          height: 1px;
-          background: rgba(255,255,255,0.08);
-          margin-bottom: 1.5rem;
-        }
-        .hero-cred-sub {
           font-size: 0.65rem;
-          font-weight: 600;
+          color: rgba(255,255,255,0.32);
           letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.28);
-          margin-bottom: 0.5rem;
+          font-weight: 600;
+        }
+        .hero-cred-rule {
+          height: 1px;
+          background: rgba(255,255,255,0.09);
+          margin-bottom: 2.25rem;
         }
         .hero-cred-discipline {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.7rem 0;
-          border-top: 1px solid rgba(255,255,255,0.06);
-          font-size: 0.875rem;
-          color: rgba(255,255,255,0.65);
-          font-weight: 500;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 1.05rem;
+          font-style: italic;
+          color: rgba(255,255,255,0.52);
+          padding: 0.8rem 0;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          font-weight: 400;
           letter-spacing: 0.01em;
+          transition: color 0.2s;
         }
-        .hero-cred-arrow { color: rgba(255,255,255,0.2); font-size: 0.75rem; }
+        .hero-cred-discipline:first-of-type { border-top: none; padding-top: 0; }
+        .hero-cred-footer {
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          font-size: 0.64rem;
+          color: rgba(255,255,255,0.2);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          font-weight: 500;
+          line-height: 1.7;
+        }
 
         @media (max-width: 900px) {
           .hero-v2 { padding: 4rem 0 3rem; }
@@ -457,10 +451,10 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: credentials */}
+            {/* Right: typographic credentials — no card, just type */}
             <div className="hero-v2-visual fade-up fade-up-delay-1">
-              <div className="hero-credential-card">
-                <p className="hero-cred-label">Selected work since 2017</p>
+              <div className="hero-cred-panel">
+                <div className="hero-cred-gold-rule" />
                 <div className="hero-cred-stats">
                   {stats.map(s => (
                     <div key={s.label} className="hero-cred-stat">
@@ -469,14 +463,13 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-                <div className="hero-cred-divider" />
-                <p className="hero-cred-sub">Areas of practice</p>
+                <div className="hero-cred-rule" />
                 {services.map(s => (
-                  <div key={s.slug} className="hero-cred-discipline">
-                    <span>{s.title}</span>
-                    <span className="hero-cred-arrow">→</span>
-                  </div>
+                  <div key={s.slug} className="hero-cred-discipline">{s.title}</div>
                 ))}
+                <p className="hero-cred-footer">
+                  Serving clients across the UK,<br />Canada, Europe and Africa
+                </p>
               </div>
             </div>
 
