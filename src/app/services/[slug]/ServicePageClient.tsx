@@ -25,62 +25,78 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
     <>
       <style>{`
         .svc-hero {
-          background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%);
-          padding: 5rem 0 0; color: #fff;
+          background: var(--clr-bg);
+          border-bottom: 1px solid var(--clr-border);
+          padding: var(--space-3xl) 0 var(--space-2xl);
         }
         .svc-hero-inner { max-width: 760px; }
         .svc-badge {
-          display: inline-flex; align-items: center; gap: 0.5rem;
-          background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
-          padding: 0.4rem 1rem; border-radius: 100px;
-          font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.9);
-          margin-bottom: 1.5rem;
+          display: inline-flex; align-items: center;
+          background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25);
+          padding: 0.35rem 1rem; border-radius: 100px;
+          font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+          color: var(--clr-text-subtle);
+          margin-bottom: 1.25rem;
         }
-        .svc-hero h1 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; color: #fff; margin-bottom: 0.75rem; line-height: 1.2; }
-        .svc-tagline { font-size: 1.15rem; color: rgba(255,255,255,0.75); margin-bottom: 1rem; line-height: 1.6; }
-        .svc-desc { font-size: 1rem; color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 2rem; }
+        .svc-hero h1 {
+          font-size: clamp(2rem, 5vw, 3.4rem);
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          color: var(--clr-text);
+          margin-bottom: 0.75rem;
+          line-height: 1.1;
+        }
+        .svc-tagline { font-size: 1.1rem; color: var(--clr-text-muted); margin-bottom: 0.75rem; line-height: 1.7; }
+        .svc-desc { font-size: 0.95rem; color: var(--clr-text-subtle); line-height: 1.8; margin-bottom: 2rem; max-width: 58ch; }
         .svc-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .btn-ghost-white { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; transition: background 0.2s; }
-        .btn-ghost-white:hover { background: rgba(255,255,255,0.22); }
-        .svc-personas { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.25rem 0; margin-top: 2.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-        .svc-persona-lbl { font-size: 0.75rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-        .svc-persona-tag { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); padding: 0.3rem 0.85rem; border-radius: 100px; font-size: 0.82rem; color: rgba(255,255,255,0.8); }
+        .svc-personas { border-top: 1px solid var(--clr-border); padding: 1.25rem 0; margin-top: 2.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .svc-persona-lbl { font-size: 0.72rem; color: var(--clr-text-subtle); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+        .svc-persona-tag { background: var(--clr-surface-2); border: 1px solid var(--clr-border); padding: 0.3rem 0.85rem; border-radius: 100px; font-size: 0.8rem; color: var(--clr-text-muted); }
 
         .feat-section { padding: 5rem 0; background: var(--clr-bg); }
-        .feat-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clr-primary-light, #40916C); margin-bottom: 0.5rem; display: block; }
-        .feat-heading { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--clr-text); margin-bottom: 2.5rem; }
+        .feat-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clr-text-subtle); margin-bottom: 0.5rem; display: block; }
+        .feat-heading { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; color: var(--clr-text); margin-bottom: 2.5rem; }
         .feat-grid { display: grid; grid-template-columns: 260px 1fr; gap: 2.5rem; align-items: start; }
         .feat-tab-list { display: flex; flex-direction: column; gap: 0.4rem; }
-        .feat-btn { text-align: left; padding: 0.85rem 1.1rem; background: transparent; border: 1px solid var(--clr-border, #E8EAED); border-radius: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 500; color: var(--clr-text-muted); transition: all 0.2s; font-family: inherit; line-height: 1.4; }
-        .feat-btn:hover { border-color: #40916C; color: var(--clr-text); }
-        .feat-btn.active { background: #1B4332; color: #fff; border-color: #1B4332; font-weight: 600; }
-        .feat-panel { background: var(--clr-surface, #fff); border: 1px solid var(--clr-border, #E8EAED); border-radius: 16px; padding: 2.5rem; }
-        .feat-panel h3 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.35rem; color: var(--clr-text); margin-bottom: 1rem; }
+        .feat-btn { text-align: left; padding: 0.85rem 1.1rem; background: transparent; border: 1px solid var(--clr-border); border-radius: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 500; color: var(--clr-text-muted); transition: all 0.2s; font-family: inherit; line-height: 1.4; }
+        .feat-btn:hover { border-color: var(--clr-primary-light); color: var(--clr-text); }
+        .feat-btn.active { background: var(--clr-primary); color: #fff; border-color: var(--clr-primary); font-weight: 600; }
+        .feat-panel { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: 16px; padding: 2.5rem; }
+        .feat-panel h3 { font-size: 1.25rem; font-weight: 700; color: var(--clr-text); margin-bottom: 1rem; }
         .feat-panel p { color: var(--clr-text-muted); line-height: 1.8; }
-        .feat-divider { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--clr-border, #E8EAED); }
+        .feat-divider { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--clr-border); }
 
-        .offerings-section { padding: 5rem 0; background: var(--clr-surface, #fff); }
+        .offerings-section { padding: 5rem 0; background: var(--clr-surface); }
         .offerings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
-        .offering-card { background: var(--clr-bg, #FAFAFA); border: 1px solid var(--clr-border, #E8EAED); border-radius: 14px; padding: 1.75rem; }
-        .offering-num { font-size: 0.7rem; font-weight: 700; color: #40916C; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.75rem; }
-        .offering-name { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
+        .offering-card { background: var(--clr-bg); border: 1px solid var(--clr-border); border-radius: 14px; padding: 1.75rem; }
+        .offering-num {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-style: italic;
+          font-size: 1.2rem;
+          color: var(--clr-accent);
+          margin-bottom: 0.75rem;
+          line-height: 1;
+        }
+        .offering-name { font-size: 1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
         .offering-desc { font-size: 0.85rem; color: var(--clr-text-muted); line-height: 1.7; }
 
-        .svc-cta { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%); padding: 5rem 0; text-align: center; color: #fff; }
-        .svc-cta h2 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.5rem); color: #fff; margin-bottom: 1rem; }
+        .svc-cta { background: var(--clr-primary); padding: 5rem 0; text-align: center; }
+        .svc-cta h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800; letter-spacing: -0.03em; color: #fff; margin-bottom: 1rem; }
         .svc-cta p { color: rgba(255,255,255,0.7); max-width: 560px; margin: 0 auto 2rem; line-height: 1.7; }
         .svc-cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-ghost-white { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; transition: background 0.2s; }
+        .btn-ghost-white:hover { background: rgba(255,255,255,0.22); }
 
         .related-section { padding: 4rem 0; background: var(--clr-bg); }
         .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.75rem; }
-        .related-card { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; background: var(--clr-surface, #fff); border: 1px solid var(--clr-border, #E8EAED); border-radius: 10px; text-decoration: none; color: var(--clr-text); font-weight: 500; font-size: 0.9rem; transition: border-color 0.2s; }
-        .related-card:hover { border-color: #40916C; }
+        .related-card { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: 10px; text-decoration: none; color: var(--clr-text); font-weight: 500; font-size: 0.9rem; transition: border-color 0.2s; }
+        .related-card:hover { border-color: var(--clr-primary-light); }
 
         @media (max-width: 768px) {
           .feat-grid { grid-template-columns: 1fr; }
           .feat-tab-list { flex-direction: row; flex-wrap: wrap; }
           .feat-btn { flex: 1; min-width: 130px; text-align: center; }
-          .svc-hero { padding: 3rem 0 0; }
+          .svc-hero { padding: var(--space-2xl) 0; }
         }
       `}</style>
 
@@ -88,16 +104,14 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
       <section className="svc-hero">
         <div className="container">
           <div className="svc-hero-inner">
-            <div className="svc-badge">
-              <span>{service.icon}</span>
-              <span>Ryters Spot · {service.title}</span>
-            </div>
+            <p className="eyebrow">Our Services</p>
+            <div className="svc-badge">Ryters Spot · {service.title}</div>
             <h1>{service.title}</h1>
             <p className="svc-tagline">{service.tagline}</p>
             <p className="svc-desc">{service.description}</p>
             <div className="svc-btns">
-              <Link href="/signup" className="btn btn-accent btn-lg">{service.ctaLabel}</Link>
-              <Link href="/services" className="btn-ghost-white">All Services</Link>
+              <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-lg">Hire Us</a>
+              <Link href="/services" className="btn btn-outline">All Services</Link>
             </div>
           </div>
           <div className="svc-personas">
@@ -124,7 +138,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
               <h3>{service.features[activeFeature].title}</h3>
               <p>{service.features[activeFeature].desc}</p>
               <div className="feat-divider">
-                <Link href="/signup" className="btn btn-primary btn-sm">Enquire About This →</Link>
+                <Link href="/contact" className="btn btn-primary btn-sm">Enquire About This →</Link>
               </div>
             </div>
           </div>
@@ -144,7 +158,7 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
           <div className="offerings-grid">
             {service.offerings.map((o, i) => (
               <div key={i} className="offering-card">
-                <div className="offering-num">Option {String(i + 1).padStart(2, '0')}</div>
+                <div className="offering-num">0{i + 1}.</div>
                 <div className="offering-name">{o.name}</div>
                 <div className="offering-desc">{o.desc}</div>
               </div>
@@ -159,8 +173,8 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
           <h2>{service.ctaLabel}</h2>
           <p>Talk to one of our specialists. We will assess your needs and recommend the right approach for your organisation — no obligation.</p>
           <div className="svc-cta-btns">
-            <Link href="/signup" className="btn btn-accent btn-lg">Create a Free Account</Link>
-            <Link href="/contact" className="btn-ghost-white">Talk to an Expert</Link>
+            <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-lg">Hire Us</a>
+            <Link href="/contact" className="btn-ghost-white">Talk to Us</Link>
           </div>
         </div>
       </section>
@@ -173,15 +187,13 @@ export default function ServicePageClient({ slug, service }: { slug: string; ser
           <div className="related-grid">
             {service.relatedSlugs.map(s => (
               <Link key={s} href={`/services/${s}`} className="related-card">
-                <span style={{ fontSize: '1.2rem' }}>{slugIcons[s]}</span>
                 <span>{slugTitles[s]}</span>
-                <span style={{ marginLeft: 'auto', color: '#40916C' }}>→</span>
+                <span style={{ color: 'var(--clr-primary)' }}>→</span>
               </Link>
             ))}
             <Link href="/services" className="related-card">
-              <span style={{ fontSize: '1.2rem' }}>🗂️</span>
               <span>All Services</span>
-              <span style={{ marginLeft: 'auto', color: '#40916C' }}>→</span>
+              <span style={{ color: 'var(--clr-primary)' }}>→</span>
             </Link>
           </div>
         </div>
