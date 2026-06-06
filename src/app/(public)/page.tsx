@@ -111,7 +111,7 @@ export default function HomePage() {
         .hero-v2 {
           position: relative;
           overflow: hidden;
-          padding: 6rem 0 5rem;
+          padding: 3rem 0 4rem;
           background: var(--clr-bg);
           border-bottom: 1px solid var(--clr-border);
         }
@@ -227,7 +227,7 @@ export default function HomePage() {
         }
 
         @media (max-width: 900px) {
-          .hero-v2 { padding: 4rem 0 3rem; }
+          .hero-v2 { padding: 2rem 0 2.5rem; }
           .hero-v2-grid { grid-template-columns: 1fr; gap: 2.5rem; }
           .hero-v2-visual { display: none; }
           .hero-v2 h1 { font-size: clamp(2.1rem, 7vw, 2.8rem); }
