@@ -52,20 +52,14 @@ const processSteps = [
 
 const testimonials = [
   {
-    initials: 'AO',
-    name: 'Amara Okonkwo',
-    role: 'PhD Candidate, University of Edinburgh',
+    role: 'PhD Candidate, UK University',
     quote: 'Ryters Spot delivered my literature review ahead of schedule and to a standard my supervisor described as "publication-ready". Outstanding.',
   },
   {
-    initials: 'CA',
-    name: 'Chidi Adeyemi',
-    role: 'CFO, FinTech Startup, Lagos',
+    role: 'CFO, FinTech Startup',
     quote: 'Our annual report went from a rough draft to a polished investor-ready document in 5 days. The team understood our brand voice perfectly.',
   },
   {
-    initials: 'SM',
-    name: 'Sarah Mitchell',
     role: 'Marketing Director, London',
     quote: 'Since Ryters Spot overhauled our content strategy, our organic traffic has grown 40%. The ROI has been exceptional.',
   },
@@ -595,13 +589,11 @@ export default function HomePage() {
           </div>
           <div className="testi-grid">
             {testimonials.map((t, i) => (
-              <div key={t.name} className={`testi-card reveal${i > 0 ? ` fade-up-delay-${i}` : ''}`}>
+              <div key={i} className={`testi-card reveal${i > 0 ? ` fade-up-delay-${i}` : ''}`}>
                 <div className="testi-stars">★★★★★</div>
                 <p className="testi-quote">"{t.quote}"</p>
                 <div className="testi-author">
-                  <div className="testi-avatar">{t.initials}</div>
                   <div>
-                    <div className="testi-name">{t.name}</div>
                     <div className="testi-role">{t.role}</div>
                   </div>
                 </div>
