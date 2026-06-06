@@ -50,15 +50,16 @@ export default function BlogPage() {
 
   return (
     <>
-      <header className="page-hero">
+      <header className="page-hero editorial-hero">
         <div className="container">
           <nav className="breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <span className="breadcrumb-sep">&#8250;</span>
-            <span>Blog &amp; Insights</span>
+            <span>Blog</span>
           </nav>
-          <h1>Insights &amp; Thought Leadership</h1>
-          <p>Expert perspectives on writing, research, strategy, digital transformation, and education from the Ryters Spot team.</p>
+          <p className="eyebrow">Insights</p>
+          <h1>Thought Leadership &amp; Expertise</h1>
+          <p>Perspectives on writing, research, strategy, digital transformation and education from the Ryters Spot team.</p>
         </div>
       </header>
 

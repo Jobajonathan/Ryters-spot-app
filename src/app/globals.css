@@ -983,20 +983,22 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 @media (max-width: 700px) { .values-grid { grid-template-columns: 1fr; } }
 
 .value-card {
-  display: flex;
-  gap: var(--space-md);
-  align-items: flex-start;
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--clr-border);
+  position: relative;
 }
-.value-icon {
-  width: 48px; height: 48px;
-  background: var(--clr-surface-2);
-  border-radius: var(--radius-md);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  flex-shrink: 0;
+.value-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 28px;
+  height: 1px;
+  background: var(--clr-accent);
 }
-.value-content h4 { margin-bottom: 6px; font-size: 1rem; }
-.value-content p  { font-size: 0.85rem; }
+.value-icon { display: none; }
+.value-content h4 { margin-bottom: 8px; font-size: 1rem; font-weight: 700; }
+.value-content p  { font-size: 0.875rem; color: var(--clr-text-muted); line-height: 1.65; }
 
 /* ---------- Footer ---------- */
 .footer {
@@ -1078,24 +1080,36 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
 /* ---------- Page Hero (inner pages) ---------- */
 .page-hero {
-  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-mid) 100%);
-  padding: var(--space-3xl) 0;
-  text-align: center;
+  background: var(--clr-bg);
+  border-bottom: 1px solid var(--clr-border);
+  padding: var(--space-3xl) 0 var(--space-2xl);
 }
-.page-hero h1 { color: #fff; margin-bottom: var(--space-md); }
-.page-hero p  { color: rgba(255,255,255,0.75); max-width: 52ch; margin-inline: auto; }
+.page-hero h1 {
+  color: var(--clr-text);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+}
+.page-hero p { color: var(--clr-text-muted); max-width: 52ch; line-height: 1.75; }
+.editorial-hero .eyebrow { margin-bottom: var(--space-md); }
+.editorial-hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
 .breadcrumb {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--space-sm);
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.55);
-  margin-bottom: var(--space-md);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--clr-text-subtle);
+  margin-bottom: var(--space-lg);
 }
-.breadcrumb a { color: rgba(255,255,255,0.7); transition: color var(--transition); }
-.breadcrumb a:hover { color: #fff; }
-.breadcrumb-sep { opacity: 0.4; }
+.breadcrumb a { color: var(--clr-text-subtle); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--clr-primary); }
+.breadcrumb-sep { opacity: 0.35; }
 
 /* ---------- Services Detail Page ---------- */
 .services-detail-grid {

@@ -29,56 +29,78 @@ export default function GetStartedPage() {
   return (
     <>
       <style>{`
-        .gs-hero { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%); padding: 4rem 0; text-align: center; color: #fff; }
-        .gs-hero h1 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.8rem, 4vw, 2.8rem); color: #fff; margin-bottom: 0.75rem; }
-        .gs-hero p { color: rgba(255,255,255,0.7); font-size: 1.05rem; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+        .gs-hero {
+          background: var(--clr-bg);
+          border-bottom: 1px solid var(--clr-border);
+          padding: var(--space-3xl) 0 var(--space-2xl);
+        }
+        .gs-hero h1 {
+          font-size: clamp(2rem, 5vw, 3.2rem);
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          color: var(--clr-text);
+          margin-bottom: 0.75rem;
+        }
+        .gs-hero p { color: var(--clr-text-muted); font-size: 1.05rem; max-width: 520px; line-height: 1.75; }
 
         .gs-section { padding: 4rem 0; }
         .gs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
-        .gs-card { border: 1px solid var(--clr-border); border-radius: 16px; padding: 2rem; background: var(--clr-surface); transition: border-color 0.2s, box-shadow 0.2s; text-decoration: none; display: block; }
-        .gs-card:hover { border-color: #40916C; box-shadow: 0 4px 24px rgba(27,67,50,0.1); }
-        .gs-icon { font-size: 2rem; margin-bottom: 1rem; }
-        .gs-title { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
-        .gs-desc { font-size: 0.88rem; color: var(--clr-text-muted); line-height: 1.7; margin-bottom: 1rem; }
+        .gs-card {
+          border: 1px solid var(--clr-border);
+          border-radius: 16px;
+          padding: 2rem;
+          background: var(--clr-surface);
+          transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+          text-decoration: none;
+          display: block;
+          position: relative;
+          overflow: hidden;
+        }
+        .gs-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--clr-accent); transform: scaleX(0); transform-origin: left; transition: transform 0.25s; }
+        .gs-card:hover { border-color: var(--clr-primary-light); box-shadow: 0 4px 24px rgba(27,67,50,0.08); transform: translateY(-2px); }
+        .gs-card:hover::before { transform: scaleX(1); }
+        .gs-icon { display: none; }
+        .gs-num { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 1.4rem; color: var(--clr-accent); margin-bottom: 0.75rem; line-height: 1; }
+        .gs-title { font-size: 1.05rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
+        .gs-desc { font-size: 0.875rem; color: var(--clr-text-muted); line-height: 1.7; margin-bottom: 1rem; }
         .gs-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-        .gs-tag { font-size: 0.72rem; padding: 2px 8px; background: #EFF5F1; color: #1B4332; border-radius: 100px; font-weight: 500; }
-        [data-theme="dark"] .gs-tag { background: rgba(64,145,108,0.15); color: #74C69D; }
-        .gs-learn { font-size: 0.82rem; color: #40916C; font-weight: 600; margin-top: 1.25rem; display: block; }
+        .gs-tag { font-size: 0.72rem; padding: 3px 10px; background: var(--clr-surface-2); color: var(--clr-text-muted); border-radius: 100px; font-weight: 500; border: 1px solid var(--clr-border); }
+        .gs-learn { font-size: 0.82rem; color: var(--clr-primary); font-weight: 600; margin-top: 1.25rem; display: block; }
 
         .gs-cta-box { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: 20px; padding: 3rem; text-align: center; max-width: 560px; margin: 3rem auto 0; }
-        .gs-cta-box h2 { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 1.6rem; color: var(--clr-text); margin-bottom: 0.75rem; }
+        .gs-cta-box h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--clr-text); margin-bottom: 0.75rem; }
         .gs-cta-box p { color: var(--clr-text-muted); line-height: 1.7; margin-bottom: 2rem; font-size: 0.95rem; }
         .gs-cta-btns { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; }
         .gs-cta-btns .btn { width: 100%; max-width: 320px; justify-content: center; }
         .gs-signin { margin-top: 1.25rem; font-size: 0.875rem; color: var(--clr-text-muted); }
-        .gs-signin a { color: #40916C; font-weight: 600; }
+        .gs-signin a { color: var(--clr-primary); font-weight: 600; }
 
         .gs-promise { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-top: 3rem; }
         .gs-promise-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--clr-text-muted); }
-        .gs-promise-check { width: 20px; height: 20px; background: #EFF5F1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #1B4332; flex-shrink: 0; }
-        [data-theme="dark"] .gs-promise-check { background: rgba(64,145,108,0.2); color: #74C69D; }
+        .gs-promise-check { width: 20px; height: 20px; background: var(--clr-surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--clr-primary); flex-shrink: 0; border: 1px solid var(--clr-border); }
       `}</style>
 
       {/* Hero */}
-      <section className="gs-hero">
+      <header className="gs-hero">
         <div className="container">
+          <p className="eyebrow">Get Started</p>
           <h1>How Can We Help You?</h1>
-          <p>Ryters Spot is a specialist consultancy available around the clock, across every time zone. Choose your area of interest below to get started.</p>
+          <p>A specialist consultancy available around the clock, across every time zone. Choose your area of interest below.</p>
         </div>
-      </section>
+      </header>
 
       {/* Service cards */}
       <section className="gs-section">
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#40916C' }}>Our Services</span>
-            <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--clr-text)', marginTop: '0.5rem' }}>What Would You Like Help With?</h2>
+            <span className="section-label">Our Services</span>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--clr-text)', marginTop: '0.5rem' }}>What Would You Like Help With?</h2>
           </div>
 
           <div className="gs-grid">
-            {services.map(s => (
+            {services.map((s, i) => (
               <Link key={s.slug} href="/signup" className="gs-card">
-                <div className="gs-icon">{s.icon}</div>
+                <div className="gs-num">0{i + 1}.</div>
                 <div className="gs-title">{s.title}</div>
                 <div className="gs-desc">{s.desc}</div>
                 <div className="gs-tags">

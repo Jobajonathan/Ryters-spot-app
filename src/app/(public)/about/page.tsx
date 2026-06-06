@@ -17,23 +17,101 @@ export default function AboutPage() {
 
   return (
     <>
-      <header className="page-hero">
+      <style>{`
+        .about-intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4xl); align-items: start; }
+        .about-pillar-box { border-left: 1px solid var(--clr-border); padding-left: var(--space-2xl); display: flex; flex-direction: column; gap: var(--space-xl); }
+        .about-pillar { position: relative; }
+        .about-pillar-label {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-style: italic;
+          font-size: 0.7rem;
+          font-weight: 400;
+          color: var(--clr-text-subtle);
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+        .about-pillar h4 { font-size: 0.95rem; font-weight: 700; color: var(--clr-text); margin-bottom: 0.5rem; }
+        .about-pillar p { font-size: 0.88rem; color: var(--clr-text-muted); line-height: 1.7; }
+        .about-pillar + .about-pillar { padding-top: var(--space-xl); border-top: 1px solid var(--clr-border); margin-top: var(--space-xl); }
+
+        .expertise-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: var(--space-lg); max-width: 900px; margin: 0 auto; }
+        .expertise-card {
+          background: var(--clr-surface);
+          border: 1px solid var(--clr-border);
+          border-radius: var(--radius-lg);
+          padding: var(--space-xl);
+          position: relative;
+        }
+        .expertise-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 1px;
+          background: var(--clr-accent);
+          border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.3s;
+        }
+        .expertise-card:hover::before { transform: scaleX(1); }
+        .expertise-num {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-style: italic;
+          font-size: 1.6rem;
+          color: var(--clr-accent);
+          line-height: 1;
+          margin-bottom: 0.75rem;
+        }
+        .expertise-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+        .expertise-card p { font-size: 0.875rem; color: var(--clr-text-muted); line-height: 1.65; }
+
+        .process-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: var(--space-xl); }
+        .process-step { text-align: center; padding: var(--space-xl) var(--space-lg); }
+        .process-num {
+          width: 48px; height: 48px;
+          border-radius: 50%;
+          background: var(--clr-primary);
+          color: #fff;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 1.2rem;
+          font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
+          margin: 0 auto var(--space-lg);
+        }
+        .process-step:last-child .process-num { background: var(--clr-accent); }
+        .process-step h4 { margin-bottom: 8px; font-size: 0.95rem; }
+        .process-step p { font-size: 0.875rem; color: var(--clr-text-muted); line-height: 1.65; }
+
+        @media (max-width: 900px) {
+          .about-intro-grid { grid-template-columns: 1fr !important; }
+          .expertise-grid { grid-template-columns: 1fr !important; }
+          .process-grid { grid-template-columns: repeat(2,1fr) !important; }
+        }
+        @media (max-width: 500px) {
+          .expertise-grid { grid-template-columns: 1fr !important; }
+          .process-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+      <header className="page-hero editorial-hero">
         <div className="container">
           <nav className="breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <span className="breadcrumb-sep">&#8250;</span>
             <span>About</span>
           </nav>
-          <h1>{c('about_hero_heading', 'We Are Ryters Spot')}</h1>
-          <p>{c('about_hero_subtext', 'A specialist writing, research and advisory firm. We have been helping clients across Europe, North America and beyond communicate with authority, execute with precision and lead with confidence.')}</p>
+          <p className="eyebrow">About Us</p>
+          <h1>{c('about_hero_heading', 'We Are Ryters Spot.')}</h1>
+          <p>{c('about_hero_subtext', 'A specialist writing, research and advisory firm. Helping clients across Europe, North America and beyond communicate with authority and lead with confidence.')}</p>
         </div>
       </header>
 
       {/* Our Story */}
       <section className="section">
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4xl)', alignItems: 'start' }} className="about-intro-grid">
-
+          <div className="about-intro-grid">
             <div className="reveal">
               <span className="section-label">Our Story</span>
               <h2 style={{ marginBottom: 'var(--space-lg)' }}>Built on a Simple Conviction</h2>
@@ -44,30 +122,24 @@ export default function AboutPage() {
             </div>
 
             <div className="reveal fade-up-delay-1">
-              <div style={{ background: 'var(--clr-surface-2)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-xl)', padding: 'var(--space-2xl)', display: 'flex', flexDirection: 'column', gap: 'var(--space-xl)' }}>
-                <div>
-                  <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>&#127919;</div>
-                  <h4 style={{ marginBottom: '6px', color: 'var(--clr-primary)' }}>Our Mission</h4>
-                  <p style={{ fontSize: '0.9rem' }}>{c('about_mission', 'To deliver writing, research and advisory services of the highest quality, enabling our clients to achieve their academic, professional and business objectives with clarity and confidence.')}</p>
+              <div className="about-pillar-box">
+                <div className="about-pillar">
+                  <span className="about-pillar-label">Mission</span>
+                  <p>{c('about_mission', 'To deliver writing, research and advisory services of the highest quality, enabling our clients to achieve their academic, professional and business objectives with clarity and confidence.')}</p>
                 </div>
-                <div>
-                  <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>&#128301;</div>
-                  <h4 style={{ marginBottom: '6px', color: 'var(--clr-primary)' }}>Our Vision</h4>
-                  <p style={{ fontSize: '0.9rem' }}>{c('about_vision', 'To be the most trusted specialist writing and advisory partner for ambitious individuals and organisations worldwide, recognised for excellence, discretion and transformative results.')}</p>
+                <div className="about-pillar">
+                  <span className="about-pillar-label">Vision</span>
+                  <p>{c('about_vision', 'To be the most trusted specialist writing and advisory partner for ambitious individuals and organisations worldwide, recognised for excellence, discretion and transformative results.')}</p>
                 </div>
-                <div>
-                  <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)' }}>&#128161;</div>
-                  <h4 style={{ marginBottom: '6px', color: 'var(--clr-primary)' }}>Our Approach</h4>
-                  <p style={{ fontSize: '0.9rem' }}>{c('about_approach', 'We combine deep subject-matter expertise with genuinely personalised service. Every engagement is tailored to your specific context, objectives and audience. We do not apply templates. We apply thinking.')}</p>
+                <div className="about-pillar">
+                  <span className="about-pillar-label">Approach</span>
+                  <p>{c('about_approach', 'We combine deep subject-matter expertise with genuinely personalised service. Every engagement is tailored to your specific context, objectives and audience. We do not apply templates. We apply thinking.')}</p>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
-
-      <style>{`@media(max-width:800px){.about-intro-grid{grid-template-columns:1fr!important}}`}</style>
 
       {/* What We Do */}
       <section className="section section-alt">
@@ -77,40 +149,33 @@ export default function AboutPage() {
             <h2 className="reveal">What We Do</h2>
             <p className="reveal" style={{ maxWidth: '58ch', marginInline: 'auto', marginTop: '0.75rem' }}>Four specialist service areas. One integrated team. A single point of accountability for every engagement.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 'var(--space-lg)', maxWidth: '900px', marginInline: 'auto' }} className="expertise-grid reveal">
-
-            <div style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-              <div style={{ fontSize: '1.6rem', marginBottom: 'var(--space-sm)' }}>&#128302;</div>
-              <h4 style={{ marginBottom: '8px' }}>Research and Academic Enquiry</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>Dissertation support, academic writing, data analysis and research advisory for scholars and institutions at every stage.</p>
+          <div className="expertise-grid reveal">
+            <div className="expertise-card">
+              <div className="expertise-num">01.</div>
+              <h4>Research and Academic Enquiry</h4>
+              <p>Dissertation support, academic writing, data analysis and research advisory for scholars and institutions at every stage.</p>
             </div>
-
-            <div style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-              <div style={{ fontSize: '1.6rem', marginBottom: 'var(--space-sm)' }}>&#128640;</div>
-              <h4 style={{ marginBottom: '8px' }}>Digital Transformation and Automation</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>End-to-end transformation roadmaps, automation strategy and process modernisation for enterprises ready to scale.</p>
+            <div className="expertise-card">
+              <div className="expertise-num">02.</div>
+              <h4>Digital Transformation and Automation</h4>
+              <p>End-to-end transformation roadmaps, automation strategy and process modernisation for enterprises ready to scale.</p>
             </div>
-
-            <div style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-              <div style={{ fontSize: '1.6rem', marginBottom: 'var(--space-sm)' }}>&#129489;&#8205;&#128187;</div>
-              <h4 style={{ marginBottom: '8px' }}>Ed-Tech Services</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>LMS development, interactive content design and educational technology strategy for institutions and learners worldwide.</p>
+            <div className="expertise-card">
+              <div className="expertise-num">03.</div>
+              <h4>Ed-Tech Services</h4>
+              <p>LMS development, interactive content design and educational technology strategy for institutions and learners worldwide.</p>
             </div>
-
-            <div style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-xl)' }}>
-              <div style={{ fontSize: '1.6rem', marginBottom: 'var(--space-sm)' }}>&#128202;</div>
-              <h4 style={{ marginBottom: '8px' }}>Product Management</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>Strategic product advisory, roadmap development and go-to-market support for teams building the next generation of products.</p>
+            <div className="expertise-card">
+              <div className="expertise-num">04.</div>
+              <h4>Product Management</h4>
+              <p>Strategic product advisory, roadmap development and go-to-market support for teams building the next generation of products.</p>
             </div>
-
           </div>
           <div className="text-center" style={{ marginTop: 'var(--space-2xl)' }}>
             <Link href="/services" className="btn btn-outline">View All Services</Link>
           </div>
         </div>
       </section>
-
-      <style>{`@media(max-width:500px){.expertise-grid{grid-template-columns:1fr!important}}`}</style>
 
       {/* Stats */}
       <section className="section">
@@ -150,42 +215,36 @@ export default function AboutPage() {
           </div>
           <div className="values-grid">
             <div className="value-card reveal">
-              <div className="value-icon">&#127757;</div>
               <div className="value-content">
                 <h4>Global Client Base</h4>
                 <p>The majority of our clients are based in the UK, Canada, the United States and across Europe. We operate to international standards and understand international expectations.</p>
               </div>
             </div>
             <div className="value-card reveal fade-up-delay-1">
-              <div className="value-icon">&#128274;</div>
               <div className="value-content">
                 <h4>Complete Confidentiality</h4>
                 <p>Discretion is fundamental to how we operate. Every engagement is protected by strict confidentiality. We sign NDAs without hesitation and never disclose client relationships or project details.</p>
               </div>
             </div>
             <div className="value-card reveal fade-up-delay-2">
-              <div className="value-icon">&#11088;</div>
               <div className="value-content">
                 <h4>Uncompromising Quality</h4>
                 <p>We hold ourselves to a standard that makes revision requests rare. Every deliverable goes through rigorous internal review before it reaches you.</p>
               </div>
             </div>
             <div className="value-card reveal">
-              <div className="value-icon">&#127919;</div>
               <div className="value-content">
                 <h4>Deep Specialisation</h4>
                 <p>We do not attempt to be generalists. Our team is composed of specialists, each with extensive real-world expertise in their service area. You work with people who genuinely know the field.</p>
               </div>
             </div>
             <div className="value-card reveal fade-up-delay-1">
-              <div className="value-icon">&#129309;</div>
               <div className="value-content">
                 <h4>Partnership Mindset</h4>
                 <p>We do not simply execute briefs. We engage with your goals, challenge assumptions where needed and bring strategic thinking to every engagement, not just execution.</p>
               </div>
             </div>
             <div className="value-card reveal fade-up-delay-2">
-              <div className="value-icon">&#9200;&#65039;</div>
               <div className="value-content">
                 <h4>Reliable Delivery</h4>
                 <p>We meet deadlines. We communicate proactively. When timelines shift, you hear from us first. Our clients stay because we are dependable, not just capable.</p>
@@ -203,37 +262,30 @@ export default function AboutPage() {
             <h2 className="reveal">How Every Engagement Works</h2>
             <p className="reveal" style={{ maxWidth: '54ch', marginInline: 'auto', marginTop: '0.75rem' }}>A clear, structured process designed for clients who value professionalism, transparency and results.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 'var(--space-xl)', counterReset: 'steps' }} className="process-grid reveal">
-
-            <div style={{ textAlign: 'center', padding: 'var(--space-xl) var(--space-lg)' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'var(--clr-primary)', color: '#fff', fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-lg)' }}>1</div>
-              <h4 style={{ marginBottom: '8px' }}>Discovery</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>We start with a thorough discovery call to understand your goals, context and what success looks like for you.</p>
+          <div className="process-grid reveal">
+            <div className="process-step">
+              <div className="process-num">1</div>
+              <h4>Discovery</h4>
+              <p>We start with a thorough discovery call to understand your goals, context and what success looks like for you.</p>
             </div>
-
-            <div style={{ textAlign: 'center', padding: 'var(--space-xl) var(--space-lg)' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'var(--clr-primary)', color: '#fff', fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-lg)' }}>2</div>
-              <h4 style={{ marginBottom: '8px' }}>Proposal</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>We deliver a tailored proposal with a clear scope, timeline, deliverables and investment. No vague estimates.</p>
+            <div className="process-step">
+              <div className="process-num">2</div>
+              <h4>Proposal</h4>
+              <p>We deliver a tailored proposal with a clear scope, timeline, deliverables and investment. No vague estimates.</p>
             </div>
-
-            <div style={{ textAlign: 'center', padding: 'var(--space-xl) var(--space-lg)' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'var(--clr-primary)', color: '#fff', fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-lg)' }}>3</div>
-              <h4 style={{ marginBottom: '8px' }}>Execution</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>Our specialists get to work. You receive progress updates at agreed milestones and have direct access to your project lead.</p>
+            <div className="process-step">
+              <div className="process-num">3</div>
+              <h4>Execution</h4>
+              <p>Our specialists get to work. You receive progress updates at agreed milestones and have direct access to your project lead.</p>
             </div>
-
-            <div style={{ textAlign: 'center', padding: 'var(--space-xl) var(--space-lg)' }}>
-              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'var(--clr-accent)', color: '#fff', fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-lg)' }}>4</div>
-              <h4 style={{ marginBottom: '8px' }}>Delivery</h4>
-              <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>We deliver on time, to specification, with post-delivery support included. Most client relationships extend well beyond the first project.</p>
+            <div className="process-step">
+              <div className="process-num">4</div>
+              <h4>Delivery</h4>
+              <p>We deliver on time, to specification, with post-delivery support included. Most client relationships extend well beyond the first project.</p>
             </div>
-
           </div>
         </div>
       </section>
-
-      <style>{`@media(max-width:800px){.process-grid{grid-template-columns:repeat(2,1fr)!important}}@media(max-width:500px){.process-grid{grid-template-columns:1fr!important}}`}</style>
 
       {/* CTA */}
       <section className="cta-banner">
@@ -241,8 +293,8 @@ export default function AboutPage() {
           <h2>Ready to Work with a Team That Gets It Right?</h2>
           <p>Tell us about your project. We will respond within one business day.</p>
           <div className="cta-banner-btns">
-            <Link href="/contact" className="btn btn-accent btn-lg">Start a Conversation</Link>
-            <Link href="/services" className="btn btn-white btn-lg">Our Services</Link>
+            <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-lg">Hire Us</a>
+            <Link href="/contact" className="btn btn-white btn-lg">Talk to Us</Link>
           </div>
         </div>
       </section>

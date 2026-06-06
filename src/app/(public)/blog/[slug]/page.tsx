@@ -13,7 +13,7 @@ function renderContent(text: string) {
     // Simple **bold** rendering
     const parts = para.split(/\*\*(.+?)\*\*/g)
     const content = parts.map((part, j) => j % 2 === 1 ? <strong key={j}>{part}</strong> : part)
-    return <p key={i} style={{ fontSize: '1.05rem', lineHeight: 1.85, color: '#374151', margin: '0 0 1.25rem' }}>{content}</p>
+    return <p key={i} style={{ fontSize: '1.05rem', lineHeight: 1.85, color: 'var(--clr-text-muted)', margin: '0 0 1.25rem' }}>{content}</p>
   })
 }
 
@@ -49,29 +49,49 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <style>{`
-        .post-hero { background: var(--clr-primary); padding: 4rem 0 3rem; }
+        .post-hero {
+          background: var(--clr-bg);
+          border-bottom: 1px solid var(--clr-border);
+          padding: var(--space-3xl) 0 var(--space-2xl);
+        }
         .post-hero .container { max-width: 800px; }
         .post-body { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
-        .post-category { display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 12px; border-radius: 100px; background: rgba(201,168,76,0.2); color: #C9A84C; margin-bottom: 1rem; }
-        .post-title { font-family: var(--font-heading, DM Sans, sans-serif); font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: #fff; line-height: 1.25; margin: 0 0 1.25rem; }
-        .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
-        .post-meta-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.4); display: inline-block; }
-        .post-cover { width: 100%; max-height: 400px; object-fit: cover; display: block; }
+        .post-category {
+          display: inline-block;
+          font-size: 0.72rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          padding: 4px 12px;
+          border-radius: 100px;
+          background: rgba(201,168,76,0.12);
+          color: var(--clr-accent);
+          margin-bottom: 1.25rem;
+        }
+        .post-title {
+          font-size: clamp(1.75rem, 4vw, 2.8rem);
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          color: var(--clr-text);
+          line-height: 1.15;
+          margin: 0 0 1.25rem;
+        }
+        .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.82rem; color: var(--clr-text-subtle); }
+        .post-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--clr-border); display: inline-block; }
+        .post-cover { width: 100%; max-height: 420px; object-fit: cover; display: block; border-bottom: 1px solid var(--clr-border); }
       `}</style>
 
       <header className="post-hero">
         <div className="container">
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-            <Link href="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Home</Link>
-            <span>›</span>
-            <Link href="/blog" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Blog</Link>
-            <span>›</span>
-            <span style={{ color: 'rgba(255,255,255,0.9)' }}>{post.title}</span>
+          <nav className="breadcrumb" aria-label="Breadcrumb">
+            <Link href="/">Home</Link>
+            <span className="breadcrumb-sep">&#8250;</span>
+            <Link href="/blog">Blog</Link>
+            <span className="breadcrumb-sep">&#8250;</span>
+            <span>{post.title}</span>
           </nav>
           {post.category && (
-            <span className="post-category" style={{ background: `rgba(${CATEGORY_COLORS[post.category] === '#C9A84C' ? '201,168,76' : '255,255,255'},0.15)`, color: '#C9A84C' }}>
-              {post.category}
-            </span>
+            <span className="post-category">{post.category}</span>
           )}
           <h1 className="post-title">{post.title}</h1>
           <div className="post-meta">
@@ -84,28 +104,24 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       </header>
 
       {post.cover_image_url && (
-        <img
-          src={post.cover_image_url}
-          alt={post.title}
-          className="post-cover"
-        />
+        <img src={post.cover_image_url} alt={post.title} className="post-cover" />
       )}
 
       <div className="container">
         <div className="post-body">
           {post.excerpt && (
-            <p style={{ fontSize: '1.15rem', fontStyle: 'italic', color: '#6b7280', lineHeight: 1.7, borderLeft: '3px solid #C9A84C', paddingLeft: '1.25rem', margin: '0 0 2rem' }}>
+            <p style={{ fontSize: '1.1rem', fontStyle: 'italic', color: 'var(--clr-text-muted)', lineHeight: 1.75, borderLeft: '2px solid var(--clr-accent)', paddingLeft: '1.25rem', margin: '0 0 2rem' }}>
               {post.excerpt}
             </p>
           )}
-          <div>{post.content ? renderContent(post.content) : <p style={{ color: '#9ca3af' }}>No content yet.</p>}</div>
-          <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-            <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#1B4332', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
-              ← Back to Blog
+          <div>{post.content ? renderContent(post.content) : <p style={{ color: 'var(--clr-text-subtle)' }}>No content yet.</p>}</div>
+          <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--clr-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+            <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--clr-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+              &#8592; Back to Blog
             </Link>
-            <Link href="/get-started" style={{ display: 'inline-block', background: '#1B4332', color: '#fff', padding: '0.6rem 1.5rem', borderRadius: 8, fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
-              Work with Us
-            </Link>
+            <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-sm">
+              Hire Us
+            </a>
           </div>
         </div>
       </div>
