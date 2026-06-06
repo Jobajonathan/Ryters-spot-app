@@ -111,33 +111,16 @@ export default function HomePage() {
         .hero-v2 {
           position: relative;
           overflow: hidden;
-          padding: 6rem 0 7rem;
-          background: #121410;
+          padding: 6rem 0 5rem;
+          background: var(--clr-bg);
+          border-bottom: 1px solid var(--clr-border);
         }
         .hero-v2::before {
           content: '';
           position: absolute;
           inset: 0;
-          background:
-            radial-gradient(ellipse at 72% 18%, rgba(201,168,76,0.07) 0%, transparent 48%),
-            radial-gradient(ellipse at 18% 85%, rgba(255,255,255,0.015) 0%, transparent 40%);
+          background: radial-gradient(ellipse at 68% 0%, rgba(201,168,76,0.06) 0%, transparent 55%);
           pointer-events: none;
-        }
-        .hero-v2::after {
-          content: '';
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 140px;
-          background: linear-gradient(to bottom, transparent, #f7f4ee);
-          pointer-events: none;
-        }
-        .hero-v2-eyebrow-text {
-          font-size: 0.72rem;
-          font-weight: 600;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.38);
-          margin-bottom: 1.25rem;
         }
         .hero-v2-grid {
           position: relative;
@@ -146,54 +129,31 @@ export default function HomePage() {
           gap: 4rem;
           align-items: center;
         }
-        .hero-v2-content {}
-        .hero-v2-eyebrow {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: rgba(201,168,76,0.15);
-          border: 1px solid rgba(201,168,76,0.3);
-          color: #C9A84C;
-          font-family: var(--font-heading);
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          padding: 0.35rem 0.9rem;
-          border-radius: 100px;
-          margin-bottom: 1.5rem;
-        }
-        .hero-v2-eyebrow-dot { width: 6px; height: 6px; background: #C9A84C; border-radius: 50%; }
         .hero-v2 h1 {
-          color: #fff;
+          color: var(--clr-text);
           font-size: clamp(2.4rem, 5vw, 3.8rem);
           font-weight: 800;
           line-height: 1.1;
           letter-spacing: -0.03em;
           margin-bottom: 1.5rem;
         }
-        .hero-v2 h1 span { color: #C9A84C; }
+        .hero-v2 h1 span { color: var(--clr-primary); }
         .hero-v2-sub {
-          font-size: 1.1rem;
-          color: rgba(255,255,255,0.75);
+          font-size: 1.05rem;
+          color: var(--clr-text-muted);
           line-height: 1.75;
           max-width: 50ch;
           margin-bottom: 2.5rem;
         }
         .hero-v2-ctas { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
-        .hero-v2-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
+        .hero-v2-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .hero-v2-tag {
           display: inline-flex;
           align-items: center;
-          gap: 0.45rem;
-          background: rgba(255,255,255,0.07);
-          border: 1px solid rgba(255,255,255,0.15);
-          color: rgba(255,255,255,0.8);
-          font-size: 0.82rem;
+          background: transparent;
+          border: 1px solid var(--clr-border);
+          color: var(--clr-text-muted);
+          font-size: 0.80rem;
           font-weight: 500;
           padding: 0.4rem 0.85rem;
           border-radius: 100px;
@@ -201,65 +161,65 @@ export default function HomePage() {
           transition: all 0.2s;
         }
         .hero-v2-tag:hover {
-          background: rgba(255,255,255,0.14);
-          border-color: rgba(255,255,255,0.3);
-          color: #fff;
+          border-color: var(--clr-primary);
+          color: var(--clr-primary);
         }
 
-        /* Hero right panel — pure typographic composition, no card */
+        /* Hero right panel — typographic credentials on warm bg */
         .hero-v2-visual { display: flex; flex-direction: column; justify-content: center; }
-        .hero-cred-panel { padding: 0; }
+        .hero-cred-panel {
+          padding: 2.5rem;
+          border-left: 1px solid var(--clr-border);
+        }
         .hero-cred-gold-rule {
           width: 28px;
           height: 2px;
           background: var(--clr-accent);
-          margin-bottom: 2.75rem;
+          margin-bottom: 2.5rem;
         }
         .hero-cred-stats {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 2.25rem 3rem;
-          margin-bottom: 2.75rem;
+          gap: 2rem 2.5rem;
+          margin-bottom: 2.5rem;
         }
-        .hero-cred-stat { display: flex; flex-direction: column; gap: 0.5rem; }
+        .hero-cred-stat { display: flex; flex-direction: column; gap: 0.4rem; }
         .hero-cred-num {
           font-family: var(--font-heading);
-          font-size: clamp(2.6rem, 4vw, 3.4rem);
+          font-size: clamp(2.4rem, 4vw, 3.2rem);
           font-weight: 300;
-          color: rgba(255,255,255,0.90);
+          color: var(--clr-text);
           letter-spacing: -0.04em;
           line-height: 1;
         }
         .hero-cred-desc {
-          font-size: 0.65rem;
-          color: rgba(255,255,255,0.32);
+          font-size: 0.64rem;
+          color: var(--clr-text-subtle);
           letter-spacing: 0.12em;
           text-transform: uppercase;
           font-weight: 600;
         }
         .hero-cred-rule {
           height: 1px;
-          background: rgba(255,255,255,0.09);
-          margin-bottom: 2.25rem;
+          background: var(--clr-border);
+          margin-bottom: 2rem;
         }
         .hero-cred-discipline {
           font-family: 'Playfair Display', Georgia, serif;
           font-size: 1.05rem;
           font-style: italic;
-          color: rgba(255,255,255,0.52);
-          padding: 0.8rem 0;
-          border-top: 1px solid rgba(255,255,255,0.07);
+          color: var(--clr-text-muted);
+          padding: 0.75rem 0;
+          border-top: 1px solid var(--clr-border);
           font-weight: 400;
-          letter-spacing: 0.01em;
-          transition: color 0.2s;
         }
         .hero-cred-discipline:first-of-type { border-top: none; padding-top: 0; }
         .hero-cred-footer {
-          margin-top: 2rem;
+          margin-top: 1.75rem;
           padding-top: 1.5rem;
-          border-top: 1px solid rgba(255,255,255,0.07);
+          border-top: 1px solid var(--clr-border);
           font-size: 0.64rem;
-          color: rgba(255,255,255,0.2);
+          color: var(--clr-text-subtle);
           letter-spacing: 0.1em;
           text-transform: uppercase;
           font-weight: 500;
@@ -447,16 +407,15 @@ export default function HomePage() {
 
             {/* Left: copy */}
             <div className="hero-v2-content fade-up">
-              <p className="hero-v2-eyebrow-text">Writing, Research &amp; Advisory</p>
               <h1>
-                The <span>research partner</span><br />you can trust.
+                Professional <span>Writing &amp; Research</span><br />Consulting
               </h1>
               <p className="hero-v2-sub">
                 Ryters Spot provides specialist writing, research, AI automation, EdTech and product management consultancy to professionals and organisations across the UK, Europe, North America and Africa.
               </p>
               <div className="hero-v2-ctas">
                 <Link href="/get-started" className="btn btn-accent btn-lg">{c('hero_cta1_text', 'Start Your Project')}</Link>
-                <Link href="/contact" className="btn btn-lg" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.18)', fontWeight: 500 }}>{c('hero_cta2_text', 'Book a Consultation')}</Link>
+                <Link href="/contact" className="btn btn-outline btn-lg">{c('hero_cta2_text', 'Book a Consultation')}</Link>
               </div>
               <div className="hero-v2-tags">
                 <Link href="/services/ai-automation" className="hero-v2-tag">AI Automation</Link>
