@@ -11,7 +11,7 @@ const services = [
     badge: 'Enterprise & SMEs',
     badgeVariant: 'green',
     title: 'AI Automation',
-    desc: 'Transform your operations with intelligent automation — from AI strategy to enterprise-scale workflow integration.',
+    desc: 'Transform your operations with intelligent automation. From AI strategy to enterprise-scale workflow integration.',
     bullets: ['AI strategy and roadmapping', 'Workflow automation and integration', 'LLM deployment and enablement'],
   },
   {
@@ -38,14 +38,14 @@ const services = [
     badge: 'Product Teams',
     badgeVariant: 'gold',
     title: 'Product Management',
-    desc: 'From ideation to delivery — building products and projects that generate measurable, lasting results.',
+    desc: 'From ideation to delivery: building products and projects that generate measurable, lasting results.',
     bullets: ['Product strategy and roadmapping', 'Agile delivery and PMO', 'Go-to-market planning'],
   },
 ]
 
 const processSteps = [
   { num: '01', title: 'Submit Your Brief', desc: 'Fill in our project form with your requirements, goals, and timeline.' },
-  { num: '02', title: 'Get a Custom Quote', desc: 'Receive a tailored proposal within 24 hours — transparent pricing, no surprises.' },
+  { num: '02', title: 'Get a Custom Quote', desc: 'Receive a tailored proposal within 24 hours. Transparent pricing, no surprises.' },
   { num: '03', title: 'We Get to Work', desc: 'Your dedicated consultant begins with regular progress updates throughout.' },
   { num: '04', title: 'Review & Approve', desc: 'Review deliverables, request revisions, and approve your final outcome.' },
 ]
@@ -98,10 +98,10 @@ export default function HomePage() {
   ]
 
   const whyItems = [
-    { label: 'Expert Team', heading: 'Specialists Across Every Domain', text: 'Our consultants bring deep expertise across AI automation, EdTech, academic research and product management — the right knowledge for every challenge, without the overhead of multiple agencies.' },
+    { label: 'Expert Team', heading: 'Specialists Across Every Domain', text: 'Our consultants bring deep expertise across AI automation, EdTech, academic research and product management: the right knowledge for every challenge, without the overhead of multiple agencies.' },
     { label: 'Proven Results', heading: '500+ Projects Delivered', text: 'Over 500 projects delivered across the UK, Europe and North America. A consistent track record of measurable, strategic results that move organisations forward.' },
-    { label: 'Global Reach', heading: 'Serving Clients Worldwide', text: 'From London to Lagos, Toronto to Dubai — our team works across time zones to deliver high-quality consultancy on your schedule, wherever you are.' },
-    { label: 'One Partner', heading: 'Strategy Through to Delivery', text: 'From initial scoping through execution and beyond. No handoffs, no gaps — one integrated team accountable for the full outcome.' },
+    { label: 'Global Reach', heading: 'Serving Clients Worldwide', text: 'From London to Lagos, Toronto to Dubai: our team works across time zones to deliver high-quality consultancy on your schedule, wherever you are.' },
+    { label: 'One Partner', heading: 'Strategy Through to Delivery', text: 'From initial scoping through execution and beyond. No handoffs, no gaps. One integrated team accountable for the full outcome.' },
   ]
 
   return (
@@ -111,7 +111,7 @@ export default function HomePage() {
         .hero-v2 {
           position: relative;
           overflow: hidden;
-          padding: 6rem 0 5rem;
+          padding: 6rem 0 7rem;
           background: #121410;
         }
         .hero-v2::before {
@@ -122,6 +122,22 @@ export default function HomePage() {
             radial-gradient(ellipse at 72% 18%, rgba(201,168,76,0.07) 0%, transparent 48%),
             radial-gradient(ellipse at 18% 85%, rgba(255,255,255,0.015) 0%, transparent 40%);
           pointer-events: none;
+        }
+        .hero-v2::after {
+          content: '';
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          height: 140px;
+          background: linear-gradient(to bottom, transparent, #f7f4ee);
+          pointer-events: none;
+        }
+        .hero-v2-eyebrow-text {
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.38);
+          margin-bottom: 1.25rem;
         }
         .hero-v2-grid {
           position: relative;
@@ -259,7 +275,7 @@ export default function HomePage() {
 
         /* ── Trust bar ── */
         .trust-v2 {
-          background: var(--clr-surface-2);
+          background: var(--clr-bg);
           border-bottom: 1px solid var(--clr-border);
           padding: 1.25rem 0;
         }
@@ -431,13 +447,12 @@ export default function HomePage() {
 
             {/* Left: copy */}
             <div className="hero-v2-content fade-up">
+              <p className="hero-v2-eyebrow-text">Writing, Research &amp; Advisory</p>
               <h1>
-                {c('hero_headline', 'The Writing &')}<br />
-                <span>{c('hero_headline_highlight', 'Research Partner')}</span><br />
-                {c('hero_headline_end', 'You Can Trust')}
+                The <span>research partner</span><br />you can trust.
               </h1>
               <p className="hero-v2-sub">
-                {c('hero_subheadline', 'Ryters Spot delivers writing & research, AI automation, EdTech and product management consultancy to organisations across the UK, Europe, North America and Africa.')}
+                Ryters Spot provides specialist writing, research, AI automation, EdTech and product management consultancy to professionals and organisations across the UK, Europe, North America and Africa.
               </p>
               <div className="hero-v2-ctas">
                 <Link href="/get-started" className="btn btn-accent btn-lg">{c('hero_cta1_text', 'Start Your Project')}</Link>
@@ -546,7 +561,7 @@ export default function HomePage() {
           <div className="section-header reveal">
             <div className="pill-label">The Process</div>
             <h2 id="process-heading">Simple. Transparent. Fast.</h2>
-            <p>From brief to delivery — here's how we work with every client.</p>
+            <p>From brief to delivery. Here is how we work with every client.</p>
           </div>
           <div className="process-row reveal">
             {processSteps.map(step => (
@@ -569,7 +584,7 @@ export default function HomePage() {
           <div className="section-header reveal">
             <div className="pill-label">Who We Serve</div>
             <h2 id="audiences-heading">Built for Your Organisation</h2>
-            <p>Whether you're a student, business, or institution — we have a service that fits.</p>
+            <p>Whether you are a student, business or institution, we have a service that fits.</p>
           </div>
           <div className="audience-v2 reveal">
             {audiences.map(a => (
@@ -617,7 +632,7 @@ export default function HomePage() {
           <div className="section-header reveal">
             <div className="pill-label">Testimonials</div>
             <h2 id="testimonials-heading">Trusted by Clients Worldwide</h2>
-            <p>Don't just take our word for it — here's what our clients say.</p>
+            <p>Here is what our clients say about working with us.</p>
           </div>
           <div className="testi-grid">
             {testimonials.map((t, i) => (
@@ -643,7 +658,7 @@ export default function HomePage() {
           <div className="cta-band-inner reveal">
             <div className="cta-band-text">
               <h2>{c('cta_banner_heading', 'Ready to Transform Your Organisation?')}</h2>
-              <p>{c('cta_banner_subtext', 'Whether you need AI automation, EdTech solutions, expert writing & research, or product management — Ryters Spot is your strategic partner from brief to delivery.')}</p>
+              <p>{c('cta_banner_subtext', 'Whether you need AI automation, EdTech solutions, expert writing and research, or product management: Ryters Spot is your strategic partner from brief to delivery.')}</p>
             </div>
             <div className="cta-band-actions">
               <Link href="/get-started" className="btn btn-accent btn-lg">{c('cta_banner_cta1_text', 'Get Started Free')}</Link>
