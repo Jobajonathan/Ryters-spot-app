@@ -111,7 +111,7 @@ export default function HomePage() {
         .hero-v2 {
           position: relative;
           overflow: hidden;
-          padding: 3rem 0 4rem;
+          padding: 1.5rem 0 4rem;
           background: var(--clr-bg);
           border-bottom: 1px solid var(--clr-border);
         }
@@ -227,7 +227,7 @@ export default function HomePage() {
         }
 
         @media (max-width: 900px) {
-          .hero-v2 { padding: 2rem 0 2.5rem; }
+          .hero-v2 { padding: 1rem 0 2rem; }
           .hero-v2-grid { grid-template-columns: 1fr; gap: 2.5rem; }
           .hero-v2-visual { display: none; }
           .hero-v2 h1 { font-size: clamp(2.1rem, 7vw, 2.8rem); }
@@ -414,8 +414,8 @@ export default function HomePage() {
                 Ryters Spot provides specialist writing, research, AI automation, EdTech and product management consultancy to professionals and organisations across the UK, Europe, North America and Africa.
               </p>
               <div className="hero-v2-ctas">
-                <Link href="/get-started" className="btn btn-accent btn-lg">{c('hero_cta1_text', 'Start Your Project')}</Link>
-                <Link href="/contact" className="btn btn-outline btn-lg">{c('hero_cta2_text', 'Book a Consultation')}</Link>
+                <Link href="/get-started" className="btn btn-accent btn-lg">{c('hero_cta1_text', 'Hire Us')}</Link>
+                <Link href="/contact" className="btn btn-outline btn-lg">{c('hero_cta2_text', 'Talk to Us')}</Link>
               </div>
               <div className="hero-v2-tags">
                 <Link href="/services/ai-automation" className="hero-v2-tag">AI Automation</Link>
