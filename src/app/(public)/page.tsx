@@ -414,7 +414,7 @@ export default function HomePage() {
                 Ryters Spot provides specialist writing, research, AI automation, EdTech and product management consultancy to professionals and organisations across the UK, Europe, North America and Africa.
               </p>
               <div className="hero-v2-ctas">
-                <Link href="/services" className="btn btn-accent btn-lg">Hire Us</Link>
+                <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-lg">Hire Us</a>
                 <Link href="/contact" className="btn btn-outline btn-lg">Talk to Us</Link>
               </div>
               <div className="hero-v2-tags">

@@ -1,32 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
+import { useState } from 'react'
 
 export default function ContactPage() {
-  useScrollReveal()
-  const [cms, setCms] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    fetch('/api/content').then(r => r.json()).then(setCms).catch(() => {})
-  }, [])
-
-  function c(key: string, fallback: string) { return cms[key] || fallback }
-
-  const [form, setForm] = useState({
-    first_name: '', last_name: '', email: '', phone: '',
-    organization: '', inquiry_type: '', service: '', message: '', newsletter_opt: false
-  })
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-    const target = e.target as HTMLInputElement
-    setForm(prev => ({
-      ...prev,
-      [target.name]: target.type === 'checkbox' ? target.checked : target.value
-    }))
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -37,7 +20,12 @@ export default function ContactPage() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          first_name: form.name,
+          email: form.email,
+          message: form.message,
+          inquiry_type: 'general',
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -54,227 +42,158 @@ export default function ContactPage() {
 
   return (
     <>
-      <header className="page-hero">
+      <style>{`
+        .contact-simple {
+          min-height: 80vh;
+          display: flex;
+          align-items: center;
+          padding: 5rem 0;
+        }
+        .contact-simple-inner {
+          max-width: 560px;
+          margin: 0 auto;
+          width: 100%;
+        }
+        .contact-simple-inner .eyebrow {
+          margin-bottom: 1rem;
+        }
+        .contact-simple-inner h1 {
+          font-size: clamp(2rem, 5vw, 2.8rem);
+          font-weight: 800;
+          line-height: 1.1;
+          letter-spacing: -0.03em;
+          margin-bottom: 0.75rem;
+        }
+        .contact-simple-inner .sub {
+          color: var(--clr-text-muted);
+          font-size: 1rem;
+          line-height: 1.7;
+          margin-bottom: 2.5rem;
+        }
+        .simple-form { display: flex; flex-direction: column; gap: 1.25rem; }
+        .simple-form label {
+          display: block;
+          font-size: 0.8rem;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--clr-text-subtle);
+          margin-bottom: 0.4rem;
+        }
+        .simple-form input,
+        .simple-form textarea {
+          width: 100%;
+          background: var(--clr-surface);
+          border: 1.5px solid var(--clr-border);
+          border-radius: 10px;
+          padding: 0.85rem 1rem;
+          font-size: 0.95rem;
+          color: var(--clr-text);
+          outline: none;
+          transition: border-color 0.2s;
+          font-family: inherit;
+        }
+        .simple-form input:focus,
+        .simple-form textarea:focus {
+          border-color: var(--clr-primary);
+        }
+        .simple-form textarea { min-height: 130px; resize: vertical; }
+        .simple-form .send-btn {
+          width: 100%;
+          justify-content: center;
+          padding: 0.9rem;
+          margin-top: 0.5rem;
+        }
+        .simple-form .privacy-note {
+          text-align: center;
+          font-size: 0.72rem;
+          color: var(--clr-text-subtle);
+          margin-top: 0.5rem;
+        }
+        .simple-form .privacy-note a { color: var(--clr-primary-light); }
+        .success-box {
+          text-align: center;
+          padding: 3rem 1rem;
+        }
+        .success-box .check {
+          font-size: 2.5rem;
+          color: var(--clr-primary);
+          margin-bottom: 1rem;
+        }
+        .success-box h3 { margin-bottom: 0.5rem; }
+        .success-box p { color: var(--clr-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .wa-alt {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          justify-content: center;
+          margin-top: 2rem;
+          font-size: 0.85rem;
+          color: var(--clr-text-muted);
+        }
+        .wa-alt a {
+          color: #25D366;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .wa-alt a:hover { text-decoration: underline; }
+        @media (max-width: 600px) {
+          .contact-simple { padding: 3rem 0; }
+        }
+      `}</style>
+
+      <section className="contact-simple">
         <div className="container">
-          <nav className="breadcrumb" aria-label="Breadcrumb">
-            <Link href="/">Home</Link>
-            <span className="breadcrumb-sep">&#8250;</span>
-            <span>Contact</span>
-          </nav>
-          <h1>{c('contact_hero_heading', 'Let us Start a Conversation')}</h1>
-          <p>{c('contact_hero_subtext', 'Whether you have a project in mind, a question about our services or want to explore a partnership, we would love to hear from you.')}</p>
-        </div>
-      </header>
+          <div className="contact-simple-inner">
+            <p className="eyebrow">Get in touch</p>
+            <h1>Talk to Us</h1>
+            <p className="sub">Leave us a message and we will get back to you within one business day.</p>
 
-      <section className="section">
-        <div className="container">
-          <div className="contact-grid">
-
-            <div>
-              <span className="section-label">Get In Touch</span>
-              <h2 style={{ marginBottom: 'var(--space-lg)' }}>We are Here to Help</h2>
-              <p style={{ marginBottom: 'var(--space-2xl)' }}>We are a global platform — available across all time zones. Our team responds to every enquiry within 24 hours. For urgent matters, please indicate this in your message.</p>
-
-              <div className="contact-info-item reveal">
-                <div className="contact-info-icon">&#128205;</div>
-                <div>
-                  <p className="contact-info-label">Our Office</p>
-                  <p className="contact-info-val">{c('contact_address', 'Abuja, Nigeria')}<br /><span style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }}>Serving clients in the UK, Canada, USA and Europe</span></p>
-                </div>
+            {status === 'success' ? (
+              <div className="success-box">
+                <div className="check">&#10003;</div>
+                <h3>Message received.</h3>
+                <p>Thank you for reaching out. We will be in touch shortly.</p>
+                <button className="btn btn-outline btn-sm" onClick={() => { setStatus('idle'); setForm({ name: '', email: '', message: '' }) }}>
+                  Send another message
+                </button>
               </div>
-
-              <div className="contact-info-item reveal">
-                <div className="contact-info-icon">&#128231;</div>
-                <div>
-                  <p className="contact-info-label">Email</p>
-                  <p className="contact-info-val"><a href={`mailto:${c('contact_email', 'hello@theryters.com')}`} style={{ color: 'var(--clr-primary-light)' }}>{c('contact_email', 'hello@theryters.com')}</a></p>
-                </div>
-              </div>
-
-              <div className="contact-info-item reveal">
-                <div className="contact-info-icon">&#128222;</div>
-                <div>
-                  <p className="contact-info-label">Phone / WhatsApp</p>
-                  <p className="contact-info-val"><a href={`tel:${c('contact_phone', '+234 706 205 7116')}`} style={{ color: 'var(--clr-primary-light)' }}>{c('contact_phone', '+234 706 205 7116')}</a></p>
-                </div>
-              </div>
-
-              <div className="contact-info-item reveal">
-                <div className="contact-info-icon">🌍</div>
-                <div>
-                  <p className="contact-info-label">Availability</p>
-                  <p className="contact-info-val">Available globally, across all time zones<br /><span style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }}>We respond to every enquiry within 24 hours</span></p>
-                </div>
-              </div>
-
-              <div style={{ marginTop: 'var(--space-2xl)' }}>
-                <p style={{ fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--clr-text-subtle)', marginBottom: 'var(--space-md)' }}>Follow Us</p>
-                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                  <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-md)', fontSize: '0.82rem', color: 'var(--clr-text-muted)', transition: 'all 0.2s', textDecoration: 'none' }} aria-label="LinkedIn">in LinkedIn</a>
-                  <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-md)', fontSize: '0.82rem', color: 'var(--clr-text-muted)', transition: 'all 0.2s', textDecoration: 'none' }} aria-label="Twitter">&#120143; Twitter</a>
-                </div>
-              </div>
-            </div>
-
-            <div className="reveal fade-up-delay-1">
-              <div className="form-card">
-                <h3 style={{ marginBottom: 'var(--space-sm)' }}>Send Us a Message</h3>
-                <p style={{ fontSize: '0.875rem', marginBottom: 'var(--space-xl)' }}>Fill in the form below and we will get back to you promptly.</p>
-
-                {status === 'success' ? (
-                  <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>&#10003;</div>
-                    <h4 style={{ fontFamily: 'var(--font-serif)', color: 'var(--clr-primary)', marginBottom: '0.75rem' }}>Message sent successfully!</h4>
-                    <p style={{ fontSize: '0.95rem', color: 'var(--clr-text-muted)', marginBottom: '1.5rem' }}>
-                      Thank you for reaching out. We have sent a confirmation to your email and will respond within one business day.
-                    </p>
-                    <button className="btn btn-outline btn-sm" onClick={() => setStatus('idle')}>Send Another Message</button>
+            ) : (
+              <form className="simple-form" onSubmit={handleSubmit} noValidate>
+                {status === 'error' && (
+                  <div style={{ background: '#fff5f5', border: '1px solid #feb2b2', color: '#c53030', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.875rem' }}>
+                    {errorMsg}
                   </div>
-                ) : (
-                  <form id="contact-form" noValidate aria-label="Contact form" onSubmit={handleSubmit}>
-
-                    {status === 'error' && (
-                      <div style={{ background: '#fff5f5', border: '1px solid #feb2b2', color: '#c53030', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.875rem', marginBottom: '1.25rem' }}>
-                        {errorMsg}
-                      </div>
-                    )}
-
-                    <div className="form-grid-2">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="first-name">First Name <span style={{ color: '#e53e3e' }}>*</span></label>
-                        <input className="form-control" type="text" id="first-name" name="first_name" placeholder="e.g. Adaeze" required autoComplete="given-name" value={form.first_name} onChange={handleChange} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="last-name">Last Name <span style={{ color: '#e53e3e' }}>*</span></label>
-                        <input className="form-control" type="text" id="last-name" name="last_name" placeholder="e.g. Okonkwo" required autoComplete="family-name" value={form.last_name} onChange={handleChange} />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="email">Email Address <span style={{ color: '#e53e3e' }}>*</span></label>
-                      <input className="form-control" type="email" id="email" name="email" placeholder="you@yourcompany.com" required autoComplete="email" value={form.email} onChange={handleChange} />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="phone">Phone / WhatsApp</label>
-                      <input className="form-control" type="tel" id="phone" name="phone" placeholder="+44 XXX XXX XXXX" autoComplete="tel" value={form.phone} onChange={handleChange} />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="organization">Organisation / Institution</label>
-                      <input className="form-control" type="text" id="organization" name="organization" placeholder="Company or institution name" autoComplete="organization" value={form.organization} onChange={handleChange} />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="inquiry-type">Type of Inquiry <span style={{ color: '#e53e3e' }}>*</span></label>
-                      <select className="form-control" id="inquiry-type" name="inquiry_type" required value={form.inquiry_type} onChange={handleChange}>
-                        <option value="" disabled>Select an inquiry type</option>
-                        <option value="project">Project Inquiry</option>
-                        <option value="consultation">Free Consultation</option>
-                        <option value="partnership">Partnership Proposal</option>
-                        <option value="academic">Research and Academic Enquiry</option>
-                        <option value="digital-transformation">Digital Transformation and Automation</option>
-                        <option value="edtech">Ed-Tech Services</option>
-                        <option value="product-management">Product Management</option>
-                        <option value="general">General Question</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="service">Service of Interest</label>
-                      <select className="form-control" id="service" name="service" value={form.service} onChange={handleChange}>
-                        <option value="">Select a service</option>
-                        <option>Research and Academic Enquiry</option>
-                        <option>Digital Transformation and Automation</option>
-                        <option>Ed-Tech Services</option>
-                        <option>Product Management</option>
-                        <option>Multiple Services</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="message">Tell Us More <span style={{ color: '#e53e3e' }}>*</span></label>
-                      <textarea className="form-control" id="message" name="message" placeholder="Please describe your project, challenge, or question in as much detail as you like..." required style={{ minHeight: '140px' }} value={form.message} onChange={handleChange}></textarea>
-                    </div>
-
-                    <div className="form-group" style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-sm)' }}>
-                      <input type="checkbox" id="newsletter-opt" name="newsletter_opt" checked={form.newsletter_opt} onChange={handleChange} style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--clr-primary)', flexShrink: 0 }} />
-                      <label htmlFor="newsletter-opt" style={{ fontSize: '0.83rem', color: 'var(--clr-text-muted)', cursor: 'pointer' }}>I would like to receive Ryters Spot insights on research, digital transformation and Ed-Tech.</label>
-                    </div>
-
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.9rem' }} disabled={status === 'loading'}>
-                      {status === 'loading' ? 'Sending...' : 'Send Message'}
-                    </button>
-
-                    <p style={{ fontSize: '0.75rem', color: 'var(--clr-text-subtle)', textAlign: 'center', marginTop: 'var(--space-md)' }}>
-                      By submitting this form, you agree to our <Link href="/privacy" style={{ color: 'var(--clr-primary-light)', textDecoration: 'underline' }}>Privacy Policy</Link>. We will never share your data.
-                    </p>
-                  </form>
                 )}
-              </div>
-            </div>
 
-          </div>
-        </div>
-      </section>
+                <div>
+                  <label htmlFor="name">Your Name</label>
+                  <input id="name" name="name" type="text" placeholder="e.g. Amara Okonkwo" required value={form.name} onChange={handleChange} autoComplete="name" />
+                </div>
 
-      {/* FAQ */}
-      <section className="section section-alt">
-        <div className="container">
-          <div className="text-center" style={{ marginBottom: 'var(--space-2xl)' }}>
-            <span className="section-label">Common Questions</span>
-            <h2 className="reveal">Frequently Asked Questions</h2>
-          </div>
-          <div style={{ maxWidth: '720px', marginInline: 'auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                <div>
+                  <label htmlFor="email">Email Address</label>
+                  <input id="email" name="email" type="email" placeholder="you@email.com" required value={form.email} onChange={handleChange} autoComplete="email" />
+                </div>
 
-            <details style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', cursor: 'pointer' }} className="reveal">
-              <summary style={{ fontWeight: 600, color: 'var(--clr-text)', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                I am based in the UK, Canada or the US. Can you still work with me?
-                <span style={{ color: 'var(--clr-primary-light)', fontSize: '1.2rem' }}>+</span>
-              </summary>
-              <p style={{ marginTop: 'var(--space-md)', fontSize: '0.9rem' }}>Absolutely. The majority of our clients are located in the UK, Canada, the United States and across Europe. All our services are delivered entirely remotely. We are comfortable working across time zones and adapt our communication to suit your schedule.</p>
-            </details>
+                <div>
+                  <label htmlFor="message">Message</label>
+                  <textarea id="message" name="message" placeholder="Tell us what you need help with..." required value={form.message} onChange={handleChange} />
+                </div>
 
-            <details style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', cursor: 'pointer' }} className="reveal">
-              <summary style={{ fontWeight: 600, color: 'var(--clr-text)', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                How do you handle confidentiality and NDAs?
-                <span style={{ color: 'var(--clr-primary-light)', fontSize: '1.2rem' }}>+</span>
-              </summary>
-              <p style={{ marginTop: 'var(--space-md)', fontSize: '0.9rem' }}>Confidentiality is not optional for us, it is foundational. We sign NDAs on every engagement where clients require it, and our internal protocols ensure that no project details, client identities or deliverables are ever disclosed.</p>
-            </details>
+                <button type="submit" className="btn btn-accent send-btn" disabled={status === 'loading'}>
+                  {status === 'loading' ? 'Sending...' : 'Send Message'}
+                </button>
 
-            <details style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', cursor: 'pointer' }} className="reveal">
-              <summary style={{ fontWeight: 600, color: 'var(--clr-text)', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                What academic support do you provide for students in the UK and Canada?
-                <span style={{ color: 'var(--clr-primary-light)', fontSize: '1.2rem' }}>+</span>
-              </summary>
-              <p style={{ marginTop: 'var(--space-md)', fontSize: '0.9rem' }}>We provide dissertation and thesis support, research design advisory, data analysis, literature reviews, academic writing coaching and full academic ghostwriting. Our specialists are familiar with the standards expected at universities in the UK, Canada, the US and Australia.</p>
-            </details>
+                <p className="privacy-note">
+                  We will never share your data. <Link href="/privacy">Privacy Policy</Link>
+                </p>
+              </form>
+            )}
 
-            <details style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', cursor: 'pointer' }} className="reveal">
-              <summary style={{ fontWeight: 600, color: 'var(--clr-text)', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                How quickly can you start and what are your turnaround times?
-                <span style={{ color: 'var(--clr-primary-light)', fontSize: '1.2rem' }}>+</span>
-              </summary>
-              <p style={{ marginTop: 'var(--space-md)', fontSize: '0.9rem' }}>Most projects begin within 2 to 3 business days following our initial consultation and signed agreement. Turnaround times vary by project scope, but we are transparent about timelines from the outset.</p>
-            </details>
-
-            <details style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', cursor: 'pointer' }} className="reveal">
-              <summary style={{ fontWeight: 600, color: 'var(--clr-text)', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                How are projects priced and what payment methods do you accept?
-                <span style={{ color: 'var(--clr-primary-light)', fontSize: '1.2rem' }}>+</span>
-              </summary>
-              <p style={{ marginTop: 'var(--space-md)', fontSize: '0.9rem' }}>We price on a project basis, providing a detailed proposal after the discovery call. International payments are accepted via bank transfer, PayPal and other methods convenient for clients in Europe and North America.</p>
-            </details>
-
-            <details style={{ background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-lg)', cursor: 'pointer' }} className="reveal">
-              <summary style={{ fontWeight: 600, color: 'var(--clr-text)', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                What makes Ryters Spot different from a freelancer or content agency?
-                <span style={{ color: 'var(--clr-primary-light)', fontSize: '1.2rem' }}>+</span>
-              </summary>
-              <p style={{ marginTop: 'var(--space-md)', fontSize: '0.9rem' }}>We are neither a marketplace nor a generalist agency. We are a specialist firm where every engagement is led by an experienced professional with genuine subject-matter expertise. You get consistent quality, direct accountability and a team that invests in understanding your context.</p>
-            </details>
-
+            <p className="wa-alt">
+              Prefer to chat? <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+            </p>
           </div>
         </div>
       </section>
