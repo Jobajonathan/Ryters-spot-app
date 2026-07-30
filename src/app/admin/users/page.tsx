@@ -10,6 +10,11 @@ type Client = {
   country: string | null
   role: string
   created_at: string
+  project_count?: number
+  active_project_count?: number
+  booking_count?: number
+  paid_total?: number
+  last_activity_at?: string
 }
 
 type AdminUser = {
@@ -203,7 +208,7 @@ export default function UsersPage() {
 
       <div style={{ marginBottom: '1.75rem' }}>
         <h1 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.5rem', fontWeight: 700, color: '#111827', margin: '0 0 0.25rem' }}>Users & CRM</h1>
-        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Manage clients and the admin team.</p>
+        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: 0 }}>Manage clients, relationship activity and the admin team.</p>
       </div>
 
       {actionMsg && (
@@ -241,11 +246,11 @@ export default function UsersPage() {
           ) : (
             <table className="users-table">
               <thead>
-                <tr><th>Name</th><th>Email</th><th>Company</th><th>Country</th><th>Joined</th></tr>
+                <tr><th>Name</th><th>Email</th><th>Company</th><th>Projects</th><th>Bookings</th><th>Paid</th><th>Last Activity</th></tr>
               </thead>
               <tbody>
                 {filteredClients.length === 0 ? (
-                  <tr><td colSpan={5} style={{ textAlign: 'center', color: '#9ca3af', padding: '2.5rem' }}>{search ? 'No matching clients.' : 'No clients yet.'}</td></tr>
+                  <tr><td colSpan={7} style={{ textAlign: 'center', color: '#9ca3af', padding: '2.5rem' }}>{search ? 'No matching clients.' : 'No clients yet.'}</td></tr>
                 ) : filteredClients.map(c => (
                   <tr key={c.id}>
                     <td>
@@ -258,8 +263,10 @@ export default function UsersPage() {
                     </td>
                     <td style={{ color: '#6b7280' }}>{c.email}</td>
                     <td style={{ color: '#6b7280' }}>{c.company || '—'}</td>
-                    <td style={{ color: '#6b7280' }}>{c.country || '—'}</td>
-                    <td style={{ color: '#9ca3af', fontSize: '0.75rem' }}>{fmtDate(c.created_at)}</td>
+                    <td style={{ color: '#374151', fontWeight: 700 }}>{c.active_project_count ?? 0} active / {c.project_count ?? 0} total</td>
+                    <td style={{ color: '#374151', fontWeight: 700 }}>{c.booking_count ?? 0}</td>
+                    <td style={{ color: '#374151', fontWeight: 700 }}>{(c.paid_total ?? 0).toLocaleString()}</td>
+                    <td style={{ color: '#9ca3af', fontSize: '0.75rem' }}>{fmtDate(c.last_activity_at || c.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

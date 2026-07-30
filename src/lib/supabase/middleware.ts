@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isAdminRole } from '@/lib/admin/roles'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -80,7 +81,7 @@ export async function updateSession(request: NextRequest) {
       .single()
 
     const role = profile?.role ?? 'client'
-    const isAdmin = ['admin', 'superadmin'].includes(role)
+    const isAdmin = isAdminRole(role)
 
     // Logged-in users hitting /login or /signup → send to the right place
     if (pathname === '/login' || pathname === '/signup') {

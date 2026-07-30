@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { apiGet, apiSend } from '@/lib/api/client'
 
 type Notification = {
   id: string
@@ -15,13 +15,23 @@ type Notification = {
   created_at: string
 }
 
+type AccountProfile = {
+  email: string
+  full_name: string
+  country: string
+  company: string
+  phone: string
+}
+
 const navItems = [
   { label: 'Overview',         icon: '◈',  href: '/dashboard' },
+  { label: 'Workspace',        icon: 'W',  href: '/dashboard/workspace' },
   { label: 'Request a Service', icon: '+',  href: '/dashboard/request' },
   { label: 'My Projects',      icon: '▤',  href: '/dashboard/projects' },
   { label: 'Deliverables',     icon: '↓',  href: '/dashboard/deliverables' },
   { label: 'Payments',         icon: '◎',  href: '/dashboard/payments' },
   { label: 'Messages',         icon: '◻',  href: '/dashboard/messages' },
+  { label: 'Bookings',         icon: 'B',  href: '/dashboard/bookings' },
   { label: 'Settings',         icon: '⚙',  href: '/dashboard/settings' },
 ]
 
@@ -36,17 +46,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const notifRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    async function loadUser() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const fullName = user.user_metadata?.full_name as string | undefined
-        const name = fullName ? fullName.split(' ')[0] : user.email?.split('@')[0] || 'Client'
+    apiGet<AccountProfile>('/api/account/profile')
+      .then(profile => {
+        const name = profile.full_name ? profile.full_name.split(' ')[0] : profile.email.split('@')[0] || 'Client'
         setUserName(name)
         setUserInitial(name.charAt(0).toUpperCase())
-      }
-    }
-    loadUser()
+      })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -82,8 +88,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   async function signOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    await apiSend('/api/auth/signout', 'POST')
     router.push('/login')
   }
 
@@ -100,13 +105,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <>
       <style>{`
         /* ── Layout shell ── */
-        .ds-shell { display: flex; min-height: 100vh; background: #F4F6F8; }
+        .ds-shell {
+          display: flex;
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at 18% 12%, rgba(201,168,76,0.14), transparent 30%),
+            radial-gradient(circle at 90% 4%, rgba(82,183,136,0.13), transparent 34%),
+            linear-gradient(145deg, #f7f9f8 0%, #eef4f0 50%, #f8f5ed 100%);
+        }
         [data-theme="dark"] .ds-shell { background: var(--clr-bg); }
 
         /* ── Sidebar ── */
         .ds-sidebar {
           width: 248px;
-          background: var(--clr-primary);
+          background: linear-gradient(180deg, rgba(6,18,13,0.96), rgba(13,38,27,0.93));
+          border-right: 1px solid rgba(255,255,255,0.08);
+          box-shadow: 18px 0 48px rgba(7, 27, 18, 0.16);
+          backdrop-filter: blur(22px) saturate(160%);
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
@@ -252,8 +267,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         /* Topbar */
         .ds-topbar {
-          background: #fff;
-          border-bottom: 1px solid #E8EAED;
+          background: rgba(255,255,255,0.72);
+          border-bottom: 1px solid rgba(232,234,237,0.75);
           padding: 0 1.75rem;
           height: 60px;
           display: flex;
@@ -264,6 +279,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           top: 0;
           z-index: 50;
           flex-shrink: 0;
+          box-shadow: 0 12px 32px rgba(15, 36, 25, 0.06);
+          backdrop-filter: blur(24px) saturate(165%);
         }
         [data-theme="dark"] .ds-topbar { background: var(--clr-surface); border-bottom-color: var(--clr-border); }
         .ds-topbar-left { display: flex; align-items: center; gap: 0.75rem; }
@@ -429,7 +446,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={`ds-nav-item${isActive(item.href) ? ' active' : ''}`}
                 onClick={() => setSidebarOpen(false)}
               >
-                <span className="ds-nav-icon">{item.icon}</span>
+                <span className="ds-nav-icon">{item.label === 'Payments' ? '$' : item.label.charAt(0)}</span>
                 <span>{item.label}</span>
               </Link>
             ))}

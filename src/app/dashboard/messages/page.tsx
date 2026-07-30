@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 
 type Thread = {
   id: string
@@ -151,6 +152,7 @@ export default function MessagesPage() {
           <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💬</div>
           <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', fontSize: '1.25rem', color: '#111827', margin: '0 0 0.5rem' }}>No active projects</h2>
           <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Messages are tied to your projects. Submit a request to get started.</p>
+          <Link href="/dashboard/bookings" className="btn btn-primary" style={{ marginTop: '1rem' }}>Book a conversation</Link>
         </div>
       ) : (
         <div className="msg-wrap">

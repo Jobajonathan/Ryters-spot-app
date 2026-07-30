@@ -3,9 +3,8 @@
 import { useState, useEffect, useRef, ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
-
-type Role = 'superadmin' | 'admin' | 'finance' | 'support' | 'content'
+import { type AdminRole, isAdminRole } from '@/lib/admin/roles'
+import { apiSend } from '@/lib/api/client'
 
 interface NavItem { label: string; href: string; exact?: boolean; roles: string | string[] }
 interface NavSection { title: string | null; items: NavItem[] }
@@ -21,6 +20,7 @@ const NAV: NavSection[] = [
     title: 'Operations',
     items: [
       { label: 'Applications', href: '/admin/applications', roles: ['superadmin','admin','support'] },
+      { label: 'Bookings', href: '/admin/bookings', roles: ['superadmin','admin','support','operations'] },
       { label: 'Messages', href: '/admin/messages', roles: ['superadmin','admin','support'] },
       { label: 'Clients & CRM', href: '/admin/users', roles: ['superadmin','admin','support'] },
       { label: 'Payments', href: '/admin/payments', roles: ['superadmin','finance'] },
@@ -51,6 +51,7 @@ const NAV: NavSection[] = [
 const ICONS: Record<string, string> = {
   '/admin': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>`,
   '/admin/applications': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`,
+  '/admin/bookings': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`,
   '/admin/messages': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
   '/admin/users': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
   '/admin/payments': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
@@ -61,7 +62,7 @@ const ICONS: Record<string, string> = {
   '/admin/security': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
 }
 
-function hasAccess(roles: string | string[], role: Role): boolean {
+function hasAccess(roles: string | string[], role: AdminRole): boolean {
   if (roles === '*') return true
   if (role === 'superadmin') return true
   return Array.isArray(roles) ? roles.includes(role) : roles === role
@@ -78,7 +79,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 function AdminShell({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [role, setRole] = useState<Role | null>(null)
+  const [role, setRole] = useState<AdminRole | null>(null)
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -89,8 +90,8 @@ function AdminShell({ children }: { children: ReactNode }) {
     fetch('/api/admin/me')
       .then(r => r.json())
       .then(data => {
-        if (data.role && ['admin','superadmin','finance','support','content'].includes(data.role)) {
-          setRole(data.role as Role)
+        if (isAdminRole(data.role)) {
+          setRole(data.role)
           setName(data.full_name || data.email || 'Admin')
         } else {
           router.replace('/admin/login')
@@ -111,8 +112,7 @@ function AdminShell({ children }: { children: ReactNode }) {
       clearTimeout(logoutTimeout)
       warningTimeout = setTimeout(() => setShowWarning(true), 13 * 60 * 1000)
       logoutTimeout = setTimeout(async () => {
-        const supabase = createClient()
-        await supabase.auth.signOut()
+        await apiSend('/api/auth/signout', 'POST')
         router.push('/admin/login?reason=inactivity')
       }, 15 * 60 * 1000)
     }
@@ -130,8 +130,7 @@ function AdminShell({ children }: { children: ReactNode }) {
   }, [role, router])
 
   async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    await apiSend('/api/auth/signout', 'POST')
     router.push('/admin/login')
   }
 
@@ -159,11 +158,23 @@ function AdminShell({ children }: { children: ReactNode }) {
         @keyframes spin { to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
         body { margin: 0; }
-        .admin-shell { display: flex; min-height: 100vh; font-family: var(--font-sans, 'Lato', system-ui, sans-serif); }
+        .admin-shell {
+          display: flex;
+          min-height: 100vh;
+          font-family: var(--font-sans, 'Lato', system-ui, sans-serif);
+          background:
+            radial-gradient(circle at 15% 10%, rgba(201,168,76,0.16), transparent 32%),
+            radial-gradient(circle at 88% 0%, rgba(82,183,136,0.14), transparent 34%),
+            linear-gradient(145deg, #f6f8f7 0%, #eef4f0 52%, #f8f5ed 100%);
+        }
 
         /* Sidebar */
         .admin-sidebar {
-          width: 248px; min-height: 100vh; background: #0b1912;
+          width: 248px; min-height: 100vh;
+          background: linear-gradient(180deg, rgba(6,18,13,0.96), rgba(13,38,27,0.93));
+          border-right: 1px solid rgba(255,255,255,0.08);
+          box-shadow: 18px 0 48px rgba(7, 27, 18, 0.16);
+          backdrop-filter: blur(22px) saturate(160%);
           display: flex; flex-direction: column;
           position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
           transition: transform 0.25s ease;
@@ -233,12 +244,13 @@ function AdminShell({ children }: { children: ReactNode }) {
         .admin-logout-btn:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: #f87171; }
 
         /* Main content */
-        .admin-main { margin-left: 248px; flex: 1; background: #f4f6f8; min-height: 100vh; display: flex; flex-direction: column; }
+        .admin-main { margin-left: 248px; flex: 1; background: transparent; min-height: 100vh; display: flex; flex-direction: column; }
         .admin-topbar {
-          height: 58px; background: #fff; border-bottom: 1px solid #e8eaed;
+          height: 58px; background: rgba(255,255,255,0.72); border-bottom: 1px solid rgba(232,234,237,0.75);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 2rem; flex-shrink: 0; position: sticky; top: 0; z-index: 40;
-          box-shadow: 0 1px 0 #f0f0f0;
+          box-shadow: 0 12px 32px rgba(15, 36, 25, 0.06);
+          backdrop-filter: blur(24px) saturate(165%);
         }
         .admin-topbar-title { font-family: var(--font-heading, DM Sans, sans-serif); font-size: 0.9rem; font-weight: 700; color: #1f2937; letter-spacing: -0.01em; }
         .admin-content { flex: 1; padding: 2rem; max-width: 1280px; width: 100%; }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { isAdminRole } from '@/lib/admin/roles'
 
 const adminSupabase = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,7 +32,7 @@ export async function GET() {
       .eq('id', user.id)
       .single()
 
-    if (!data || !['admin', 'superadmin'].includes(data.role)) {
+    if (!data || !isAdminRole(data.role)) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
     }
 

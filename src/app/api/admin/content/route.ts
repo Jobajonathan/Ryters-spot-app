@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { isAdminRole } from '@/lib/admin/roles'
 
 const adminSupabase = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,7 +22,7 @@ async function getUser() {
 
 async function isAdmin(userId: string) {
   const { data } = await adminSupabase.from('profiles').select('role').eq('id', userId).single()
-  return data?.role && ['admin', 'superadmin', 'content'].includes(data.role)
+  return isAdminRole(data?.role) && ['superadmin', 'admin', 'content', 'operations'].includes(data.role)
 }
 
 // GET — return all site content rows
@@ -54,8 +55,7 @@ export async function PUT(request: Request) {
     for (const { key, value } of updates) {
       await adminSupabase
         .from('site_content')
-        .update({ value, updated_at: new Date().toISOString(), updated_by: user.id })
-        .eq('key', key)
+        .upsert({ key, value, updated_at: new Date().toISOString(), updated_by: user.id }, { onConflict: 'key' })
     }
 
     return NextResponse.json({ success: true })

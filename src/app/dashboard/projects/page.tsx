@@ -308,7 +308,10 @@ function ProjectsContent() {
     <>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: 'var(--clr-text)', margin: 0 }}>My Projects</h2>
-        <Link href="/dashboard/request" className="btn btn-primary btn-sm">+ New Request</Link>
+        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <Link href="/dashboard/bookings" className="btn btn-ghost btn-sm">Book a Session</Link>
+          <Link href="/dashboard/request" className="btn btn-primary btn-sm">+ New Request</Link>
+        </div>
       </div>
 
       {submitted && (

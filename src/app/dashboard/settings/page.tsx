@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { apiGet, apiSend } from '@/lib/api/client'
 
 const COUNTRIES = [
   'United Kingdom', 'United States', 'Canada', 'Australia', 'Nigeria',
@@ -9,6 +9,14 @@ const COUNTRIES = [
   'Ireland', 'Sweden', 'Norway', 'Denmark', 'Singapore', 'India',
   'New Zealand', 'UAE', 'Other',
 ]
+
+type AccountProfile = {
+  email: string
+  full_name: string
+  country: string
+  company: string
+  phone: string
+}
 
 export default function SettingsPage() {
   const [formData, setFormData] = useState({ full_name: '', country: '', company: '', phone: '' })
@@ -18,20 +26,17 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    async function loadUser() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setEmail(user.email || '')
+    apiGet<AccountProfile>('/api/account/profile')
+      .then(profile => {
+        setEmail(profile.email)
         setFormData({
-          full_name: (user.user_metadata?.full_name as string) || '',
-          country: (user.user_metadata?.country as string) || '',
-          company: (user.user_metadata?.company as string) || '',
-          phone: (user.user_metadata?.phone as string) || '',
+          full_name: profile.full_name,
+          country: profile.country,
+          company: profile.company,
+          phone: profile.phone,
         })
-      }
-    }
-    loadUser()
+      })
+      .catch(err => setError(err instanceof Error ? err.message : 'Could not load profile.'))
   }, [])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
@@ -44,12 +49,17 @@ export default function SettingsPage() {
     setSaved(false)
     setLoading(true)
     try {
-      const supabase = createClient()
-      const { error: updateError } = await supabase.auth.updateUser({ data: formData })
-      if (updateError) setError(updateError.message)
-      else setSaved(true)
-    } catch {
-      setError('An unexpected error occurred.')
+      const profile = await apiSend<AccountProfile>('/api/account/profile', 'PATCH', formData)
+      setEmail(profile.email)
+      setFormData({
+        full_name: profile.full_name,
+        country: profile.country,
+        company: profile.company,
+        phone: profile.phone,
+      })
+      setSaved(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.')
     } finally {
       setLoading(false)
     }
