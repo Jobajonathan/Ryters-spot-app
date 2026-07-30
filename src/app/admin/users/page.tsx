@@ -98,20 +98,24 @@ export default function UsersPage() {
 
   useEffect(() => {
     if (tab === 'admins' && admins.length === 0) {
-      setAdminsLoading(true)
       fetch('/api/admin/users')
         .then(r => r.json())
         .then(data => { setAdmins(Array.isArray(data) ? data : []); setAdminsLoading(false) })
         .catch(() => setAdminsLoading(false))
     }
     if (tab === 'audit' && audit.length === 0) {
-      setAuditLoading(true)
       fetch('/api/admin/audit')
         .then(r => r.json())
         .then(data => { setAudit(Array.isArray(data) ? data : []); setAuditLoading(false) })
         .catch(() => setAuditLoading(false))
     }
-  }, [tab])
+  }, [tab, admins.length, audit.length])
+
+  function selectTab(nextTab: 'clients' | 'admins' | 'audit') {
+    if (nextTab === 'admins' && admins.length === 0) setAdminsLoading(true)
+    if (nextTab === 'audit' && audit.length === 0) setAuditLoading(true)
+    setTab(nextTab)
+  }
 
   async function handleInvite(e: React.FormEvent) {
     e.preventDefault()
@@ -209,15 +213,15 @@ export default function UsersPage() {
       )}
 
       <div className="users-tabs">
-        <button className={`users-tab${tab === 'clients' ? ' active' : ''}`} onClick={() => setTab('clients')}>
+        <button className={`users-tab${tab === 'clients' ? ' active' : ''}`} onClick={() => selectTab('clients')}>
           Clients ({clients.length})
         </button>
         {isSuperAdmin && (
           <>
-            <button className={`users-tab${tab === 'admins' ? ' active' : ''}`} onClick={() => setTab('admins')}>
+            <button className={`users-tab${tab === 'admins' ? ' active' : ''}`} onClick={() => selectTab('admins')}>
               Admin Team ({admins.length})
             </button>
-            <button className={`users-tab${tab === 'audit' ? ' active' : ''}`} onClick={() => setTab('audit')}>
+            <button className={`users-tab${tab === 'audit' ? ' active' : ''}`} onClick={() => selectTab('audit')}>
               Audit Log
             </button>
           </>

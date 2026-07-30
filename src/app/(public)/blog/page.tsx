@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
 
 type Post = {
   id: string
@@ -17,13 +16,44 @@ type Post = {
 
 const CATEGORIES = [
   { key: 'all', label: 'All' },
-  { key: 'Digital Transformation', label: 'Digital Transformation' },
   { key: 'Research', label: 'Research' },
-  { key: 'Ed-Tech', label: 'Ed-Tech' },
-  { key: 'AI & Automation', label: 'AI & Automation' },
-  { key: 'Product Management', label: 'Product Management' },
-  { key: 'Tips & Guides', label: 'Tips & Guides' },
-  { key: 'Company News', label: 'Company News' },
+  { key: 'Product Management', label: 'Product' },
+  { key: 'Digital Transformation', label: 'Systems' },
+  { key: 'AI & Automation', label: 'Automation' },
+  { key: 'Ed-Tech', label: 'Learning Products' },
+]
+
+const fallbackPosts: Post[] = [
+  {
+    id: 'fallback-research-product-decisions',
+    title: 'Research before product decisions',
+    slug: 'research-before-product-decisions',
+    excerpt: 'A practical note on using evidence, user context and decision briefs before committing product effort.',
+    category: 'Research',
+    published_at: null,
+    author_name: 'Ryters Spot',
+    cover_image_url: null,
+  },
+  {
+    id: 'fallback-knowledge-systems',
+    title: 'Turning expertise into knowledge systems',
+    slug: 'turning-expertise-into-knowledge-systems',
+    excerpt: 'How teams can turn scattered expertise into documentation, learning products and repeatable delivery assets.',
+    category: 'Digital Transformation',
+    published_at: null,
+    author_name: 'Ryters Spot',
+    cover_image_url: null,
+  },
+  {
+    id: 'fallback-product-roadmaps',
+    title: 'From idea to usable roadmap',
+    slug: 'from-idea-to-usable-roadmap',
+    excerpt: 'The R&PD lens for moving from early ambition to scoped requirements, product direction and execution rhythm.',
+    category: 'Product Management',
+    published_at: null,
+    author_name: 'Ryters Spot',
+    cover_image_url: null,
+  },
 ]
 
 function fmtDate(iso: string | null) {
@@ -32,110 +62,70 @@ function fmtDate(iso: string | null) {
 }
 
 export default function BlogPage() {
-  useScrollReveal()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('all')
 
   useEffect(() => {
     fetch('/api/blog')
-      .then(r => r.json())
-      .then(data => { setPosts(Array.isArray(data) ? data : []); setLoading(false) })
+      .then((res) => res.json())
+      .then((data) => { setPosts(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
 
-  const filtered = activeFilter === 'all' ? posts : posts.filter(p => p.category === activeFilter)
-  const featured = posts[0] || null
-  const gridPosts = activeFilter === 'all' ? posts.slice(1) : filtered
+  const displayPosts = posts.length > 0 ? posts : fallbackPosts
+  const filtered = activeFilter === 'all' ? displayPosts : displayPosts.filter((post) => post.category === activeFilter)
+  const featured = displayPosts[0] || null
+  const gridPosts = activeFilter === 'all' ? displayPosts.slice(1) : filtered
+  const usingFallback = !loading && posts.length === 0
 
   return (
     <>
-      <header className="page-hero editorial-hero">
+      <header className="page-hero liquid-page-hero">
         <div className="container">
           <nav className="breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
-            <span className="breadcrumb-sep">&#8250;</span>
-            <span>Blog</span>
+            <span className="breadcrumb-sep">/</span>
+            <span>Insights</span>
           </nav>
-          <p className="eyebrow">Insights</p>
-          <h1>Thought Leadership &amp; Expertise</h1>
-          <p>Perspectives on writing, research, strategy, digital transformation and education from the Ryters Spot team.</p>
+          <p className="rpd-kicker">R&amp;PD Insights</p>
+          <h1>Notes on research, products and knowledge systems.</h1>
+          <p>Clear thinking for people turning ideas into deliverables, systems and products.</p>
         </div>
       </header>
 
-      {/* Category Filter */}
-      <div style={{ background: 'var(--clr-surface)', borderBottom: '1px solid var(--clr-border)', overflowX: 'auto' }}>
+      <div className="liquid-filter">
         <div className="container">
-          <div style={{ display: 'flex', gap: '8px', padding: '0.75rem 0', whiteSpace: 'nowrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--clr-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '4px' }}>Filter:</span>
-            {CATEGORIES.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setActiveFilter(key)}
-                style={{
-                  padding: '0.4rem 1rem',
-                  borderRadius: '100px',
-                  fontSize: '0.82rem',
-                  fontWeight: activeFilter === key ? 600 : 500,
-                  background: activeFilter === key ? 'var(--clr-primary)' : 'transparent',
-                  color: activeFilter === key ? '#fff' : 'var(--clr-text-muted)',
-                  border: activeFilter === key ? 'none' : '1px solid var(--clr-border)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          {CATEGORIES.map(({ key, label }) => (
+            <button key={key} className={activeFilter === key ? 'active' : ''} onClick={() => setActiveFilter(key)}>
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
       {loading ? (
-        <section className="section">
-          <div className="container" style={{ textAlign: 'center', padding: '4rem', color: 'var(--clr-text-muted)' }}>
-            Loading articles...
-          </div>
-        </section>
-      ) : posts.length === 0 ? (
-        <section className="section">
-          <div className="container" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✍️</div>
-            <h2 style={{ fontFamily: 'var(--font-heading, DM Sans, sans-serif)', color: 'var(--clr-text)', marginBottom: '0.5rem' }}>Coming Soon</h2>
-            <p style={{ color: 'var(--clr-text-muted)', maxWidth: '40ch', margin: '0 auto' }}>
-              Our team is working on thought-leadership content. Check back soon for expert insights.
-            </p>
-          </div>
-        </section>
+        <section className="section"><div className="container empty-state">Loading insights...</div></section>
       ) : (
         <>
-          {/* Featured post */}
           {activeFilter === 'all' && featured && (
             <section className="section">
               <div className="container">
-                <span className="section-label">Featured</span>
-                <article className="blog-featured reveal" style={{ marginTop: '1rem' }}>
-                  <div className="blog-featured-img" style={featured.cover_image_url ? { padding: 0, overflow: 'hidden' } : { display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>
-                    {featured.cover_image_url ? (
-                      <img
-                        src={featured.cover_image_url}
-                        alt={featured.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                      />
-                    ) : (
-                      '✍️'
-                    )}
+                <article className="blog-featured liquid-glass">
+                  <div className="blog-featured-img">
+                    {featured.cover_image_url ? <img src={featured.cover_image_url} alt={featured.title} /> : <span>R&amp;PD Insight</span>}
                   </div>
                   <div className="blog-featured-body">
+                    {usingFallback && <span className="blog-status">Editorial preview</span>}
                     {featured.category && <span className="blog-tag">{featured.category}</span>}
-                    <h2 className="blog-featured-title">{featured.title}</h2>
-                    {featured.excerpt && <p className="blog-featured-excerpt">{featured.excerpt}</p>}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                    <h2>{featured.title}</h2>
+                    {featured.excerpt && <p>{featured.excerpt}</p>}
+                    <div className="blog-row">
                       <div className="blog-meta">
-                        <span>{featured.author_name || 'Ryters Spot Editorial'}</span>
+                        <span>{featured.author_name || 'Ryters Spot'}</span>
                         {featured.published_at && <><span className="blog-meta-dot" /><span>{fmtDate(featured.published_at)}</span></>}
                       </div>
-                      <Link href={`/blog/${featured.slug}`} className="btn btn-outline btn-sm">Read Article</Link>
+                      <Link href={usingFallback ? '/blog' : `/blog/${featured.slug}`} className="btn btn-liquid btn-sm">Read insight</Link>
                     </div>
                   </div>
                 </article>
@@ -143,47 +133,37 @@ export default function BlogPage() {
             </section>
           )}
 
-          {/* Posts Grid */}
-          <section className={`section${activeFilter === 'all' ? ' section-alt' : ''}`} id="all-posts">
+          <section className={`section${activeFilter === 'all' ? ' section-alt' : ''}`}>
             <div className="container">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-xl)' }}>
-                <h2 className="reveal">{activeFilter === 'all' ? 'All Articles' : activeFilter}</h2>
-                <p style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)' }} className="reveal">
-                  Showing {gridPosts.length} article{gridPosts.length !== 1 ? 's' : ''}
-                </p>
+              <div className="blog-heading-row">
+                <h2>{activeFilter === 'all' ? 'All insights' : CATEGORIES.find((item) => item.key === activeFilter)?.label}</h2>
+                <p>Showing {gridPosts.length} article{gridPosts.length !== 1 ? 's' : ''}</p>
               </div>
-
+              {usingFallback && (
+                <div className="blog-note liquid-glass">
+                  <strong>Blog publishing is connected.</strong>
+                  <span>These are editorial placeholders until published posts are available from the content system.</span>
+                </div>
+              )}
               {gridPosts.length === 0 ? (
-                <p style={{ color: 'var(--clr-text-muted)', textAlign: 'center', padding: '2rem' }}>
-                  No articles in this category yet.
-                </p>
+                <p className="empty-state">No articles in this category yet.</p>
               ) : (
                 <div className="blog-grid">
-                  {gridPosts.map((post, i) => (
-                    <article key={post.id} className={`blog-card reveal${i % 3 === 1 ? ' fade-up-delay-1' : i % 3 === 2 ? ' fade-up-delay-2' : ''}`}>
-                      <div className="blog-card-img" style={post.cover_image_url ? { padding: 0, overflow: 'hidden' } : { display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>
-                        {post.cover_image_url ? (
-                          <img
-                            src={post.cover_image_url}
-                            alt={post.title}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                          />
-                        ) : (
-                          '✍️'
-                        )}
+                  {gridPosts.map((post) => (
+                    <article key={post.id} className="blog-card liquid-glass">
+                      <div className="blog-card-img">
+                        {post.cover_image_url ? <img src={post.cover_image_url} alt={post.title} /> : <span>{post.category || 'Insight'}</span>}
                       </div>
                       <div className="blog-card-body">
                         {post.category && <span className="blog-tag">{post.category}</span>}
-                        <h3 className="blog-title">{post.title}</h3>
-                        {post.excerpt && <p className="blog-excerpt">{post.excerpt}</p>}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <h3>{post.title}</h3>
+                        {post.excerpt && <p>{post.excerpt}</p>}
+                        <div className="blog-row">
                           <div className="blog-meta">
                             <span>{post.author_name || 'Ryters Spot'}</span>
                             {post.published_at && <><span className="blog-meta-dot" /><span>{fmtDate(post.published_at)}</span></>}
                           </div>
-                          <Link href={`/blog/${post.slug}`} style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--clr-primary)', textDecoration: 'none' }}>
-                            Read →
-                          </Link>
+                          <Link href={usingFallback ? '/blog' : `/blog/${post.slug}`}>Read</Link>
                         </div>
                       </div>
                     </article>
@@ -194,26 +174,6 @@ export default function BlogPage() {
           </section>
         </>
       )}
-
-      {/* Newsletter */}
-      <section className="section newsletter">
-        <div className="container">
-          <div className="newsletter-inner">
-            <div>
-              <span className="section-label">Stay Informed</span>
-              <h2 className="reveal">Get Expert Insights in Your Inbox</h2>
-              <p className="reveal" style={{ marginTop: '0.75rem' }}>Join professionals who receive our newsletter on writing, research, and digital strategy.</p>
-            </div>
-            <div className="reveal">
-              <form className="newsletter-form" aria-label="Newsletter signup" noValidate>
-                <input type="email" className="newsletter-input" placeholder="Enter your email address" required aria-label="Email address" />
-                <button type="submit" className="btn btn-primary">Subscribe</button>
-              </form>
-              <p style={{ fontSize: '0.75rem', color: 'var(--clr-text-subtle)', marginTop: '0.75rem' }}>No spam. Unsubscribe anytime.</p>
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   )
 }

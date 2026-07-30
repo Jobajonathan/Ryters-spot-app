@@ -69,8 +69,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  useEffect(() => { setSidebarOpen(false) }, [pathname])
-
   async function markAllRead() {
     await fetch('/api/notifications', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ markAllRead: true }) })
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
@@ -417,7 +415,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* ── Sidebar ── */}
         <aside className={`ds-sidebar${sidebarOpen ? ' open' : ''}`}>
-          <Link href="/" className="ds-logo">
+          <Link href="/" className="ds-logo" onClick={() => setSidebarOpen(false)}>
             <span className="ds-logo-text">Ryters Spot</span>
             <span className="ds-logo-badge">Client</span>
           </Link>
@@ -429,6 +427,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 className={`ds-nav-item${isActive(item.href) ? ' active' : ''}`}
+                onClick={() => setSidebarOpen(false)}
               >
                 <span className="ds-nav-icon">{item.icon}</span>
                 <span>{item.label}</span>

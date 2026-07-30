@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', project: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -23,8 +23,9 @@ export default function ContactPage() {
         body: JSON.stringify({
           first_name: form.name,
           email: form.email,
+          service: form.project,
           message: form.message,
-          inquiry_type: 'general',
+          inquiry_type: 'rpd_project',
         }),
       })
       const data = await res.json()
@@ -41,162 +42,53 @@ export default function ContactPage() {
   }
 
   return (
-    <>
-      <style>{`
-        .contact-simple {
-          min-height: 80vh;
-          display: flex;
-          align-items: center;
-          padding: 5rem 0;
-        }
-        .contact-simple-inner {
-          max-width: 560px;
-          margin: 0 auto;
-          width: 100%;
-        }
-        .contact-simple-inner .eyebrow {
-          margin-bottom: 1rem;
-        }
-        .contact-simple-inner h1 {
-          font-size: clamp(2rem, 5vw, 2.8rem);
-          font-weight: 800;
-          line-height: 1.1;
-          letter-spacing: -0.03em;
-          margin-bottom: 0.75rem;
-        }
-        .contact-simple-inner .sub {
-          color: var(--clr-text-muted);
-          font-size: 1rem;
-          line-height: 1.7;
-          margin-bottom: 2.5rem;
-        }
-        .simple-form { display: flex; flex-direction: column; gap: 1.25rem; }
-        .simple-form label {
-          display: block;
-          font-size: 0.8rem;
-          font-weight: 600;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          color: var(--clr-text-subtle);
-          margin-bottom: 0.4rem;
-        }
-        .simple-form input,
-        .simple-form textarea {
-          width: 100%;
-          background: var(--clr-surface);
-          border: 1.5px solid var(--clr-border);
-          border-radius: 10px;
-          padding: 0.85rem 1rem;
-          font-size: 0.95rem;
-          color: var(--clr-text);
-          outline: none;
-          transition: border-color 0.2s;
-          font-family: inherit;
-        }
-        .simple-form input:focus,
-        .simple-form textarea:focus {
-          border-color: var(--clr-primary);
-        }
-        .simple-form textarea { min-height: 130px; resize: vertical; }
-        .simple-form .send-btn {
-          width: 100%;
-          justify-content: center;
-          padding: 0.9rem;
-          margin-top: 0.5rem;
-        }
-        .simple-form .privacy-note {
-          text-align: center;
-          font-size: 0.72rem;
-          color: var(--clr-text-subtle);
-          margin-top: 0.5rem;
-        }
-        .simple-form .privacy-note a { color: var(--clr-primary-light); }
-        .success-box {
-          text-align: center;
-          padding: 3rem 1rem;
-        }
-        .success-box .check {
-          font-size: 2.5rem;
-          color: var(--clr-primary);
-          margin-bottom: 1rem;
-        }
-        .success-box h3 { margin-bottom: 0.5rem; }
-        .success-box p { color: var(--clr-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
-        .wa-alt {
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          justify-content: center;
-          margin-top: 2rem;
-          font-size: 0.85rem;
-          color: var(--clr-text-muted);
-        }
-        .wa-alt a {
-          color: #25D366;
-          font-weight: 600;
-          text-decoration: none;
-        }
-        .wa-alt a:hover { text-decoration: underline; }
-        @media (max-width: 600px) {
-          .contact-simple { padding: 3rem 0; }
-        }
-      `}</style>
-
-      <section className="contact-simple">
-        <div className="container">
-          <div className="contact-simple-inner">
-            <p className="eyebrow">Get in touch</p>
-            <h1>Talk to Us</h1>
-            <p className="sub">Leave us a message and we will get back to you within one business day.</p>
-
-            {status === 'success' ? (
-              <div className="success-box">
-                <div className="check">&#10003;</div>
-                <h3>Message received.</h3>
-                <p>Thank you for reaching out. We will be in touch shortly.</p>
-                <button className="btn btn-outline btn-sm" onClick={() => { setStatus('idle'); setForm({ name: '', email: '', message: '' }) }}>
-                  Send another message
-                </button>
-              </div>
-            ) : (
-              <form className="simple-form" onSubmit={handleSubmit} noValidate>
-                {status === 'error' && (
-                  <div style={{ background: '#fff5f5', border: '1px solid #feb2b2', color: '#c53030', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.875rem' }}>
-                    {errorMsg}
-                  </div>
-                )}
-
-                <div>
-                  <label htmlFor="name">Your Name</label>
-                  <input id="name" name="name" type="text" placeholder="e.g. Amara Okonkwo" required value={form.name} onChange={handleChange} autoComplete="name" />
-                </div>
-
-                <div>
-                  <label htmlFor="email">Email Address</label>
-                  <input id="email" name="email" type="email" placeholder="you@email.com" required value={form.email} onChange={handleChange} autoComplete="email" />
-                </div>
-
-                <div>
-                  <label htmlFor="message">Message</label>
-                  <textarea id="message" name="message" placeholder="Tell us what you need help with..." required value={form.message} onChange={handleChange} />
-                </div>
-
-                <button type="submit" className="btn btn-accent send-btn" disabled={status === 'loading'}>
-                  {status === 'loading' ? 'Sending...' : 'Send Message'}
-                </button>
-
-                <p className="privacy-note">
-                  We will never share your data. <Link href="/privacy">Privacy Policy</Link>
-                </p>
-              </form>
-            )}
-
-            <p className="wa-alt">
-              Prefer to chat? <a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
-            </p>
+    <section className="section contact-liquid-page">
+      <div className="container contact-liquid-grid">
+        <div>
+          <p className="rpd-kicker">Start a Project</p>
+          <h1>Tell us what you want to research, build or develop.</h1>
+          <p>Send a short brief. We will review the context and respond with the clearest next step within one business day.</p>
+          <div className="contact-liquid-details liquid-glass">
+            <p><strong>Email</strong><a href="mailto:hello@theryters.com">hello@theryters.com</a></p>
+            <p><strong>WhatsApp</strong><a href="https://wa.me/2347062057116" target="_blank" rel="noopener noreferrer">+234 706 205 7116</a></p>
+            <p><strong>Mode</strong><span>Remote-first. Confidential by default.</span></p>
           </div>
         </div>
-      </section>
-    </>
+
+        <div className="liquid-glass contact-form-card">
+          {status === 'success' ? (
+            <div className="empty-state">
+              <h2>Message received.</h2>
+              <p>Thank you. We will be in touch shortly.</p>
+              <button className="btn btn-liquid" onClick={() => { setStatus('idle'); setForm({ name: '', email: '', project: '', message: '' }) }}>Send another</button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} noValidate>
+              {status === 'error' && <div className="form-error">{errorMsg}</div>}
+              <label htmlFor="name">Name</label>
+              <input id="name" name="name" value={form.name} onChange={handleChange} required autoComplete="name" placeholder="Your name" />
+
+              <label htmlFor="email">Email</label>
+              <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required autoComplete="email" placeholder="you@company.com" />
+
+              <label htmlFor="project">Project type</label>
+              <select id="project" name="project" value={form.project} onChange={handleChange}>
+                <option value="">Select one</option>
+                <option>Research Intelligence</option>
+                <option>Product Development</option>
+                <option>Knowledge Product or System</option>
+                <option>Not sure yet</option>
+              </select>
+
+              <label htmlFor="message">Brief</label>
+              <textarea id="message" name="message" value={form.message} onChange={handleChange} required placeholder="What is the outcome, timeline and current state of the work?" />
+
+              <button type="submit" className="btn btn-accent btn-lg" disabled={status === 'loading'}>{status === 'loading' ? 'Sending...' : 'Send project enquiry'}</button>
+              <p className="liquid-form-note">By submitting, you agree to our <Link href="/privacy">Privacy Policy</Link>.</p>
+            </form>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
