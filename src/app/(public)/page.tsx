@@ -10,8 +10,8 @@ const pillars = [
   {
     id: 'product-development',
     label: 'Product Development',
-    title: 'Products shaped from clear thinking.',
-    text: 'Product discovery, requirements, prototypes, roadmaps and build coordination for founders, operators and institutions.',
+    title: 'Products built to launch, sell and scale.',
+    text: 'Software development planning, digital presence, sales and marketing systems, business development assets, roadmaps and delivery coordination for products that need market traction.',
   },
   {
     id: 'knowledge-systems',
@@ -22,9 +22,9 @@ const pillars = [
 ]
 
 const proof = [
-  ['500+', 'research, writing and product engagements delivered'],
-  ['18+', 'countries reached across Africa, Europe and North America'],
-  ['24h', 'response window for serious project enquiries'],
+  ['Build', 'software, digital products and delivery systems'],
+  ['Launch', 'web presence, offers, campaigns and market entry assets'],
+  ['Scale', 'sales, marketing and business development engines'],
 ]
 
 const insightCards = [
@@ -50,9 +50,9 @@ export default function HomePage() {
         <div className="container liquid-hero-grid">
           <div className="liquid-hero-copy">
             <p className="rpd-kicker">Research and Product Development Company</p>
-            <h1>We turn research into products, systems and serious deliverables.</h1>
+            <h1>We research, build and scale products.</h1>
             <p className="liquid-lede">
-              Ryters Spot is an R&amp;PD company helping founders, professionals and organisations investigate ideas, shape products, build knowledge assets and move from concept to execution with clarity.
+              Ryters Spot helps founders and organisations move from idea to market with research, software planning, digital presence, sales systems, marketing assets and product delivery support.
             </p>
             <div className="liquid-actions">
               <Link href="/contact" className="btn btn-accent btn-lg">Start an R&amp;PD project</Link>
@@ -62,8 +62,8 @@ export default function HomePage() {
 
           <aside className="liquid-glass hero-lab" aria-label="Ryters Spot operating model">
             <div className="lab-mark">R&amp;PD</div>
-            <p className="lab-label">Operating model</p>
-            <h2>Research-led. Product-minded. Delivery-focused.</h2>
+            <p className="lab-label">Product growth model</p>
+            <h2>Research-led. Build-ready. Scale-minded.</h2>
             <div className="lab-proof">
               {proof.map(([value, label]) => (
                 <div key={value}>
@@ -80,8 +80,8 @@ export default function HomePage() {
         <div className="container">
           <div className="section-intro">
             <p className="rpd-kicker">What We Build</p>
-            <h2>One company for the work between insight and launch.</h2>
-            <p>Most important work does not fit neatly into one box. We connect research, writing, product thinking and delivery so your ideas can become usable assets.</p>
+            <h2>One company for the work between insight, product and growth.</h2>
+            <p>Most important products need more than an idea. We connect research, software/product planning, digital presence, sales, marketing and business development so the product can launch and scale.</p>
           </div>
           <div className="pillar-grid">
             {pillars.map((pillar, index) => (
@@ -105,8 +105,8 @@ export default function HomePage() {
           <div className="method-stack">
             {[
               ['01', 'Investigate', 'We gather the research, context, users, market realities and constraints behind the work.'],
-              ['02', 'Shape', 'We define the product, document, system or strategy with clear requirements and decision logic.'],
-              ['03', 'Develop', 'We produce the assets, coordinate delivery and refine the output until it is ready to use.'],
+              ['02', 'Shape', 'We define the product, offer, digital presence, growth channels, requirements and decision logic.'],
+              ['03', 'Develop', 'We build the product assets, coordinate delivery and prepare the sales, marketing and operating systems needed to scale.'],
             ].map(([num, title, text]) => (
               <div className="method-row" key={num}>
                 <span>{num}</span>

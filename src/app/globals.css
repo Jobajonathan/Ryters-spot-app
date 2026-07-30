@@ -1846,9 +1846,11 @@ h3 { font-size: clamp(1.15rem, 2vw, 1.5rem); }
 
 .liquid-hero {
   position: relative;
-  min-height: calc(100vh - 76px);
-  padding: clamp(4rem, 9vw, 8rem) 0;
+  min-height: min(720px, calc(100vh - 76px));
+  padding: clamp(2.4rem, 5vw, 4.4rem) 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .liquid-field {
@@ -1873,8 +1875,8 @@ h3 { font-size: clamp(1.15rem, 2vw, 1.5rem); }
 .liquid-hero-grid {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-  gap: clamp(2rem, 6vw, 5rem);
+  grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.72fr);
+  gap: clamp(1.4rem, 4vw, 3.4rem);
   align-items: center;
 }
 
@@ -1883,25 +1885,31 @@ h3 { font-size: clamp(1.15rem, 2vw, 1.5rem); }
 .section-deep h2,
 .section-deep h3 { color: #fff; }
 
+.liquid-hero h1 {
+  font-size: clamp(3rem, 5.45vw, 5rem);
+  line-height: 0.96;
+  max-width: 850px;
+}
+
 .liquid-lede {
   color: rgba(255,255,255,0.76);
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
-  line-height: 1.72;
-  max-width: 660px;
-  margin: 1.5rem 0 2rem;
+  font-size: clamp(1rem, 1.45vw, 1.15rem);
+  line-height: 1.58;
+  max-width: 720px;
+  margin: 1.1rem 0 1.35rem;
 }
 
 .liquid-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center; }
 .liquid-actions.center { justify-content: center; }
 
-.hero-lab { padding: clamp(1.4rem, 3vw, 2.2rem); color: #fff; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.06)); }
-.lab-mark { font-family: var(--font-heading); font-size: clamp(4rem, 9vw, 7rem); font-weight: 900; line-height: 0.85; color: rgba(215,255,115,0.9); }
-.lab-label { color: rgba(255,255,255,0.58); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem; font-weight: 800; margin: 2rem 0 0.75rem; }
-.hero-lab h2 { color: #fff; font-size: clamp(1.8rem, 4vw, 3.1rem); }
-.lab-proof { display: grid; gap: 0.75rem; margin-top: 2rem; }
-.lab-proof div { display: grid; grid-template-columns: 92px 1fr; gap: 1rem; align-items: center; border-top: 1px solid rgba(255,255,255,0.16); padding-top: 0.75rem; }
-.lab-proof strong { color: var(--clr-accent); font-family: var(--font-heading); font-size: 1.7rem; }
-.lab-proof span { color: rgba(255,255,255,0.72); font-size: 0.9rem; }
+.hero-lab { padding: clamp(1.15rem, 2.2vw, 1.55rem); color: #fff; background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.06)); }
+.lab-mark { font-family: var(--font-heading); font-size: clamp(3.1rem, 6vw, 4.8rem); font-weight: 900; line-height: 0.85; color: rgba(215,255,115,0.9); }
+.lab-label { color: rgba(255,255,255,0.58); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.68rem; font-weight: 800; margin: 1.15rem 0 0.55rem; }
+.hero-lab h2 { color: #fff; font-size: clamp(1.35rem, 2.6vw, 2.15rem); line-height: 1.02; }
+.lab-proof { display: grid; gap: 0.5rem; margin-top: 1.15rem; }
+.lab-proof div { display: grid; grid-template-columns: 70px 1fr; gap: 0.8rem; align-items: center; border-top: 1px solid rgba(255,255,255,0.16); padding-top: 0.55rem; }
+.lab-proof strong { color: var(--clr-accent); font-family: var(--font-heading); font-size: 1.05rem; }
+.lab-proof span { color: rgba(255,255,255,0.72); font-size: 0.84rem; line-height: 1.35; }
 
 .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .pillar-card { display: flex; flex-direction: column; min-height: 320px; padding: clamp(1.25rem, 2.5vw, 2rem); color: inherit; }
@@ -2201,7 +2209,13 @@ h3 { font-size: clamp(1.15rem, 2vw, 1.5rem); }
     border-bottom: 1px solid var(--clr-border);
   }
   .principle-item:last-child { border-bottom: 0; }
-  .liquid-hero { min-height: auto; }
+  .liquid-hero {
+    min-height: auto;
+    padding: clamp(2rem, 8vw, 3rem) 0;
+  }
+  .liquid-hero h1 {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
   .hero-lab { max-width: 560px; }
   .liquid-footer-bottom { flex-direction: column; }
   .blog-heading-row,

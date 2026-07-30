@@ -10,8 +10,8 @@ const services = [
   {
     id: 'product-development',
     title: 'Product Development',
-    text: 'For teams moving from an idea or broken workflow into a product, feature, platform or operational system.',
-    items: ['Product discovery and requirements', 'Roadmaps and MVP definition', 'Prototype and workflow planning', 'Launch documentation', 'Product/project delivery coordination'],
+    text: 'For teams moving from an idea or broken workflow into a product, software platform, digital presence or growth engine.',
+    items: ['Software product discovery and requirements', 'Web, app and digital presence planning', 'Roadmaps, MVP scope and prototypes', 'Sales, marketing and launch assets', 'Business development and scaling systems', 'Product/project delivery coordination'],
   },
   {
     id: 'knowledge-systems',
