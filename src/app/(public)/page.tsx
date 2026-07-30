@@ -55,8 +55,8 @@ export default function HomePage() {
               Ryters Spot helps founders and organisations move from idea to market with research, software planning, digital presence, sales systems, marketing assets and product delivery support.
             </p>
             <div className="liquid-actions">
-              <Link href="/contact" className="btn btn-accent btn-lg">Start an R&amp;PD project</Link>
-              <Link href="/services" className="btn btn-liquid btn-lg">Explore capabilities</Link>
+              <Link href="/contact" className="btn btn-accent btn-lg">Hire Ryters Spot</Link>
+              <Link href="/services" className="btn btn-liquid btn-lg">View our services</Link>
             </div>
           </div>
 
